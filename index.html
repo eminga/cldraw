@@ -24,8 +24,15 @@
 			<h3>Draw team</h3>
 			<div class="btn-toolbar" id="cldraw-buttons">
 			</div>
-			<h3>Reset table</h3>
-			<button type="button" class="btn btn-danger" onclick="reset()">Reset</button>
+			<h3>Options</h3>
+			<div class="btn-toolbar" id="cldraw-buttons2">
+				<button type="button" class="btn btn-primary" id="button-randomteam" onclick="drawRandomTeam()">
+					Draw random team
+				</button>
+				<button type="button" class="btn btn-danger" onclick="reset()">
+					Reset table
+				</button>				
+			</div>
 		</div>
 		
 	
@@ -49,6 +56,6 @@
 		footer {
 			height: 30px;
 		}
-	</style>		
+	</style>
 	</body>
 </html>

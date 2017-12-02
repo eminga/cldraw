@@ -46,7 +46,6 @@ Real Madrid CF, Spain (2)
 var teamsW = ['Manchester United','Paris St. Germain','Chelsea FC','FC Barcelona','Liverpool FC','Manchester City','Beşiktaş JK','Tottenham Hotspur'];
 var countriesW = [0, 1, 0, 2, 0, 0, 3, 0];
 var teamsR = ['FC Basel','FC Bayern','AS Roma','Juventus','Sevilla FC','Shakhtar','FC Porto','Real Madrid'];
-
 var countriesR = [4, 5, 6, 6, 2, 7, 8, 2];
 
 
@@ -62,7 +61,7 @@ var calculatedProbabilities = [];
 createTable();
 
 // if available, load precalculated probabilities
-var filename = 'probabilities_';
+var filename = 'probabilities/';
 for (var i = 0; i < 8; i++) {
 	filename += countriesW[i];
 }
@@ -92,6 +91,8 @@ function reset() {
 	}
 	updateTable(calculateProbabilities());
 	createButtonsR();
+	var button = document.getElementById('button-randomteam');
+    button.classList.remove('disabled');
 }
 
 
@@ -252,6 +253,51 @@ function drawWinner(team, opponent) {
 }
 
 
+function drawRandomTeam() {
+	var opponent = -1;
+	for (var i = 0; i < 8; i++) {
+		if (drawnR[i] && !matched.includes(i)) {
+			opponent = i;
+		}
+	}
+
+	if (opponent == -1) {
+		var numR = 0;
+		for (var i = 0; i < 8; i++) {
+			if (!drawnR[i]) {
+				numR++;
+			}
+		}
+		if (numR > 0) {
+			var team = Math.floor(Math.random() * numR);
+			for (var i = 0; i <= team; i++) {
+				if (drawnR[i]) {
+					team++;
+				}
+			}
+			drawRunnerUp(team);
+		}
+	} else {
+		drawnR[opponent] = false;
+		var possibleMatch = calculatePossibleMatches()[opponent];
+		drawnR[opponent] = true;
+		var numW = 0;
+		for (var i = 0; i < 8; i++) {
+			if (possibleMatch[i]) {
+				numW++;
+			}
+		}
+		var team = Math.floor(Math.random() * numW);
+		for (var i = 0; i <= team && i < 20; i++) {
+			if (!possibleMatch[i]) {
+				team++;
+			}
+		}
+		drawWinner(team, opponent);
+	}
+}
+
+
 function createTable() {
 	var table = document.getElementById('cldraw-table');
 	var thead = document.createElement('thead');
@@ -275,6 +321,7 @@ function createTable() {
 		tr.appendChild(td);
 		for (var j = 0; j < 8; j++) {
 			var td = document.createElement('td');
+			td.style.textAlign = 'center';
 			tr.appendChild(td);
 		}
 		tbody.appendChild(tr);
@@ -314,8 +361,11 @@ function createButtonsR() {
 	while (buttons.firstChild) {
 		buttons.removeChild(buttons.firstChild);
 	}
+
+	var numR = 0;
 	for (var i = 0; i < 8 ; i++) {
 		if (!drawnR[i]) {
+			numR++;
 			var button = document.createElement('button');
 			button.classList.add('btn');
 			button.classList.add('btn-primary');
@@ -324,6 +374,10 @@ function createButtonsR() {
 			button.addEventListener('click', drawRunnerUp.bind(null, i), false);
 			buttons.appendChild(button);
 		}
+	}
+	if (numR == 0) {
+		var button = document.getElementById('button-randomteam');
+    	button.classList.add('disabled');
 	}
 }
 

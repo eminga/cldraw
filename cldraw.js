@@ -312,23 +312,23 @@ function createTable() {
 	}
 	var thead = document.createElement('thead');
 	var tr = document.createElement('tr');
-	var td = document.createElement('td');
-	tr.appendChild(td)
+	var th = document.createElement('th');
+	tr.appendChild(th)
 	for (var i = 0; i < 8; i++) {
-		var td = document.createElement('td');
-		td.appendChild(document.createTextNode(teamsR[i]));
-		td.style.fontWeight = 'bold';
-		tr.appendChild(td);
+		th = document.createElement('th');
+		th.appendChild(document.createTextNode(teamsR[i]));
+		th.scope = 'col';
+		tr.appendChild(th);
 	}
 	thead.appendChild(tr);
 
-	var tbody = document.createElement('thead');
+	var tbody = document.createElement('tbody');
 	for (var i = 0; i < 8; i++) {
 		var tr = document.createElement('tr');
-		var td = document.createElement('td');
-		td.style.fontWeight = 'bold';
-		td.appendChild(document.createTextNode(teamsW[i]));
-		tr.appendChild(td);
+		var th = document.createElement('th');
+		th.scope = 'row';
+		th.appendChild(document.createTextNode(teamsW[i]));
+		tr.appendChild(th);
 		for (var j = 0; j < 8; j++) {
 			var td = document.createElement('td');
 			td.style.textAlign = 'center';
@@ -364,6 +364,7 @@ function updateTable(probabilities, highlight) {
 		}
 	}
 }
+
 
 // create buttons of runner-up teams which were not drawn yet
 function createButtonsR() {
@@ -421,8 +422,8 @@ function showEditor() {
 			document.getElementById('cldraw-runner-up-' + i).value = teamsR[i];
 			document.getElementById('cldraw-runner-up-' + i + '-country').value = countriesR[i];
 		}
-		button.classList.add('active');		
-		div.style.display = 'inline';
+		button.classList.add('active');
+		div.style.display = '';
 	} else {
 		button.classList.remove('active');
 		div.style.display = 'none';

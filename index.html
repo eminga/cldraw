@@ -9,28 +9,32 @@
 	<title>CL Draw Probabilities</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-	</head>
+</head>
 	<body>
 		<div class="container" role="main">
 			<div class="page-header">
 				<h1>CL Draw Probabilities (2017/18)</h1>
 			</div>
 			<div class="row">
-				<div class="col-md-9">
+				<div class="col-md-9 table-responsive">
 					<table class="table" id="cldraw-table"></table>
 				</div>
-				<div class="col-md-3" align="center">
-					<strong>Fixtures</strong><br>
-					<div id="cldraw-fixtures">
+				<div class="col-md-3 hidden-xs hidden-sm">
+					<div class="panel panel-primary" align="center">
+						<div class="panel-heading">
+							<h3 class="panel-title">Fixtures</h3>
+						</div>
+						<div class="panel-body" id="cldraw-fixtures">
+						</div>
 					</div>
 				</div>
 			</div>
-			
+
 			<h3>Draw team</h3>
 			<div class="btn-toolbar" id="cldraw-buttons">
 			</div>
 			<h3>Options</h3>
-			<div class="btn-toolbar" id="cldraw-buttons2">
+			<div class="btn-toolbar">
 				<button type="button" class="btn btn-primary" id="button-randomteam" onclick="drawRandomTeam()">
 					Draw random team
 				</button>
@@ -42,114 +46,121 @@
 				</button>			
 			</div>
 			
-			
-			<div id="cldraw-editor" style="display:none">
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<label for="cldraw-winners">Group winners:</label>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<label for="cldraw-runners-up">Group runners-up:</label>						
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-0">Group A:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-0"> <input id="cldraw-winner-0-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-0"> <input id="cldraw-runner-up-0-country" size="2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-1">Group B:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-1"> <input id="cldraw-winner-1-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-1"> <input id="cldraw-runner-up-1-country" size="2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-2">Group C:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-2"> <input id="cldraw-winner-2-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-2"> <input id="cldraw-runner-up-2-country" size="2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-3">Group D:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-3"> <input id="cldraw-winner-3-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-3"> <input id="cldraw-runner-up-3-country" size="2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-4">Group E:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-4"> <input id="cldraw-winner-4-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-4"> <input id="cldraw-runner-up-4-country" size="2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-5">Group F:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-5"> <input id="cldraw-winner-5-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-5"> <input id="cldraw-runner-up-5-country" size="2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-6">Group G:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-6"> <input id="cldraw-winner-6-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-6"> <input id="cldraw-runner-up-6-country" size="2">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-xs-2">
-						<label for="cldraw-winner-7">Group H:</p>
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-winner-7"> <input id="cldraw-winner-7-country" size="2">
-					</div>
-					<div class="col-md-3 col-xs-5">
-						<input id="cldraw-runner-up-7"> <input id="cldraw-runner-up-7-country" size="2">
-					</div>
-				</div>
-				
+			<div class="row" id="cldraw-editor" style="display: none">
+				<br>
+				<div class="col-md-7">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">Team Editor</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-xs-2">
+								</div>
+								<div class="col-xs-5">
+									<label for="cldraw-winners">Group winners:</label>
+								</div>
+								<div class="col-xs-5">
+									<label for="cldraw-runners-up">Group runners-up:</label>						
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-0">Group A:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-0" size="15"> <input id="cldraw-winner-0-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-0" size="15"> <input id="cldraw-runner-up-0-country" size="2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-1">Group B:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-1" size="15"> <input id="cldraw-winner-1-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-1" size="15"> <input id="cldraw-runner-up-1-country" size="2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-2">Group C:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-2" size="15"> <input id="cldraw-winner-2-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-2" size="15"> <input id="cldraw-runner-up-2-country" size="2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-3">Group D:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-3" size="15"> <input id="cldraw-winner-3-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-3" size="15"> <input id="cldraw-runner-up-3-country" size="2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-4">Group E:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-4" size="15"> <input id="cldraw-winner-4-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-4" size="15"> <input id="cldraw-runner-up-4-country" size="2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-5">Group F:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-5" size="15"> <input id="cldraw-winner-5-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-5" size="15"> <input id="cldraw-runner-up-5-country" size="2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-6">Group G:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-6" size="15"> <input id="cldraw-winner-6-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-6" size="15"> <input id="cldraw-runner-up-6-country" size="2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-winner-7">Group H:</p>
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-winner-7" size="15"> <input id="cldraw-winner-7-country" size="2">
+								</div>
+								<div class="col-xs-5">
+									<input id="cldraw-runner-up-7" size="15"> <input id="cldraw-runner-up-7-country" size="2">
+								</div>
+							</div>
 
-				<button type="button" class="btn btn-default" onclick="saveTeams()">
-					Save
-				</button>
+							<button type="button" class="btn btn-default" onclick="saveTeams()">
+								Save
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-		
 		
 
 		<footer class="navbar navbar-default navbar-fixed-bottom">

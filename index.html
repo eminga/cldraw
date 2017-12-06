@@ -9,17 +9,14 @@
 	<title>CL Draw Probabilities</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-</head>
+	</head>
 	<body>
 		<div class="container" role="main">
 			<div class="page-header">
 				<h1>CL Draw Probabilities (2017/18)</h1>
 			</div>
 			<div class="row">
-				<div class="col-md-9 table-responsive">
-					<table class="table" id="cldraw-table"></table>
-				</div>
-				<div class="col-md-3 hidden-xs hidden-sm">
+				<div class="col-md-3 col-md-push-9">
 					<div class="panel panel-primary" align="center">
 						<div class="panel-heading">
 							<h3 class="panel-title">Fixtures</h3>
@@ -27,6 +24,9 @@
 						<div class="panel-body" id="cldraw-fixtures">
 						</div>
 					</div>
+				</div>
+				<div class="col-md-9 col-md-pull-3 table-responsive">
+					<table class="table" id="cldraw-table"></table>
 				</div>
 			</div>
 
@@ -153,6 +153,10 @@
 								</div>
 							</div>
 
+							<div class="alert alert-warning" role="alert">
+								<strong>Warning:</strong> Calculating the new probabilities can take a few minutes on old or mobile devices.
+							</div>
+
 							<button type="button" class="btn btn-default" onclick="saveTeams()">
 								Save
 							</button>
@@ -161,9 +165,9 @@
 				</div>
 			</div>
 		</div>
-		
 
-		<footer class="navbar navbar-default navbar-fixed-bottom">
+
+		<footer class="navbar navbar-default navbar-fixed-bottom hidden-xs">
 			<div class="container">
 				<p class="navbar-text pull-left">© 2017 - CL Draw Probabilities by 
 					<a href="https://twitter.com/e_mi_nga">eminga</a>

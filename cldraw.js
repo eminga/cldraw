@@ -25,7 +25,7 @@ Team, Country
 	Winners
 Manchester United FC, England
 Paris St. Germain, France
-Chelsea FC, England
+AS Roma, Italy
 FC Barcelona, Spain
 Liverpool FC, England
 Manchester City FC, England
@@ -35,7 +35,7 @@ Tottenham Hotspur FC, England
 	Runners-up
 FC Basel 1893, Switzerland
 FC Bayern München, Germany
-AS Roma, Italy
+Chelsea FC, England
 Juventus, Italy
 Sevilla FC, Spain
 FC Shakhtar Donetsk, Ukraine
@@ -43,11 +43,10 @@ FC Porto, Portugal
 Real Madrid CF, Spain
 */
 
-var teamsW = ['Manchester United', 'Paris St. Germain', 'Chelsea FC', 'FC Barcelona', 'Liverpool FC', 'Manchester City', 'Beşiktaş JK', 'Tottenham Hotspur'];
-var countriesW = ['EN', 'FR', 'EN', 'ES', 'EN', 'EN', 'TR', 'EN'];
-var teamsR = ['FC Basel', 'FC Bayern', 'AS Roma', 'Juventus', 'Sevilla FC', 'Shakhtar', 'FC Porto', 'Real Madrid'];
-var countriesR = ['CH', 'DE', 'IT', 'IT', 'ES', 'UA', 'PT', 'ES'];
-
+var teamsW = ['Manchester United', 'Paris St. Germain', 'AS Roma', 'FC Barcelona', 'Liverpool FC', 'Manchester City', 'Beşiktaş JK', 'Tottenham Hotspur'];
+var countriesW = ['EN', 'FR', 'IT', 'ES', 'EN', 'EN', 'TR', 'EN'];
+var teamsR = ['FC Basel', 'FC Bayern', 'Chelsea FC', 'Juventus', 'Sevilla FC', 'Shakhtar', 'FC Porto', 'Real Madrid'];
+var countriesR = ['CH', 'DE', 'EN', 'IT', 'ES', 'UA', 'PT', 'ES'];
 
 // drawn{W,R}[i] == true if team i has already been drawn
 var drawnW = [];

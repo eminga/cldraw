@@ -20,33 +20,13 @@
  *  SOFTWARE.
  */
 
-/*
-Team, Country
-	Winners
-Manchester United FC, England
-Paris St. Germain, France
-AS Roma, Italy
-FC Barcelona, Spain
-Liverpool FC, England
-Manchester City FC, England
-Beşiktaş JK, Turkey
-Tottenham Hotspur FC, England
-
-	Runners-up
-FC Basel 1893, Switzerland
-FC Bayern München, Germany
-Chelsea FC, England
-Juventus, Italy
-Sevilla FC, Spain
-FC Shakhtar Donetsk, Ukraine
-FC Porto, Portugal
-Real Madrid CF, Spain
-*/
-
 var teamsW = ['Manchester United', 'Paris St. Germain', 'AS Roma', 'FC Barcelona', 'Liverpool FC', 'Manchester City', 'Beşiktaş JK', 'Tottenham Hotspur'];
-var countriesW = ['EN', 'FR', 'IT', 'ES', 'EN', 'EN', 'TR', 'EN'];
+var initialCountriesW = ['EN', 'FR', 'IT', 'ES', 'EN', 'EN', 'TR', 'EN'];
 var teamsR = ['FC Basel', 'FC Bayern', 'Chelsea FC', 'Juventus', 'Sevilla FC', 'Shakhtar', 'FC Porto', 'Real Madrid'];
-var countriesR = ['CH', 'DE', 'EN', 'IT', 'ES', 'UA', 'PT', 'ES'];
+var initialCountriesR = ['CH', 'DE', 'EN', 'IT', 'ES', 'UA', 'PT', 'ES'];
+
+var countriesW = [];
+var countriesR = [];
 
 // drawn{W,R}[i] == true if team i has already been drawn
 var drawnW = [];
@@ -63,12 +43,39 @@ initialize();
 function initialize() {
 	createTable();
 	calculatedProbabilities = [];
+
+	// assign the same number c > 0 to all teams which are from the same
+	// country and where both pots contain at least one team from this country
+	for (var i = 0; i < 8; i++) {
+		countriesW[i] = 0;
+		countriesR[i] = 0;
+	}
+	var c = 1;
+	for (var i = 0; i < 8; i++) {
+		if (countriesW[i] == 0) {
+			var sameCountry = false;
+			for (var j = 0; j < 8; j++) {
+				if (initialCountriesR[j] == initialCountriesW[i]) {
+					countriesR[j] = c;
+					sameCountry = true;
+				}
+			}			
+			if (sameCountry) {
+				countriesW[i] = c;
+				for (var j = i; j < 8; j++) {
+					if (initialCountriesW[j] == initialCountriesW[i]) {
+						countriesW[j] = c;
+					}
+				}
+				c++;
+			}
+		}
+	}
+
 	// if available, load precalculated probabilities
 	var filename = 'probabilities/';
 	for (var i = 0; i < 8; i++) {
 		filename += countriesW[i];
-	}
-	for (var i = 0; i < 8; i++) {
 		filename += countriesR[i];
 	}
 	filename += '.json';
@@ -96,7 +103,7 @@ function reset() {
 	updateTable(calculateProbabilities());
 	createButtonsR();
 	document.getElementById('button-randomteam').classList.remove('disabled');
-    document.getElementById('cldraw-fixtures').innerHTML = '';
+	document.getElementById('cldraw-fixtures').innerHTML = '';
 }
 
 
@@ -107,7 +114,7 @@ function isValid(draw) {
 		while (drawnW[i + j]) {
 			j++;
 		}
-		if (i + j == draw[i] || countriesW[i + j] == countriesR[draw[i]]) {
+		if (i + j == draw[i] || (countriesW[i + j] != 0 && countriesW[i + j] == countriesR[draw[i]])) {
 			return false;
 		}
 	}
@@ -171,7 +178,7 @@ function generateId() {
 }
 
 
-function calculateProbabilities(team, possibleMatch) {
+function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 	var id = generateId();
 	var probabilities = [];
 
@@ -188,14 +195,13 @@ function calculateProbabilities(team, possibleMatch) {
 		}
 
 		// if the same number of winners and runners-up has been drawn
-		if (team == undefined) {
+		if (unmatchedRunnerUp == undefined) {
 			var possibleMatches = calculatePossibleMatches();
-
 			for (var i = 0; i < 8; i++) {
 				if (!drawnR[i]) {
 					options++;
+					// temporarily draw runner-up i and calculate the resulting probabilities
 					drawnR[i] = true;
-
 					var temp = calculateProbabilities(i, possibleMatches[i]);
 					for (var j = 0; j < 8; j++) {
 						for (var k = 0; k < 8; k++) {
@@ -207,12 +213,13 @@ function calculateProbabilities(team, possibleMatch) {
 			}
 
 			calculatedProbabilities[id] = probabilities;
-		// if an opponent for team "team" is to be drawn next
+		// if an opponent for team unmatchedRunnerUp is to be drawn next
 		} else { 
 			for (var i = 0; i < 8; i++) {
 				if (possibleMatch[i]) {
 					options++;
-					matched[i] = team;
+					// temporarily match unmatchedRunnerUp with winner i and calculate the resulting probabilities
+					matched[i] = unmatchedRunnerUp;
 					drawnW[i] = true;
 					var temp = calculateProbabilities();
 					for (var j = 0; j < 8; j++) {
@@ -220,7 +227,7 @@ function calculateProbabilities(team, possibleMatch) {
 							probabilities[j][k] += temp[j][k];
 						}
 					}
-					probabilities[i][team] += 1;
+					probabilities[i][unmatchedRunnerUp] += 1;
 					matched[i] = -1;
 					drawnW[i] = false;
 				}
@@ -261,6 +268,7 @@ function drawWinner(team, opponent) {
 
 function drawRandomTeam() {
 	var opponent = -1;
+	// check if there is a drawn but unmatched runner-up
 	for (var i = 0; i < 8; i++) {
 		if (drawnR[i] && !matched.includes(i)) {
 			opponent = i;
@@ -387,7 +395,7 @@ function createButtonsR() {
 	}
 	if (numR == 0) {
 		var button = document.getElementById('button-randomteam');
-    	button.classList.add('disabled');
+		button.classList.add('disabled');
 	}
 }
 
@@ -417,9 +425,9 @@ function showEditor() {
 	if (!button.classList.contains('active')) {
 		for (var i = 0; i < 8; i++) {
 			document.getElementById('cldraw-winner-' + i).value = teamsW[i];
-			document.getElementById('cldraw-winner-' + i + '-country').value = countriesW[i];
+			document.getElementById('cldraw-winner-' + i + '-country').value = initialCountriesW[i];
 			document.getElementById('cldraw-runner-up-' + i).value = teamsR[i];
-			document.getElementById('cldraw-runner-up-' + i + '-country').value = countriesR[i];
+			document.getElementById('cldraw-runner-up-' + i + '-country').value = initialCountriesR[i];
 		}
 		button.classList.add('active');
 		div.style.display = '';
@@ -437,9 +445,9 @@ function saveTeams() {
 	div.style.display = 'none';
 	for (var i = 0; i < 8; i++) {
 			teamsW[i] = document.getElementById('cldraw-winner-' + i).value;
-			countriesW[i] = document.getElementById('cldraw-winner-' + i + '-country').value;
+			initialCountriesW[i] = document.getElementById('cldraw-winner-' + i + '-country').value;
 			teamsR[i] = document.getElementById('cldraw-runner-up-' + i).value;
-			countriesR[i] = document.getElementById('cldraw-runner-up-' + i + '-country').value;
-		}
+			initialCountriesR[i] = document.getElementById('cldraw-runner-up-' + i + '-country').value;
+	}
 	initialize();
 }

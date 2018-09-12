@@ -44,8 +44,11 @@
 				<button type="button" class="btn btn-default" id="button-editor" onclick="showEditor()">
 					Edit teams
 				</button>
+				<button type="button" class="btn btn-default" id="jsondl" style="display: none" onclick="downloadJSON()">
+					Download probabilities
+				</button>
 			</div>
-			
+
 			<div class="row" id="cldraw-editor" style="display: none">
 				<br>
 				<div class="col-md-7">
@@ -169,7 +172,7 @@
 
 		<footer class="navbar navbar-default navbar-fixed-bottom hidden-xs">
 			<div class="container">
-				<p class="navbar-text pull-left">© 2017 - CL Draw Probabilities by 
+				<p class="navbar-text pull-left">© 2018 - CL Draw Probabilities by 
 					<a href="https://twitter.com/e_mi_nga">eminga</a>
 				</p>
 				<a href="https://github.com/eminga/cldraw" class="navbar-btn btn pull-right">View on GitHub</a>
@@ -178,7 +181,7 @@
 
 		<script src="js-combinatorics/combinatorics.js"></script>
 		<script src="cldraw.js"></script>
-		
+
 	<style>
 		body {
 			margin-bottom: 60px;

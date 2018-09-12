@@ -1,5 +1,5 @@
 /*  CL Draw Probabilities
- *  Copyright (C) 2017  eminga
+ *  Copyright (C) 2017-2018  eminga
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,13 @@
  *  SOFTWARE.
  */
 
+// To update the teams, change the following 4 variables:
 var teamsW = ['Manchester United', 'Paris St. Germain', 'AS Roma', 'FC Barcelona', 'Liverpool FC', 'Manchester City', 'Beşiktaş JK', 'Tottenham Hotspur'];
 var initialCountriesW = ['EN', 'FR', 'IT', 'ES', 'EN', 'EN', 'TR', 'EN'];
 var teamsR = ['FC Basel', 'FC Bayern', 'Chelsea FC', 'Juventus', 'Sevilla FC', 'Shakhtar', 'FC Porto', 'Real Madrid'];
 var initialCountriesR = ['CH', 'DE', 'EN', 'IT', 'ES', 'UA', 'PT', 'ES'];
+
+
 
 var countriesW = [];
 var countriesR = [];
@@ -40,10 +43,8 @@ var calculatedProbabilities;
 initialize();
 
 
-function initialize() {
-	createTable();
-	calculatedProbabilities = [];
-
+// creates a filename for the cached probabilities (e.g. 1000213213100013.json)
+function createFilename() {
 	// assign the same number c > 0 to all teams which are from the same
 	// country and where both pots contain at least one team from this country
 	for (var i = 0; i < 8; i++) {
@@ -59,7 +60,7 @@ function initialize() {
 					countriesR[j] = c;
 					sameCountry = true;
 				}
-			}			
+			}
 			if (sameCountry) {
 				countriesW[i] = c;
 				for (var j = i; j < 8; j++) {
@@ -72,19 +73,31 @@ function initialize() {
 		}
 	}
 
-	// if available, load precalculated probabilities
-	var filename = 'probabilities/';
+	var filename = '';
 	for (var i = 0; i < 8; i++) {
 		filename += countriesW[i];
 		filename += countriesR[i];
 	}
 	filename += '.json';
+	return filename;
+}
 
+
+function initialize() {
+	createTable();
+	calculatedProbabilities = [];
+
+	// if available, load precalculated probabilities
+	filename = 'probabilities/' + createFilename();
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (this.readyState == 4) {
+			var button = document.getElementById('jsondl');
 			if (this.status == 200) {
+				button.style.display = 'none';
 				calculatedProbabilities = JSON.parse(this.responseText);
+			} else {
+				button.style.display = '';
 			}
 			reset();
 		}
@@ -444,10 +457,21 @@ function saveTeams() {
 	var div = document.getElementById('cldraw-editor');
 	div.style.display = 'none';
 	for (var i = 0; i < 8; i++) {
-			teamsW[i] = document.getElementById('cldraw-winner-' + i).value;
-			initialCountriesW[i] = document.getElementById('cldraw-winner-' + i + '-country').value;
-			teamsR[i] = document.getElementById('cldraw-runner-up-' + i).value;
-			initialCountriesR[i] = document.getElementById('cldraw-runner-up-' + i + '-country').value;
+		teamsW[i] = document.getElementById('cldraw-winner-' + i).value;
+		initialCountriesW[i] = document.getElementById('cldraw-winner-' + i + '-country').value;
+		teamsR[i] = document.getElementById('cldraw-runner-up-' + i).value;
+		initialCountriesR[i] = document.getElementById('cldraw-runner-up-' + i + '-country').value;
 	}
 	initialize();
+}
+
+
+function downloadJSON() {
+	var a = document.createElement("a");
+	document.body.appendChild(a);
+	url = window.URL.createObjectURL(new Blob([JSON.stringify(calculatedProbabilities)], {type: "octet/stream"}));
+	a.href = url;
+	a.download = createFilename();
+	a.click();
+	window.URL.revokeObjectURL(url);
 }

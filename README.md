@@ -4,7 +4,7 @@ An interactive probability calculator for the round of 16 of the UEFA Champions 
 Try it: https://eminga.github.io/cldraw/
 
 ## Background
-In the round of 16 of the UEFA Champions League, the UEFA imposed some regulations on how the teams are matched:
+In the round of 16 of the UEFA Champions League, the UEFA imposes some regulations on how the teams are matched:
 1. Group winners play against group runners-up.
 2. Winners and runners-up are drawn alternatingly, starting with a runner-up.
 3. Teams from the same group cannot be matched.
@@ -19,10 +19,12 @@ This tool simply computes the conditional probabilities of all possible pairings
 
 To speed up the computation, memoization is used. In addition, precomputed probabilites can be stored on the server to avoid long computation times on mobile devices.
 
-## Fork me
-If this tool wasn't updated in time or you want to fork it for another reason, feel free to do so! Just respect the MIT License.
+## Host yourself
+If this tool wasn't updated in time or you want to host it yourself for another reason, feel free to do so! Just respect the MIT License.
 
-To host it on GitHub, enable the GitHub Pages feature and (if necessary) edit the teams in the cldraw.js file. To store the probabilites on the server, press the "Download probabilities" button and upload the .json file to the "probabilities" folder.
+You can edit the teams in the beginning of the cldraw.js file. To store the probabilites on the server, press the "Download probabilities" button and upload the .json file to the "probabilities" folder.
+
+To host it on GitHub, fork this repo and enable the GitHub Pages feature.
 
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.

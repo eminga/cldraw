@@ -45,6 +45,20 @@ initialize();
 
 // creates a filename for the cached probabilities (e.g. 1000213213100013.json)
 function createFilename() {
+	var filename = '';
+	for (var i = 0; i < 8; i++) {
+		filename += countriesW[i];
+		filename += countriesR[i];
+	}
+	filename += '.json';
+	return filename;
+}
+
+
+function initialize() {
+	createTable();
+	calculatedProbabilities = [];
+
 	// assign the same number c > 0 to all teams which are from the same
 	// country and where both pots contain at least one team from this country
 	for (var i = 0; i < 8; i++) {
@@ -72,20 +86,6 @@ function createFilename() {
 			}
 		}
 	}
-
-	var filename = '';
-	for (var i = 0; i < 8; i++) {
-		filename += countriesW[i];
-		filename += countriesR[i];
-	}
-	filename += '.json';
-	return filename;
-}
-
-
-function initialize() {
-	createTable();
-	calculatedProbabilities = [];
 
 	// if available, load precalculated probabilities
 	filename = 'probabilities/' + createFilename();

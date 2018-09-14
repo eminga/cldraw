@@ -3,6 +3,8 @@ An interactive probability calculator for the round of 16 of the UEFA Champions 
 
 Try it: https://eminga.github.io/cldraw/
 
+If you are interested in exact fractions rather than rounded decimals, have a look at the [fractions branch](https://github.com/eminga/cldraw/tree/fractions).
+
 ## Background
 In the round of 16 of the UEFA Champions League, the UEFA imposes some regulations on how the teams are matched:
 1. Group winners play against group runners-up.
@@ -29,4 +31,4 @@ To host it on GitHub, fork this repo and enable the GitHub Pages feature.
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.
 
-It uses [js-combinatorics](https://github.com/dankogai/js-combinatorics) by [dankogai](https://github.com/dankogai) and [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs).
+It uses [js-combinatorics](https://github.com/dankogai/js-combinatorics) by [Dan Kogai](https://github.com/dankogai) and [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs).

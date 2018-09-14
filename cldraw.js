@@ -467,9 +467,31 @@ function saveTeams() {
 
 
 function downloadJSON() {
+	var croppedProbabilities = [];
+	for (var i = 0; i < calculatedProbabilities.length; i++) {
+		if (calculatedProbabilities[i] != null) {
+			var depth = 0;
+			var id = i;
+			while (id > 0) {
+				depth += id % 2;
+				id >>>= 1;
+			}
+			// only store probabilities for cases where less then 5 teams have been drawn
+			if (depth < 5) {
+				croppedProbabilities[i] = [];
+				for (var j = 0; j < 8; j++) {
+					croppedProbabilities[i][j] = [];
+					for (var k = 0; k < 8; k++) {
+						croppedProbabilities[i][j][k] = calculatedProbabilities[i][j][k];
+					}
+				}
+			}
+		}
+	}
+
 	var a = document.createElement("a");
 	document.body.appendChild(a);
-	url = window.URL.createObjectURL(new Blob([JSON.stringify(calculatedProbabilities)], {type: "octet/stream"}));
+	url = window.URL.createObjectURL(new Blob([JSON.stringify(croppedProbabilities)], {type: "octet/stream"}));
 	a.href = url;
 	a.download = createFilename();
 	a.click();

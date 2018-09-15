@@ -3,8 +3,6 @@ An interactive probability calculator for the round of 16 of the UEFA Champions 
 
 Try it: https://eminga.github.io/cldraw/
 
-If you are interested in exact fractions rather than rounded decimals, have a look at the [fractions branch](https://github.com/eminga/cldraw/tree/fractions).
-
 ## Background
 In the round of 16 of the UEFA Champions League, the UEFA imposes some regulations on how the teams are matched:
 1. Group winners play against group runners-up.

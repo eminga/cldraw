@@ -39,6 +39,7 @@ var drawnR = [];
 var matched = [];
 
 var drawHistory = [];
+var previewMode = false;
 
 var calculatedProbabilities;
 
@@ -263,24 +264,33 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 }
 
 
-function drawRunnerUp(team) {
+function drawRunnerUp(team, preview = false) {
 	var possibleMatch = calculatePossibleMatches()[team];
 	drawnR[team] = true;
-	drawHistory.push(team);
 	var probabilities = calculateProbabilities(team, possibleMatch);
 	updateTable(probabilities, team);
-	createButtonsW(team, possibleMatch);
-	updateFixtures();
+	if (!preview) {
+		drawHistory.push(team);
+		createButtonsW(team, possibleMatch);
+		updateFixtures();
+	} else {
+		drawnR[team] = false;
+	}
 }
 
 
-function drawWinner(team, opponent) {
+function drawWinner(team, opponent, preview = false) {
 	matched[team] = opponent;
 	drawnW[team] = true;
-	drawHistory.push(team + 8);
 	updateTable(calculateProbabilities());
-	createButtonsR();
-	updateFixtures();
+	if (!preview) {
+		drawHistory.push(team + 8);
+		createButtonsR();
+		updateFixtures();
+	} else {
+		matched[team] = -1;
+		drawnW[team] = false;
+	}
 }
 
 
@@ -295,6 +305,7 @@ function undo() {
 		} else {
 			team -= 8;
 			drawnW[team] = false;
+			matched[team] = -1;
 			opponent = drawHistory.pop();
 			drawnR[opponent] = false;
 			drawRunnerUp(opponent);
@@ -446,7 +457,12 @@ function createButtonsR() {
 			button.classList.add('btn-primary');
 			var text = document.createTextNode(teamsR[i]);
 			button.appendChild(text);
-			button.addEventListener('click', drawRunnerUp.bind(null, i), false);
+			button.addEventListener('click', drawRunnerUp.bind(null, i, false), false);
+			if (previewMode) {
+				button.addEventListener('mouseover', drawRunnerUp.bind(null, i, true), false);
+				var probabilities = calculateProbabilities();
+				button.addEventListener('mouseout', updateTable.bind(null, probabilities), false);
+			}
 			buttons.appendChild(button);
 		}
 	}
@@ -469,8 +485,36 @@ function createButtonsW(opponent, possibleMatch) {
 			button.classList.add('btn-primary');
 			var text = document.createTextNode(teamsW[i]);
 			button.appendChild(text);
-			button.addEventListener('click', drawWinner.bind(null, i, opponent), false);
+			button.addEventListener('click', drawWinner.bind(null, i, opponent, false), false);
+			if (previewMode) {
+				button.addEventListener('mouseover', drawWinner.bind(null, i, opponent, true), false);
+				var probabilities = calculateProbabilities(opponent, possibleMatch);
+				button.addEventListener('mouseout', updateTable.bind(null, probabilities, opponent), false);
+			}
 			buttons.appendChild(button);
+		}
+	}
+}
+
+
+function togglePreviewMode() {
+	var button = document.getElementById('button-preview');
+	if (previewMode) {
+		previewMode = false;
+		button.classList.remove('active');
+	} else {
+		previewMode = true;
+		button.classList.add('active');
+	}
+	if (drawHistory.length == 0) {
+		reset();
+	} else {
+		var team = drawHistory[drawHistory.length - 1];
+		undo();
+		if (team < 8) {
+			drawRunnerUp(team);
+		} else {
+			drawWinner(team - 8, drawHistory[drawHistory.length - 1]);
 		}
 	}
 }

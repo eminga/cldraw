@@ -38,6 +38,8 @@ var drawnR = [];
 // matched[i] == j if teams i and j are matched
 var matched = [];
 
+var drawHistory = [];
+
 var calculatedProbabilities;
 
 initialize();
@@ -115,8 +117,9 @@ function reset() {
 	}
 	updateTable(calculateProbabilities());
 	createButtonsR();
+	drawHistory = [];
+	updateFixtures();
 	document.getElementById('button-randomteam').classList.remove('disabled');
-	document.getElementById('cldraw-fixtures').innerHTML = '';
 }
 
 
@@ -263,19 +266,41 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 function drawRunnerUp(team) {
 	var possibleMatch = calculatePossibleMatches()[team];
 	drawnR[team] = true;
+	drawHistory.push(team);
 	var probabilities = calculateProbabilities(team, possibleMatch);
 	updateTable(probabilities, team);
 	createButtonsW(team, possibleMatch);
-	document.getElementById('cldraw-fixtures').innerHTML += teamsR[team] + ' - ';
+	updateFixtures();
 }
 
 
 function drawWinner(team, opponent) {
 	matched[team] = opponent;
 	drawnW[team] = true;
+	drawHistory.push(team + 8);
 	updateTable(calculateProbabilities());
 	createButtonsR();
-	document.getElementById('cldraw-fixtures').innerHTML += teamsW[team] + '<br>';
+	updateFixtures();
+}
+
+
+function undo() {
+	team = drawHistory.pop();
+	if (team != undefined) {
+		if (team < 8) {
+			drawnR[team] = false;
+			updateTable(calculateProbabilities());
+			createButtonsR();
+			updateFixtures();
+		} else {
+			team -= 8;
+			drawnW[team] = false;
+			opponent = drawHistory.pop();
+			drawnR[opponent] = false;
+			drawRunnerUp(opponent);
+		}
+		document.getElementById('button-randomteam').classList.remove('disabled');
+	}
 }
 
 
@@ -382,6 +407,25 @@ function updateTable(probabilities, highlight) {
 			table.rows[i + 1].cells[j + 1].innerHTML = text;
 			table.rows[i + 1].cells[j + 1].style.background = color;
 		}
+	}
+}
+
+
+function updateFixtures() {
+	var text = '';
+	for (var i = 0; i < drawHistory.length; i++) {
+		team = drawHistory[i];
+		if (team < 8) {
+			text += teamsR[team] + ' - ';
+		} else {
+			text += teamsW[team - 8] + '<br>';
+		}
+	}
+	document.getElementById('cldraw-fixtures').innerHTML = text;
+	if (drawHistory.length > 0) {
+		document.getElementById('button-undo').classList.remove('disabled');
+	} else {
+		document.getElementById('button-undo').classList.add('disabled');
 	}
 }
 

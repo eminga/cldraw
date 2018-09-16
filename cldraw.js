@@ -454,6 +454,9 @@ function createButtonsR() {
 		buttons.removeChild(buttons.firstChild);
 	}
 
+	if (previewMode) {
+		var probabilities = calculateProbabilities();
+	}
 	var numR = 0;
 	for (var i = 0; i < 8 ; i++) {
 		if (!drawnR[i]) {
@@ -466,7 +469,6 @@ function createButtonsR() {
 			button.addEventListener('click', drawRunnerUp.bind(null, i, false), false);
 			if (previewMode) {
 				button.addEventListener('mouseover', drawRunnerUp.bind(null, i, true), false);
-				var probabilities = calculateProbabilities();
 				button.addEventListener('mouseout', updateTable.bind(null, probabilities), false);
 			}
 			buttons.appendChild(button);
@@ -484,6 +486,9 @@ function createButtonsW(opponent, possibleMatch) {
 	while (buttons.firstChild) {
 		buttons.removeChild(buttons.firstChild);
 	}
+	if (previewMode) {
+		var probabilities = calculateProbabilities(opponent, possibleMatch);
+	}
 	for (var i = 0; i < 8 ; i++) {
 		if (!drawnW[i] && possibleMatch[i]) {
 			var button = document.createElement('button');
@@ -494,7 +499,6 @@ function createButtonsW(opponent, possibleMatch) {
 			button.addEventListener('click', drawWinner.bind(null, i, opponent, false), false);
 			if (previewMode) {
 				button.addEventListener('mouseover', drawWinner.bind(null, i, opponent, true), false);
-				var probabilities = calculateProbabilities(opponent, possibleMatch);
 				button.addEventListener('mouseout', updateTable.bind(null, probabilities, opponent), false);
 			}
 			buttons.appendChild(button);

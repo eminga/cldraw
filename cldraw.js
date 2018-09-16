@@ -432,11 +432,17 @@ function updateFixtures() {
 			text += teamsW[team - 8] + '<br>';
 		}
 	}
+	var openPairings = 8 - Math.floor((drawHistory.length ) / 2);
+	for (var i = 0; i < openPairings; i++) {
+		text += '<br>';
+	}
 	document.getElementById('cldraw-fixtures').innerHTML = text;
 	if (drawHistory.length > 0) {
 		document.getElementById('button-undo').classList.remove('disabled');
+		document.getElementById('button-restart').classList.remove('disabled');
 	} else {
 		document.getElementById('button-undo').classList.add('disabled');
+		document.getElementById('button-restart').classList.add('disabled');
 	}
 }
 

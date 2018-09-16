@@ -432,7 +432,7 @@ function updateFixtures() {
 			text += teamsW[team - 8] + '<br>';
 		}
 	}
-	var openPairings = 8 - Math.floor((drawHistory.length ) / 2);
+	var openPairings = 8 - Math.floor(drawHistory.length / 2);
 	for (var i = 0; i < openPairings; i++) {
 		text += '<br>';
 	}

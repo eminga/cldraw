@@ -40,6 +40,7 @@ var matched = [];
 
 var drawHistory = [];
 var previewMode = false;
+var swap = false;
 
 var calculatedProbabilities;
 
@@ -372,7 +373,11 @@ function createTable() {
 	tr.appendChild(th)
 	for (var i = 0; i < 8; i++) {
 		th = document.createElement('th');
-		th.appendChild(document.createTextNode(teamsR[i]));
+		if (!swap) {
+			th.appendChild(document.createTextNode(teamsR[i]));
+		} else {
+			th.appendChild(document.createTextNode(teamsW[i]));
+		}
 		th.scope = 'col';
 		tr.appendChild(th);
 	}
@@ -383,7 +388,11 @@ function createTable() {
 		var tr = document.createElement('tr');
 		var th = document.createElement('th');
 		th.scope = 'row';
-		th.appendChild(document.createTextNode(teamsW[i]));
+		if (!swap) {
+			th.appendChild(document.createTextNode(teamsW[i]));
+		} else {
+			th.appendChild(document.createTextNode(teamsR[i]));
+		}
 		tr.appendChild(th);
 		for (var j = 0; j < 8; j++) {
 			var td = document.createElement('td');
@@ -415,8 +424,13 @@ function updateTable(probabilities, highlight) {
 					color = '#f5ff75';
 				}
 			}
-			table.rows[i + 1].cells[j + 1].innerHTML = text;
-			table.rows[i + 1].cells[j + 1].style.background = color;
+			if (!swap) {
+				table.rows[i + 1].cells[j + 1].innerHTML = text;
+				table.rows[i + 1].cells[j + 1].style.background = color;
+			} else {
+				table.rows[j + 1].cells[i + 1].innerHTML = text;
+				table.rows[j + 1].cells[i + 1].style.background = color;
+			}
 		}
 	}
 }
@@ -528,6 +542,28 @@ function togglePreviewMode() {
 		}
 	}
 }
+
+
+function transposeTable() {
+	swap = !swap;
+	var table = document.getElementById('cldraw-table');
+	var oldTable = [];
+	for (var i = 0; i < 8; i++) {
+		oldTable[i] = [];
+		for (var j = 0; j < 8; j++) {
+			oldTable[i][j] = [];
+			oldTable[i][j][0] = table.rows[i + 1].cells[j + 1].innerHTML;
+			oldTable[i][j][1] = table.rows[i + 1].cells[j + 1].style.background;
+		}
+	}
+	createTable();
+	for (var i = 0; i < 8; i++) {
+		for (var j = 0; j < 8; j++) {
+			table.rows[i + 1].cells[j + 1].innerHTML = oldTable[j][i][0];
+			table.rows[i + 1].cells[j + 1].style.background = oldTable[j][i][1];
+		}
+	}
+} 
 
 
 function showEditor() {

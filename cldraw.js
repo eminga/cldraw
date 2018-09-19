@@ -40,6 +40,7 @@ var matched = [];
 
 var drawHistory = [];
 var previewMode = false;
+var hideMode = false;
 var swap = false;
 
 var calculatedProbabilities;
@@ -117,9 +118,9 @@ function reset() {
 		drawnR[i] = false;
 		matched[i] = -1;
 	}
+	drawHistory = [];
 	updateTable(calculateProbabilities());
 	createButtonsR();
-	drawHistory = [];
 	updateFixtures();
 	document.getElementById('button-randomteam').classList.remove('disabled');
 }
@@ -265,13 +266,16 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 }
 
 
-function drawRunnerUp(team, preview = false) {
+function drawRunnerUp(team, preview) {
 	var possibleMatch = calculatePossibleMatches()[team];
 	drawnR[team] = true;
+	// write to history before table is updated, needed to hide drawn teams
+	if (!preview) {
+		drawHistory.push(team);
+	}
 	var probabilities = calculateProbabilities(team, possibleMatch);
 	updateTable(probabilities, team);
 	if (!preview) {
-		drawHistory.push(team);
 		createButtonsW(team, possibleMatch);
 		updateFixtures();
 	} else {
@@ -280,12 +284,15 @@ function drawRunnerUp(team, preview = false) {
 }
 
 
-function drawWinner(team, opponent, preview = false) {
+function drawWinner(team, opponent, preview) {
 	matched[team] = opponent;
 	drawnW[team] = true;
-	updateTable(calculateProbabilities());
+	// write to history before table is updated, needed to hide drawn teams
 	if (!preview) {
 		drawHistory.push(team + 8);
+	}
+	updateTable(calculateProbabilities());
+	if (!preview) {
 		createButtonsR();
 		updateFixtures();
 	} else {
@@ -433,6 +440,9 @@ function updateTable(probabilities, highlight) {
 			}
 		}
 	}
+	if (hideMode) {
+		hideDrawnTeams();
+	}
 }
 
 
@@ -457,6 +467,58 @@ function updateFixtures() {
 	} else {
 		document.getElementById('button-undo').classList.add('disabled');
 		document.getElementById('button-restart').classList.add('disabled');
+	}
+}
+
+
+function hideDrawnTeams() {
+	var matchedR = [];
+	var matchedW = [];
+	var n = drawHistory.length;
+	if (n % 2 == 1) {
+		n -= 1;
+	}
+	for (var i = 0; i < n; i++) {
+		var team = drawHistory[i];
+		if (team < 8) {
+			matchedR[team] = true;
+		} else {
+			team -= 8;
+			matchedW[team] = true;
+		}
+	}
+
+	var table = document.getElementById('cldraw-table');
+	if (swap) {
+		for (var i = 0; i < 8; i++) {
+			if (matchedR[i]) {
+				table.rows[i + 1].style.display = 'none';
+			} else {
+				table.rows[i + 1].style.display = '';
+			}
+			for (j = 0; j < 9; j++) {
+				if (matchedW[i]) {
+					table.rows[j].cells[i + 1].style.display = 'none';
+				} else {
+					table.rows[j].cells[i + 1].style.display = '';
+				}
+			}
+		}
+	} else {
+		for (var i = 0; i < 8; i++) {
+			if (matchedW[i]) {
+				table.rows[i + 1].style.display = 'none';
+			} else {
+				table.rows[i + 1].style.display = '';
+			}
+			for (j = 0; j < 9; j++) {
+				if (matchedR[i]) {
+					table.rows[j].cells[i + 1].style.display = 'none';
+				} else {
+					table.rows[j].cells[i + 1].style.display = '';
+				}
+			}
+		}
 	}
 }
 
@@ -544,6 +606,26 @@ function togglePreviewMode() {
 }
 
 
+function toggleHideMode() {
+	var button = document.getElementById('button-hide');
+	if (hideMode) {
+		hideMode = false;
+		button.classList.remove('active');
+		var table = document.getElementById('cldraw-table');
+		for (var i = 0; i < 8; i++) {
+			table.rows[i + 1].style.display = '';
+			for (var j = 0; j < 9; j++) {
+				table.rows[j].cells[i + 1].style.display = '';
+			}
+		}
+	} else {
+		hideMode = true;
+		button.classList.add('active');
+		hideDrawnTeams();
+	}
+}
+
+
 function transposeTable() {
 	swap = !swap;
 	var table = document.getElementById('cldraw-table');
@@ -563,7 +645,10 @@ function transposeTable() {
 			table.rows[i + 1].cells[j + 1].style.background = oldTable[j][i][1];
 		}
 	}
-} 
+	if (hideMode) {
+		hideDrawnTeams();
+	}
+}
 
 
 function showEditor() {

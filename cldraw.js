@@ -324,15 +324,7 @@ function undo() {
 
 
 function drawRandomTeam() {
-	var opponent = -1;
-	// check if there is a drawn but unmatched runner-up
-	for (var i = 0; i < 8; i++) {
-		if (drawnR[i] && !matched.includes(i)) {
-			opponent = i;
-		}
-	}
-
-	if (opponent == -1) {
+	if (drawHistory.length % 2 == 0) {
 		var numR = 0;
 		for (var i = 0; i < 8; i++) {
 			if (!drawnR[i]) {
@@ -349,6 +341,7 @@ function drawRandomTeam() {
 			drawRunnerUp(team);
 		}
 	} else {
+		var opponent = drawHistory[drawHistory.length - 1];
 		drawnR[opponent] = false;
 		var possibleMatch = calculatePossibleMatches()[opponent];
 		drawnR[opponent] = true;

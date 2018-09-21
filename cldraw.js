@@ -170,7 +170,7 @@ function calculatePossibleMatches() {
 
 // generates an identifier for the remaining teams
 function generateId() {
-	var id = "";
+	var id = '';
 	for (var i = 0; i < 8; i++) {
 		var temp = 0;
 		if (!drawnW[i]) {
@@ -183,7 +183,7 @@ function generateId() {
 				}
 			}
 			if (temp < 16) {
-				id += "0" + (temp).toString(16);
+				id += '0' + (temp).toString(16);
 			} else {
 				id += (temp).toString(16);
 			}
@@ -193,69 +193,24 @@ function generateId() {
 }
 
 
-function loadProbabilities(id) {
-	var probabilities = [];
-	var indexW = 0;
-	for (var i = 0; i < 8; i++) {
-		probabilities[i] = [];
-		if (drawnW[i]) {
-			var opponent = matched[i];
-			for (var j = 0; j < 8; j++) {
-				if (j == opponent) {
-					probabilities[i][j] = 1;
-				} else {
-					probabilities[i][j] = 0;
-				}
-			}
-		} else {
-			var indexR = 0;
-			for (var j = 0; j < 8; j++) {
-				if (drawnR[j]) {
-					probabilities[i][j] = 0;
-				} else {
-					probabilities[i][j] = calculatedProbabilities[id][indexW][indexR];
-					indexR++;
-				}
-			}
-			indexW++;
-		}
-	}
-	return probabilities;
-}
-
-
-function saveProbabilities(id, probabilities) {
-	var result = [];
-	var indexW = 0;
-	for (var i = 0; i < 8; i++) {
-		if (!drawnW[i]) {
-			result[indexW] = [];
-			indexR = 0;
-			for (var j = 0; j < 8; j++) {
-				if (!drawnR[j]) {
-					result[indexW][indexR] = probabilities[i][j];
-					indexR++;
-				}
-			}
-			indexW++;
-		}
-	}
-	calculatedProbabilities[id] = result;
-}
-
-
 function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 	var id = generateId();
 	var probabilities = [];
 
 	// use cached probabilities if existing
 	if (unmatchedRunnerUp == undefined && calculatedProbabilities[id] != null) {
-		probabilities = loadProbabilities(id);
+		probabilities = calculatedProbabilities[id];
 	} else {
 		var options = 0;
+		var size = 8;
 		for (var i = 0; i < 8; i++) {
+			if (drawnW[i]) {
+				size--;
+			}
+		}
+		for (var i = 0; i < size; i++) {
 			probabilities[i] = [];
-			for (var j = 0; j < 8; j++) {
+			for (var j = 0; j < size; j++) {
 				probabilities[i][j] = 0;
 			}
 		}
@@ -269,8 +224,8 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 					// temporarily draw runner-up i and calculate the resulting probabilities
 					drawnR[i] = true;
 					var temp = calculateProbabilities(i, possibleMatches[i]);
-					for (var j = 0; j < 8; j++) {
-						for (var k = 0; k < 8; k++) {
+					for (var j = 0; j < size; j++) {
+						for (var k = 0; k < size; k++) {
 							probabilities[j][k] += temp[j][k];
 						}
 					}
@@ -278,7 +233,7 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 				}
 			}
 
-		// if an opponent for team unmatchedRunnerUp is to be drawn next
+		// if an opponent for team 'unmatchedRunnerUp' is to be drawn next
 		} else { 
 			for (var i = 0; i < 8; i++) {
 				if (possibleMatch[i]) {
@@ -286,30 +241,57 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 					// temporarily match unmatchedRunnerUp with winner i and calculate the resulting probabilities
 					matched[i] = unmatchedRunnerUp;
 					drawnW[i] = true;
-					var temp = calculateProbabilities();
-					for (var j = 0; j < 8; j++) {
-						for (var k = 0; k < 8; k++) {
-							probabilities[j][k] += temp[j][k];
+
+					var indexW = i;
+					for (var j = 0; j < i; j++) {
+						if (drawnW[j]) {
+							indexW--;
 						}
 					}
+					var indexR = unmatchedRunnerUp;
+					for (var j = 0; j < unmatchedRunnerUp; j++) {
+						if (drawnR[j]) {
+							indexR--;
+						}
+					}
+
+					var temp = calculateProbabilities();
+					for (var j = 0; j < size; j++) {
+						for (var k = 0; k < size; k++) {
+							if (j < indexW) {
+								if (k < indexR) {
+									probabilities[j][k] += temp[j][k];
+								}
+								if (k > indexR) {
+									probabilities[j][k] += temp[j][k - 1];
+								}
+							} else if (j > indexW) {
+								if (k < indexR) {
+									probabilities[j][k] += temp[j - 1][k];
+								}
+								if (k > indexR) {
+									probabilities[j][k] += temp[j - 1][k - 1];
+								}
+							}
+						}
+					}
+					probabilities[indexW][indexR] += 1;
 					matched[i] = -1;
 					drawnW[i] = false;
 				}
 			}
 		}
 
-		for (var i = 0; i < 8; i++) {
-			for (var j = 0; j < 8; j++) {
-				if (matched[i] == j) {
-					probabilities[i][j] = 1;
-				} else if (options != 0) {
+		if (options != 0) {
+			for (var i = 0; i < size; i++) {
+				for (var j = 0; j < size; j++) {
 					probabilities[i][j] /= options;
 				}
 			}
 		}
 
 		if (unmatchedRunnerUp == undefined) {
-			saveProbabilities(id, probabilities);
+			calculatedProbabilities[id] = probabilities;
 		}
 	}
 
@@ -459,6 +441,33 @@ function createTable() {
 
 
 function updateTable(probabilities, highlight) {
+	var fullProbabilities = [];
+	var indexW = 0;
+	for (var i = 0; i < 8; i++) {
+		fullProbabilities[i] = [];
+		if (drawnW[i]) {
+			var opponent = matched[i];
+			for (var j = 0; j < 8; j++) {
+				if (j == opponent) {
+					fullProbabilities[i][j] = 1;
+				} else {
+					fullProbabilities[i][j] = 0;
+				}
+			}
+		} else {
+			var indexR = 0;
+			for (var j = 0; j < 8; j++) {
+				if (drawnR[j] && j != highlight) {
+					fullProbabilities[i][j] = 0;
+				} else {
+					fullProbabilities[i][j] = probabilities[indexW][indexR];
+					indexR++;
+				}
+			}
+			indexW++;
+		}
+	}
+
 	var table = document.getElementById('cldraw-table');
 	for (var i = 0; i < 8; i++){
 		for (var j = 0; j < 8; j++){
@@ -468,8 +477,8 @@ function updateTable(probabilities, highlight) {
 				text = 'drawn';
 				color = '#4998ff';
 			} else {
-				text = (100 * probabilities[i][j]).toFixed(2) + "%";
-				if (probabilities[i][j] == 0) {
+				text = (100 * fullProbabilities[i][j]).toFixed(2) + "%";
+				if (fullProbabilities[i][j] == 0) {
 					color = '#999999';
 				} else if (j == highlight) {
 					color = '#f5ff75';

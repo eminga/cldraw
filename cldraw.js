@@ -48,21 +48,9 @@ var calculatedProbabilities;
 initialize();
 
 
-// creates a filename for the cached probabilities (e.g. 1000213213100013.json)
-function createFilename() {
-	var filename = '';
-	for (var i = 0; i < 8; i++) {
-		filename += countriesW[i];
-		filename += countriesR[i];
-	}
-	filename += '.json';
-	return filename;
-}
-
-
 function initialize() {
 	createTable();
-	calculatedProbabilities = [];
+	calculatedProbabilities = {};
 
 	// assign the same number c > 0 to all teams which are from the same
 	// country and where both pots contain at least one team from this country
@@ -93,7 +81,7 @@ function initialize() {
 	}
 
 	// if available, load precalculated probabilities
-	filename = 'probabilities/' + createFilename();
+	filename = 'probabilities/' + generateId() + '.json';
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (this.readyState == 4) {
@@ -118,6 +106,7 @@ function reset() {
 		drawnR[i] = false;
 		matched[i] = -1;
 	}
+
 	drawHistory = [];
 	updateTable(calculateProbabilities());
 	createButtonsR();
@@ -178,22 +167,80 @@ function calculatePossibleMatches() {
 	return possibleMatches;
 }
 
-// generates an identifier for the drawn teams
+
+// generates an identifier for the remaining teams
 function generateId() {
-	x = 0;
+	var id = "";
 	for (var i = 0; i < 8; i++) {
-		x <<= 1;
+		var temp = 0;
+		if (!drawnW[i]) {
+			for (var j = 0; j < 8; j++) {
+				if (!drawnR[j]) {
+					temp <<= 1;
+					if (i != j && (countriesW[i] == 0 || countriesW[i] != countriesR[j])) {
+						temp |= 1;
+					}
+				}
+			}
+			if (temp < 16) {
+				id += "0" + (temp).toString(16);
+			} else {
+				id += (temp).toString(16);
+			}
+		}
+	}
+	return id;
+}
+
+
+function loadProbabilities(id) {
+	var probabilities = [];
+	var indexW = 0;
+	for (var i = 0; i < 8; i++) {
+		probabilities[i] = [];
 		if (drawnW[i]) {
-			x |= 1;
+			var opponent = matched[i];
+			for (var j = 0; j < 8; j++) {
+				if (j == opponent) {
+					probabilities[i][j] = 1;
+				} else {
+					probabilities[i][j] = 0;
+				}
+			}
+		} else {
+			var indexR = 0;
+			for (var j = 0; j < 8; j++) {
+				if (drawnR[j]) {
+					probabilities[i][j] = 0;
+				} else {
+					probabilities[i][j] = calculatedProbabilities[id][indexW][indexR];
+					indexR++;
+				}
+			}
+			indexW++;
 		}
 	}
+	return probabilities;
+}
+
+
+function saveProbabilities(id, probabilities) {
+	var result = [];
+	var indexW = 0;
 	for (var i = 0; i < 8; i++) {
-		x <<= 1;
-		if (drawnR[i]) {
-			x |= 1;
+		if (!drawnW[i]) {
+			result[indexW] = [];
+			indexR = 0;
+			for (var j = 0; j < 8; j++) {
+				if (!drawnR[j]) {
+					result[indexW][indexR] = probabilities[i][j];
+					indexR++;
+				}
+			}
+			indexW++;
 		}
 	}
-	return x;
+	calculatedProbabilities[id] = result;
 }
 
 
@@ -202,8 +249,8 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 	var probabilities = [];
 
 	// use cached probabilities if existing
-	if (calculatedProbabilities[id] != null) {
-		probabilities = calculatedProbabilities[id];
+	if (unmatchedRunnerUp == undefined && calculatedProbabilities[id] != null) {
+		probabilities = loadProbabilities(id);
 	} else {
 		var options = 0;
 		for (var i = 0; i < 8; i++) {
@@ -231,7 +278,6 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 				}
 			}
 
-			calculatedProbabilities[id] = probabilities;
 		// if an opponent for team unmatchedRunnerUp is to be drawn next
 		} else { 
 			for (var i = 0; i < 8; i++) {
@@ -246,19 +292,24 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 							probabilities[j][k] += temp[j][k];
 						}
 					}
-					probabilities[i][unmatchedRunnerUp] += 1;
 					matched[i] = -1;
 					drawnW[i] = false;
 				}
 			}
 		}
 
-		if (options > 0) {
-			for (var i = 0; i < 8; i++) {
-				for (var j = 0; j < 8; j++) {
+		for (var i = 0; i < 8; i++) {
+			for (var j = 0; j < 8; j++) {
+				if (matched[i] == j) {
+					probabilities[i][j] = 1;
+				} else if (options != 0) {
 					probabilities[i][j] /= options;
 				}
 			}
+		}
+
+		if (unmatchedRunnerUp == undefined) {
+			saveProbabilities(id, probabilities);
 		}
 	}
 
@@ -679,33 +730,32 @@ function saveTeams() {
 
 
 function downloadJSON() {
-	var croppedProbabilities = [];
-	for (var i = 0; i < calculatedProbabilities.length; i++) {
-		if (calculatedProbabilities[i] != null) {
-			var depth = 0;
-			var id = i;
-			while (id > 0) {
-				depth += id % 2;
-				id >>>= 1;
-			}
-			// only store probabilities for cases where less then 5 teams have been drawn
-			if (depth < 5) {
-				croppedProbabilities[i] = [];
-				for (var j = 0; j < 8; j++) {
-					croppedProbabilities[i][j] = [];
-					for (var k = 0; k < 8; k++) {
-						croppedProbabilities[i][j][k] = calculatedProbabilities[i][j][k];
-					}
-				}
-			}
+	var croppedProbabilities = {};
+	for (var id in calculatedProbabilities) {
+		// only store probabilities for cases where less then 5 teams have been drawn
+		if (id.length >= 12) {
+			croppedProbabilities[id] = calculatedProbabilities[id];
 		}
 	}
+
+	drawnWOld = drawnW.slice();
+	drawnROld = drawnR.slice();
+	matchedOld = matched.slice();
+	for (var i = 0; i < 8; i++) {
+		drawnW[i] = false;
+		drawnR[i] = false;
+		matched[i] = -1;
+	}
+	var id = generateId();
+	drawnW = drawnWOld;
+	drawnR = drawnROld;
+	matched = matchedOld;
 
 	var a = document.createElement("a");
 	document.body.appendChild(a);
 	url = window.URL.createObjectURL(new Blob([JSON.stringify(croppedProbabilities)], {type: "octet/stream"}));
 	a.href = url;
-	a.download = createFilename();
+	a.download = id + '.json';
 	a.click();
 	window.URL.revokeObjectURL(url);
 }

@@ -29,4 +29,4 @@ To host it on GitHub, fork this repo and enable the GitHub Pages feature.
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.
 
-It uses [js-combinatorics](https://github.com/dankogai/js-combinatorics) by [Dan Kogai](https://github.com/dankogai) and [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs).
+It uses [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs).

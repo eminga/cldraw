@@ -115,59 +115,6 @@ function reset() {
 }
 
 
-// returns true if draw is a valid draw
-function isValid(draw) {
-	var j = 0;
-	for (var i = 0; i < draw.length; i++) {
-		while (drawnW[i + j]) {
-			j++;
-		}
-		if (i + j == draw[i] || (countriesW[i + j] != 0 && countriesW[i + j] == countriesR[draw[i]])) {
-			return false;
-		}
-	}
-	return true;
-}
-
-
-// returns matrix with teams i,j which can be matched s.t. there remains
-// at least one valid draw after i and j have been matched
-function calculatePossibleMatches() {
-	var availableTeams = [];
-	for (var i = 0; i < 8; i++) {
-		if (!drawnR[i]) {
-			availableTeams.push(i);
-		}
-	}
-
-	var possibleMatches = [];
-	for (var i = 0; i < 8; i++) {
-		possibleMatches[i] = [];
-		for (var j = 0; j < 8; j++) {
-			possibleMatches[i][j] = false;
-		}
-	}
-
-	if (availableTeams.length > 0) {
-		draws = Combinatorics.permutation(availableTeams);
-
-		while(draw = draws.next()) {
-			if (isValid(draw)) {
-				var j = 0;
-				for (var k = 0; k < draw.length; k++) {
-					while (drawnW[k + j]) {
-						j++;
-					}
-					possibleMatches[draw[k]][k + j] = true;
-				}
-			}
-		}
-	}
-
-	return possibleMatches;
-}
-
-
 // generates an identifier for the remaining teams
 function generateId() {
 	var id = '';
@@ -193,11 +140,11 @@ function generateId() {
 }
 
 
-function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
+function calculateProbabilities(unmatchedRunnerUp) {
 	var id = generateId();
 	var probabilities = [];
 
-	// use cached probabilities if existing
+	// use cached probabilities if existing (only if drawnW == drawnR)
 	if (unmatchedRunnerUp == undefined && calculatedProbabilities[id] != null) {
 		probabilities = calculatedProbabilities[id];
 	} else {
@@ -217,26 +164,33 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 
 		// if the same number of winners and runners-up has been drawn
 		if (unmatchedRunnerUp == undefined) {
-			var possibleMatches = calculatePossibleMatches();
 			for (var i = 0; i < 8; i++) {
 				if (!drawnR[i]) {
 					options++;
 					// temporarily draw runner-up i and calculate the resulting probabilities
 					drawnR[i] = true;
-					var temp = calculateProbabilities(i, possibleMatches[i]);
-					for (var j = 0; j < size; j++) {
-						for (var k = 0; k < size; k++) {
-							probabilities[j][k] += temp[j][k];
+					var temp = calculateProbabilities(i);
+					if (temp === null) {
+						options--;
+					} else {
+						for (var j = 0; j < size; j++) {
+							for (var k = 0; k < size; k++) {
+								probabilities[j][k] += temp[j][k];
+							}
 						}
 					}
 					drawnR[i] = false;
 				}
 			}
+			if (options == 0 && id != '') {
+				calculatedProbabilities[id] = null;
+				return null;
+			}
 
 		// if an opponent for team 'unmatchedRunnerUp' is to be drawn next
 		} else { 
 			for (var i = 0; i < 8; i++) {
-				if (possibleMatch[i]) {
+				if (!drawnW[i] && i != unmatchedRunnerUp && (countriesW[i] == 0 || countriesW[i] != countriesR[unmatchedRunnerUp])) {
 					options++;
 					// temporarily match unmatchedRunnerUp with winner i and calculate the resulting probabilities
 					matched[i] = unmatchedRunnerUp;
@@ -256,29 +210,36 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 					}
 
 					var temp = calculateProbabilities();
-					for (var j = 0; j < size; j++) {
-						for (var k = 0; k < size; k++) {
-							if (j < indexW) {
-								if (k < indexR) {
-									probabilities[j][k] += temp[j][k];
-								}
-								if (k > indexR) {
-									probabilities[j][k] += temp[j][k - 1];
-								}
-							} else if (j > indexW) {
-								if (k < indexR) {
-									probabilities[j][k] += temp[j - 1][k];
-								}
-								if (k > indexR) {
-									probabilities[j][k] += temp[j - 1][k - 1];
+					if (temp === null) {
+						options--;
+					} else {
+						for (var j = 0; j < size; j++) {
+							for (var k = 0; k < size; k++) {
+								if (j < indexW) {
+									if (k < indexR) {
+										probabilities[j][k] += temp[j][k];
+									}
+									if (k > indexR) {
+										probabilities[j][k] += temp[j][k - 1];
+									}
+								} else if (j > indexW) {
+									if (k < indexR) {
+										probabilities[j][k] += temp[j - 1][k];
+									}
+									if (k > indexR) {
+										probabilities[j][k] += temp[j - 1][k - 1];
+									}
 								}
 							}
 						}
+						probabilities[indexW][indexR] += 1;
 					}
-					probabilities[indexW][indexR] += 1;
 					matched[i] = -1;
 					drawnW[i] = false;
 				}
+			}
+			if (options == 0) {
+				return null;
 			}
 		}
 
@@ -299,16 +260,41 @@ function calculateProbabilities(unmatchedRunnerUp, possibleMatch) {
 }
 
 
+function getPossibleMatches(probabilities, team) {
+	var possibleMatch = [];
+	var indexR = team;
+	for (var i = 0; i < team; i++) {
+		if (drawnR[i]) {
+			indexR--;
+		}
+	}
+	var indexW = 0;
+	for (var i = 0; i < 8; i++) {
+		if (drawnW[i]) {
+			possibleMatch[i] = false;
+			indexW++;
+		} else {
+			if (probabilities[i - indexW][indexR] > 0) {
+				possibleMatch[i] = true;
+			} else {
+				possibleMatch[i] = false;
+			}
+		}
+	}
+	return possibleMatch;
+}
+
+
 function drawRunnerUp(team, preview) {
-	var possibleMatch = calculatePossibleMatches()[team];
 	drawnR[team] = true;
 	// write to history before table is updated, needed to hide drawn teams
 	if (!preview) {
 		drawHistory.push(team);
 	}
-	var probabilities = calculateProbabilities(team, possibleMatch);
+	var probabilities = calculateProbabilities(team);
 	updateTable(probabilities, team);
 	if (!preview) {
+		var possibleMatch = getPossibleMatches(probabilities, team);
 		createButtonsW(team, possibleMatch);
 		updateFixtures();
 	} else {
@@ -375,9 +361,8 @@ function drawRandomTeam() {
 		}
 	} else {
 		var opponent = drawHistory[drawHistory.length - 1];
-		drawnR[opponent] = false;
-		var possibleMatch = calculatePossibleMatches()[opponent];
-		drawnR[opponent] = true;
+		var probabilities = calculateProbabilities(opponent);
+		var possibleMatch = getPossibleMatches(probabilities, opponent);
 		var numW = 0;
 		for (var i = 0; i < 8; i++) {
 			if (possibleMatch[i]) {
@@ -616,10 +601,10 @@ function createButtonsW(opponent, possibleMatch) {
 		buttons.removeChild(buttons.firstChild);
 	}
 	if (previewMode) {
-		var probabilities = calculateProbabilities(opponent, possibleMatch);
+		var probabilities = calculateProbabilities(opponent);
 	}
 	for (var i = 0; i < 8 ; i++) {
-		if (!drawnW[i] && possibleMatch[i]) {
+		if (possibleMatch[i]) {
 			var button = document.createElement('button');
 			button.classList.add('btn');
 			button.classList.add('btn-primary');

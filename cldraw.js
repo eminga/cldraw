@@ -43,60 +43,40 @@ var previewMode = false;
 var hideMode = false;
 var swap = false;
 
-var calculatedProbabilities;
+var calculatedProbabilities = {};
 
 initialize();
 
 
 function initialize() {
 	createTable();
-	calculatedProbabilities = {};
 
-	// assign the same number c > 0 to all teams which are from the same
-	// country and where both pots contain at least one team from this country
-	for (var i = 0; i < 8; i++) {
-		countriesW[i] = 0;
-		countriesR[i] = 0;
-	}
+	// assign the same number c to all teams which are from the same country
 	var c = 1;
 	for (var i = 0; i < 8; i++) {
-		if (countriesW[i] == 0) {
-			var sameCountry = false;
-			for (var j = 0; j < 8; j++) {
-				if (initialCountriesR[j] == initialCountriesW[i]) {
-					countriesR[j] = c;
-					sameCountry = true;
-				}
+		var sameCountry = false;
+		for (var j = 0; j < i; j++) {
+			if (initialCountriesW[j] == initialCountriesW[i]) {
+				countriesW[i] = countriesW[j];
+				sameCountry = true;
+				break;
 			}
-			if (sameCountry) {
-				countriesW[i] = c;
-				for (var j = i; j < 8; j++) {
-					if (initialCountriesW[j] == initialCountriesW[i]) {
-						countriesW[j] = c;
-					}
-				}
-				c++;
+		}
+		if (!sameCountry) {
+			countriesW[i] = c;
+			c++;
+		}
+	}
+	for (var i = 0; i < 8; i++) {
+		countriesR[i] = 0;
+		for (var j = 0; j < 8; j++) {
+			if (initialCountriesW[j] == initialCountriesR[i]) {
+				countriesR[i] = countriesW[j];
 			}
 		}
 	}
 
-	// if available, load precalculated probabilities
-	filename = 'probabilities/' + generateId() + '.json';
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (this.readyState == 4) {
-			var button = document.getElementById('jsondl');
-			if (this.status == 200) {
-				button.style.display = 'none';
-				calculatedProbabilities = JSON.parse(this.responseText);
-			} else {
-				button.style.display = '';
-			}
-			reset();
-		}
-	};
-	xhr.open('GET', filename);
-	xhr.send();
+	reset();
 }
 
 
@@ -124,7 +104,7 @@ function generateId() {
 			for (var j = 0; j < 8; j++) {
 				if (!drawnR[j]) {
 					temp <<= 1;
-					if (i != j && (countriesW[i] == 0 || countriesW[i] != countriesR[j])) {
+					if (i != j && countriesW[i] != countriesR[j]) {
 						temp |= 1;
 					}
 				}
@@ -141,10 +121,12 @@ function generateId() {
 
 
 function calculateProbabilities(unmatchedRunnerUp) {
-	var id = generateId();
 	var probabilities = [];
 
-	// use cached probabilities if existing (only if drawnW == drawnR)
+	// use cached probabilities if existing (only if there is no unmatched runner-up)
+	if (unmatchedRunnerUp == undefined) {
+		var id = generateId();
+	}
 	if (unmatchedRunnerUp == undefined && calculatedProbabilities[id] != null) {
 		probabilities = calculatedProbabilities[id];
 	} else {
@@ -182,15 +164,16 @@ function calculateProbabilities(unmatchedRunnerUp) {
 					drawnR[i] = false;
 				}
 			}
+			// return null if the current draw is a dead end
 			if (options == 0 && id != '') {
 				calculatedProbabilities[id] = null;
 				return null;
 			}
 
 		// if an opponent for team 'unmatchedRunnerUp' is to be drawn next
-		} else { 
+		} else {
 			for (var i = 0; i < 8; i++) {
-				if (!drawnW[i] && i != unmatchedRunnerUp && (countriesW[i] == 0 || countriesW[i] != countriesR[unmatchedRunnerUp])) {
+				if (!drawnW[i] && i != unmatchedRunnerUp && countriesW[i] != countriesR[unmatchedRunnerUp]) {
 					options++;
 					// temporarily match unmatchedRunnerUp with winner i and calculate the resulting probabilities
 					matched[i] = unmatchedRunnerUp;
@@ -238,6 +221,7 @@ function calculateProbabilities(unmatchedRunnerUp) {
 					drawnW[i] = false;
 				}
 			}
+			// return null if the current draw is a dead end
 			if (options == 0) {
 				return null;
 			}
@@ -720,36 +704,4 @@ function saveTeams() {
 		initialCountriesR[i] = document.getElementById('cldraw-runner-up-' + i + '-country').value;
 	}
 	initialize();
-}
-
-
-function downloadJSON() {
-	var croppedProbabilities = {};
-	for (var id in calculatedProbabilities) {
-		// only store probabilities for cases where less then 5 teams have been drawn
-		if (id.length >= 12) {
-			croppedProbabilities[id] = calculatedProbabilities[id];
-		}
-	}
-
-	drawnWOld = drawnW.slice();
-	drawnROld = drawnR.slice();
-	matchedOld = matched.slice();
-	for (var i = 0; i < 8; i++) {
-		drawnW[i] = false;
-		drawnR[i] = false;
-		matched[i] = -1;
-	}
-	var id = generateId();
-	drawnW = drawnWOld;
-	drawnR = drawnROld;
-	matched = matchedOld;
-
-	var a = document.createElement("a");
-	document.body.appendChild(a);
-	url = window.URL.createObjectURL(new Blob([JSON.stringify(croppedProbabilities)], {type: "octet/stream"}));
-	a.href = url;
-	a.download = id + '.json';
-	a.click();
-	window.URL.revokeObjectURL(url);
 }

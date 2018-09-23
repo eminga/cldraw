@@ -22,7 +22,7 @@ To speed up the computation, memoization is used.
 ## Host yourself
 If this tool wasn't updated in time or you want to host it yourself for another reason, feel free to do so! To host it on GitHub, fork this repo and enable the GitHub Pages feature.
 
-You can edit the teams in the beginning of the cldraw.js file.
+You can edit the teams and other settings in the settings.js file.
 
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.

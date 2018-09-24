@@ -21,11 +21,8 @@
  */
 
 const SET_COUNTRIES = 0;
-const SET_DRAWN = 1;
-const GET_PROBABILITIES_R = 2;
-const GET_PROBABILITIES_W = 3;
-const GET_MULTIPLE_PROBABILITIES_R = 4;
-const GET_MULTIPLE_PROBABILITIES_W = 5;
+const GET_PROBABILITIES = 1;
+const GET_PROBABILITIES_PREVIEW = 2;
 
 var calculatedProbabilities = {};
 
@@ -33,30 +30,52 @@ onmessage = function(e) {
 	if (e.data[0] == SET_COUNTRIES) {
 		countriesW = e.data[1];
 		countriesR = e.data[2];
-	} else if (e.data[0] == SET_DRAWN) {
-		drawnW = e.data[1];
-		drawnR = e.data[2];
-	} else if (e.data[0] == GET_PROBABILITIES_R) {
-		postMessage(calculateProbabilities());
-	} else if (e.data[0] == GET_PROBABILITIES_W) {
-		postMessage(calculateProbabilities(e.data[1]));
-	} else if (e.data[0] == GET_MULTIPLE_PROBABILITIES_R) {
-		probabilities = [];
-		for (var i = 0; i < 8; i++) {
-			if (e.data[1][i]) {
-				drawnR[i] = true;
-				probabilities[i] = calculateProbabilities(i);
+	} else if (e.data[0] == GET_PROBABILITIES) {
+		if (e.data.length < 3) {
+			var drawnW = [];
+			var drawnR = [];
+			for (var i = 0; i < 8; i++) {
+				drawnW[i] = false;
 				drawnR[i] = false;
 			}
+		} else {
+			var drawnW = e.data[1];
+			var drawnR = e.data[2];
 		}
-		postMessage(probabilities);
-	} else if (e.data[0] == GET_MULTIPLE_PROBABILITIES_W) {
+		if (e.data.length < 4) {
+			postMessage(calculateProbabilities(drawnW, drawnR));
+		} else {
+			postMessage(calculateProbabilities(drawnW, drawnR, e.data[3]));
+		}
+	} else if (e.data[0] == GET_PROBABILITIES_PREVIEW) {
 		probabilities = [];
+		var drawnW = e.data[1];
+		var drawnR = e.data[2];
+		var possibleOpponent = e.data[3];
+		var num = 0;
 		for (var i = 0; i < 8; i++) {
-			if (e.data[2][i]) {
-				drawnW[i] = true;
-				probabilities[i] = calculateProbabilities();
-				drawnW[i] = false;
+			if (drawnR[i]) {
+				num++;
+			}
+			if (drawnW[i]) {
+				num--;
+			}
+		}
+		if (num == 0) {
+			for (var i = 0; i < 8; i++) {
+				if (possibleOpponent[i]) {
+					drawnR[i] = true;
+					probabilities[i] = calculateProbabilities(drawnW, drawnR, i);
+					drawnR[i] = false;
+				}
+			}
+		} else {
+			for (var i = 0; i < 8; i++) {
+				if (possibleOpponent[i]) {
+					drawnW[i] = true;
+					probabilities[i] = calculateProbabilities(drawnW, drawnR);
+					drawnW[i] = false;
+				}
 			}
 		}
 		postMessage(probabilities);
@@ -65,7 +84,7 @@ onmessage = function(e) {
 
 
 // generates an identifier for the remaining teams
-function generateId() {
+function generateId(drawnW, drawnR) {
 	var id = '';
 	for (var i = 0; i < 8; i++) {
 		var temp = 0;
@@ -89,12 +108,12 @@ function generateId() {
 }
 
 
-function calculateProbabilities(unmatchedRunnerUp) {
+function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 	var probabilities = [];
 
 	// use cached probabilities if existing (only if there is no unmatched runner-up)
 	if (unmatchedRunnerUp == undefined) {
-		var id = generateId();
+		var id = generateId(drawnW, drawnR);
 	}
 	if (unmatchedRunnerUp == undefined && calculatedProbabilities[id] != null) {
 		probabilities = calculatedProbabilities[id];
@@ -120,7 +139,7 @@ function calculateProbabilities(unmatchedRunnerUp) {
 					options++;
 					// temporarily draw runner-up i and calculate the resulting probabilities
 					drawnR[i] = true;
-					var temp = calculateProbabilities(i);
+					var temp = calculateProbabilities(drawnW, drawnR, i);
 					if (temp === null) {
 						options--;
 					} else {
@@ -160,7 +179,7 @@ function calculateProbabilities(unmatchedRunnerUp) {
 						}
 					}
 
-					var temp = calculateProbabilities();
+					var temp = calculateProbabilities(drawnW, drawnR);
 					if (temp === null) {
 						options--;
 					} else {

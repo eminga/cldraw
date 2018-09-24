@@ -21,11 +21,8 @@
  */
 
 const SET_COUNTRIES = 0;
-const SET_DRAWN = 1;
-const GET_PROBABILITIES_R = 2;
-const GET_PROBABILITIES_W = 3;
-const GET_MULTIPLE_PROBABILITIES_R = 4;
-const GET_MULTIPLE_PROBABILITIES_W = 5;
+const GET_PROBABILITIES = 1;
+const GET_PROBABILITIES_PREVIEW = 2;
 
 // drawn{W,R}[i] == true if team i has already been drawn
 var drawnW = [];
@@ -75,12 +72,12 @@ function initialize() {
 	if (previewMode) {
 		document.getElementById('button-preview').classList.add('active');
 	} else {
-		document.getElementById('button-preview').classList.remove('active')
+		document.getElementById('button-preview').classList.remove('active');
 	}
 	if (hideMode) {
 		document.getElementById('button-hide').classList.add('active');
 	} else {
-		document.getElementById('button-hide').classList.remove('active')
+		document.getElementById('button-hide').classList.remove('active');
 	}
 
 	reset();
@@ -98,8 +95,7 @@ function initialize() {
 	drawHistory = [];
 	document.getElementById('button-randomteam').classList.add('disabled');
 
-	calculator.postMessage([SET_DRAWN, drawnW, drawnR]);
-	calculator.postMessage([GET_PROBABILITIES_R]);
+	calculator.postMessage([GET_PROBABILITIES]);
 	calculator.onmessage = function(e) {
 		var probabilities = e.data;
 		updateTable(probabilities);
@@ -139,8 +135,7 @@ function drawRunnerUp(team) {
 	drawnR[team] = true;
 	// write to history before table is updated, needed to hide drawn teams
 	drawHistory.push(team);
-	calculator.postMessage([SET_DRAWN, drawnW, drawnR]);
-	calculator.postMessage([GET_PROBABILITIES_W, team]);
+	calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, team]);
 	calculator.onmessage = function(e) {
 		var probabilities = e.data;
 		updateTable(probabilities, team);
@@ -155,8 +150,7 @@ function drawWinner(team, opponent) {
 	drawnW[team] = true;
 	// write to history before table is updated, needed to hide drawn teams
 	drawHistory.push(team + 8);
-	calculator.postMessage([SET_DRAWN, drawnW, drawnR]);
-	calculator.postMessage([GET_PROBABILITIES_R]);
+	calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
 	calculator.onmessage = function(e) {
 		var probabilities = e.data;
 		updateTable(probabilities);
@@ -171,8 +165,7 @@ function undo() {
 	if (team != undefined) {
 		if (team < 8) {
 			drawnR[team] = false;
-			calculator.postMessage([SET_DRAWN, drawnW, drawnR]);
-			calculator.postMessage([GET_PROBABILITIES_R]);
+			calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
 			calculator.onmessage = function(e) {
 				var probabilities = e.data;
 				updateTable(probabilities);
@@ -211,7 +204,7 @@ function drawRandomTeam() {
 		}
 	} else {
 		var opponent = drawHistory[drawHistory.length - 1];
-		calculator.postMessage([GET_PROBABILITIES_W, opponent]);
+		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, opponent]);
 		calculator.onmessage = function(e) {
 			var probabilities = e.data;
 			var possibleMatch = getPossibleMatches(probabilities, opponent);
@@ -444,7 +437,7 @@ function createButtonsR(probabilities) {
 				teams[i] = true;
 			}
 		}
-		calculator.postMessage([GET_MULTIPLE_PROBABILITIES_R, teams]);
+		calculator.postMessage([GET_PROBABILITIES_PREVIEW, drawnW, drawnR, teams]);
 		calculator.onmessage = function(e) {
 			var probabilities2 = e.data;
 			for (var i = 0; i < 8; i++) {
@@ -497,7 +490,7 @@ function createButtonsW(opponent, probabilities) {
 				teams[i] = true;
 			}
 		}
-		calculator.postMessage([GET_MULTIPLE_PROBABILITIES_W, opponent, teams]);
+		calculator.postMessage([GET_PROBABILITIES_PREVIEW, drawnW, drawnR, teams]);
 		calculator.onmessage = function(e) {
 			var probabilities2 = e.data;
 			for (var i = 0; i < 8; i++) {

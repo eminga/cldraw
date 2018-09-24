@@ -115,7 +115,7 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 	if (unmatchedRunnerUp == undefined) {
 		var id = generateId(drawnW, drawnR);
 	}
-	if (unmatchedRunnerUp == undefined && calculatedProbabilities[id] != null) {
+	if (unmatchedRunnerUp == undefined && calculatedProbabilities[id] !== undefined) {
 		probabilities = calculatedProbabilities[id];
 	} else {
 		var options = 0;

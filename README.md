@@ -14,6 +14,11 @@ Regulations 3. and 4. require a calculation after each drawn runner-up to avoid 
 
 These regulations lead to non-uniform probabilities regarding the outcome of the draw.
 
+## Europa League Version
+There is also a version for the round of 32 of the UEFA Europa League. In contrast to the CL version, the EL version includes precomputed probabilities as a local computation would take too long (25 minutes, 4.5 GB RAM on my PC). After the 5th team is drawn, the remaining probabilities are computed locally which can take up to 30 seconds and might not work at all on old mobile devices.
+
+Try it: https://eminga.github.io/cldraw/el.html
+
 ## How this tool works
 This tool simply computes the conditional probabilities of all possible pairings with respect to the calculation step described in the background section.
 

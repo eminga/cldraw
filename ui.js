@@ -345,20 +345,25 @@ function updateTable(probabilities, highlight) {
 
 
 function updateFixtures() {
-	var text = '';
-	for (var i = 0; i < drawHistory.length; i++) {
-		team = drawHistory[i];
-		if (team < potSize) {
-			text += teamsR[team] + ' - ';
-		} else {
-			text += teamsW[team - potSize] + '<br>';
-		}
-	}
+	var l = Math.floor(potSize / 2);
 	var openPairings = potSize - Math.floor(drawHistory.length / 2);
-	for (var i = 0; i < openPairings; i++) {
-		text += '<br>';
+	for (var i = 0; i < 4; i++) {
+		var text = '';
+		for (var j = i * l; j < l * (i + 1); j++) {
+			if (j < drawHistory.length) {
+				team = drawHistory[j];
+				if (team < potSize) {
+					text += teamsR[team] + ' - ';
+				} else {
+					text += teamsW[team - potSize] + '<br>';
+				}
+			} else if (j % 2 == 1) {
+				text += '<br>';
+			}
+		}
+		document.getElementById('cldraw-fixtures-' + i).innerHTML = text;
+
 	}
-	document.getElementById('cldraw-fixtures').innerHTML = text;
 	if (drawHistory.length > 0) {
 		document.getElementById('button-undo').classList.remove('disabled');
 		document.getElementById('button-restart').classList.remove('disabled');

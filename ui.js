@@ -23,6 +23,8 @@
 const SET_COUNTRIES = 0;
 const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
+const GET_ALL_PROBABILITIES = 3;
+const IMPORT_PROBABILITIES = 4;
 
 // drawn{W,R}[i] == true if team i has already been drawn
 var drawnW = [];
@@ -37,6 +39,7 @@ var calculator = new Worker('cldraw.js');
 initialize();
 
 function initialize() {
+	potSize = countriesW.length;
 	createTable();
 
 	var workerCountriesW = [];
@@ -44,7 +47,7 @@ function initialize() {
 
 	// assign the same number c to all teams which are from the same country
 	var c = 1;
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		var sameCountry = false;
 		for (var j = 0; j < i; j++) {
 			if (countriesW[j] == countriesW[i]) {
@@ -58,9 +61,9 @@ function initialize() {
 			c++;
 		}
 	}
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		workerCountriesR[i] = 0;
-		for (var j = 0; j < 8; j++) {
+		for (var j = 0; j < potSize; j++) {
 			if (countriesW[j] == countriesR[i]) {
 				workerCountriesR[i] = workerCountriesW[j];
 			}
@@ -80,14 +83,21 @@ function initialize() {
 		document.getElementById('button-hide').classList.remove('active');
 	}
 
-	reset();
+	if (potSize > 13) {
+		calculator.postMessage([IMPORT_PROBABILITIES]);
+		calculator.onmessage = function(e) {
+			reset();
+		}
+	} else {
+		reset();
+	}
 }
 
 
 
 
  function reset() {
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		drawnW[i] = false;
 		drawnR[i] = false;
 		matched[i] = -1;
@@ -115,7 +125,7 @@ function getPossibleMatches(probabilities, team) {
 		}
 	}
 	var indexW = 0;
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		if (drawnW[i]) {
 			possibleMatch[i] = false;
 			indexW++;
@@ -132,6 +142,7 @@ function getPossibleMatches(probabilities, team) {
 
 
 function drawRunnerUp(team) {
+	disableButtons();
 	drawnR[team] = true;
 	// write to history before table is updated, needed to hide drawn teams
 	drawHistory.push(team);
@@ -146,10 +157,11 @@ function drawRunnerUp(team) {
 
 
 function drawWinner(team, opponent) {
+	disableButtons();
 	matched[team] = opponent;
 	drawnW[team] = true;
 	// write to history before table is updated, needed to hide drawn teams
-	drawHistory.push(team + 8);
+	drawHistory.push(team + potSize);
 	calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
 	calculator.onmessage = function(e) {
 		var probabilities = e.data;
@@ -163,7 +175,7 @@ function drawWinner(team, opponent) {
 function undo() {
 	team = drawHistory.pop();
 	if (team != undefined) {
-		if (team < 8) {
+		if (team < potSize) {
 			drawnR[team] = false;
 			calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
 			calculator.onmessage = function(e) {
@@ -173,7 +185,7 @@ function undo() {
 			}
 			updateFixtures();
 		} else {
-			team -= 8;
+			team -= potSize;
 			drawnW[team] = false;
 			matched[team] = -1;
 			opponent = drawHistory.pop();
@@ -186,9 +198,10 @@ function undo() {
 
 
 function drawRandomTeam() {
+	disableButtons();
 	if (drawHistory.length % 2 == 0) {
 		var numR = 0;
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			if (!drawnR[i]) {
 				numR++;
 			}
@@ -209,7 +222,7 @@ function drawRandomTeam() {
 			var probabilities = e.data;
 			var possibleMatch = getPossibleMatches(probabilities, opponent);
 			var numW = 0;
-			for (var i = 0; i < 8; i++) {
+			for (var i = 0; i < potSize; i++) {
 				if (possibleMatch[i]) {
 					numW++;
 				}
@@ -235,7 +248,7 @@ function createTable() {
 	var tr = document.createElement('tr');
 	var th = document.createElement('th');
 	tr.appendChild(th)
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		th = document.createElement('th');
 		if (!swap) {
 			th.appendChild(document.createTextNode(teamsR[i]));
@@ -248,7 +261,7 @@ function createTable() {
 	thead.appendChild(tr);
 
 	var tbody = document.createElement('tbody');
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		var tr = document.createElement('tr');
 		var th = document.createElement('th');
 		th.scope = 'row';
@@ -258,7 +271,7 @@ function createTable() {
 			th.appendChild(document.createTextNode(teamsR[i]));
 		}
 		tr.appendChild(th);
-		for (var j = 0; j < 8; j++) {
+		for (var j = 0; j < potSize; j++) {
 			var td = document.createElement('td');
 			td.style.textAlign = 'center';
 			td.appendChild(document.createTextNode('\u231B'));
@@ -275,11 +288,11 @@ function createTable() {
 function updateTable(probabilities, highlight) {
 	var fullProbabilities = [];
 	var indexW = 0;
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		fullProbabilities[i] = [];
 		if (drawnW[i]) {
 			var opponent = matched[i];
-			for (var j = 0; j < 8; j++) {
+			for (var j = 0; j < potSize; j++) {
 				if (j == opponent) {
 					fullProbabilities[i][j] = 1;
 				} else {
@@ -288,7 +301,7 @@ function updateTable(probabilities, highlight) {
 			}
 		} else {
 			var indexR = 0;
-			for (var j = 0; j < 8; j++) {
+			for (var j = 0; j < potSize; j++) {
 				if (drawnR[j] && j != highlight) {
 					fullProbabilities[i][j] = 0;
 				} else {
@@ -301,8 +314,8 @@ function updateTable(probabilities, highlight) {
 	}
 
 	var table = document.getElementById('cldraw-table');
-	for (var i = 0; i < 8; i++){
-		for (var j = 0; j < 8; j++){
+	for (var i = 0; i < potSize; i++){
+		for (var j = 0; j < potSize; j++){
 			var color = '';
 			var text;
 			if (matched[i] == j) {
@@ -335,13 +348,13 @@ function updateFixtures() {
 	var text = '';
 	for (var i = 0; i < drawHistory.length; i++) {
 		team = drawHistory[i];
-		if (team < 8) {
+		if (team < potSize) {
 			text += teamsR[team] + ' - ';
 		} else {
-			text += teamsW[team - 8] + '<br>';
+			text += teamsW[team - potSize] + '<br>';
 		}
 	}
-	var openPairings = 8 - Math.floor(drawHistory.length / 2);
+	var openPairings = potSize - Math.floor(drawHistory.length / 2);
 	for (var i = 0; i < openPairings; i++) {
 		text += '<br>';
 	}
@@ -365,23 +378,23 @@ function hideDrawnTeams() {
 	}
 	for (var i = 0; i < n; i++) {
 		var team = drawHistory[i];
-		if (team < 8) {
+		if (team < potSize) {
 			matchedR[team] = true;
 		} else {
-			team -= 8;
+			team -= potSize;
 			matchedW[team] = true;
 		}
 	}
 
 	var table = document.getElementById('cldraw-table');
 	if (swap) {
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			if (matchedR[i]) {
 				table.rows[i + 1].style.display = 'none';
 			} else {
 				table.rows[i + 1].style.display = '';
 			}
-			for (j = 0; j < 9; j++) {
+			for (j = 0; j < potSize + 1; j++) {
 				if (matchedW[i]) {
 					table.rows[j].cells[i + 1].style.display = 'none';
 				} else {
@@ -390,13 +403,13 @@ function hideDrawnTeams() {
 			}
 		}
 	} else {
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			if (matchedW[i]) {
 				table.rows[i + 1].style.display = 'none';
 			} else {
 				table.rows[i + 1].style.display = '';
 			}
-			for (j = 0; j < 9; j++) {
+			for (j = 0; j < potSize + 1; j++) {
 				if (matchedR[i]) {
 					table.rows[j].cells[i + 1].style.display = 'none';
 				} else {
@@ -410,14 +423,11 @@ function hideDrawnTeams() {
 
 // create buttons of runner-up teams which were not drawn yet
 function createButtonsR(probabilities) {
+	removeButtons();
 	var buttonList = document.getElementById('cldraw-buttons');
-	while (buttonList.firstChild) {
-		buttonList.removeChild(buttonList.firstChild);
-	}
-
 	var button = [];
 	var numR = 0;
-	for (var i = 0; i < 8 ; i++) {
+	for (var i = 0; i < potSize ; i++) {
 		if (!drawnR[i]) {
 			numR++;
 			button[i] = document.createElement('button');
@@ -432,7 +442,7 @@ function createButtonsR(probabilities) {
 
 	if (previewMode) {
 		var teams = [];
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				teams[i] = true;
 			}
@@ -440,7 +450,7 @@ function createButtonsR(probabilities) {
 		calculator.postMessage([GET_PROBABILITIES_PREVIEW, drawnW, drawnR, teams]);
 		calculator.onmessage = function(e) {
 			var probabilities2 = e.data;
-			for (var i = 0; i < 8; i++) {
+			for (var i = 0; i < potSize; i++) {
 				if (button[i] != undefined) {
 					button[i].addEventListener('mouseover', updateTable.bind(null, probabilities2[i], i), false);
 					button[i].addEventListener('mouseout', updateTable.bind(null, probabilities), false);
@@ -449,30 +459,26 @@ function createButtonsR(probabilities) {
 			}
 		}
 	} else {
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				buttonList.appendChild(button[i]);
 			}
 		}
 	}
 
-	if (numR == 0) {
-		var button = document.getElementById('button-randomteam');
-		button.classList.add('disabled');
+	if (numR > 0) {
+		document.getElementById('button-randomteam').classList.remove('disabled');
 	}
 }
 
 
 // create buttons of group winners which can be matched with the last drawn runner-up
 function createButtonsW(opponent, probabilities) {
+	removeButtons();
 	var buttonList = document.getElementById('cldraw-buttons');
-	while (buttonList.firstChild) {
-		buttonList.removeChild(buttonList.firstChild);
-	}
-
 	var button = [];
 	var possibleMatch = getPossibleMatches(probabilities, opponent);
-	for (var i = 0; i < 8 ; i++) {
+	for (var i = 0; i < potSize ; i++) {
 		if (possibleMatch[i]) {
 			button[i] = document.createElement('button');
 			button[i].classList.add('btn');
@@ -485,7 +491,7 @@ function createButtonsW(opponent, probabilities) {
 
 	if (previewMode) {
 		var teams = [];
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				teams[i] = true;
 			}
@@ -493,7 +499,7 @@ function createButtonsW(opponent, probabilities) {
 		calculator.postMessage([GET_PROBABILITIES_PREVIEW, drawnW, drawnR, teams]);
 		calculator.onmessage = function(e) {
 			var probabilities2 = e.data;
-			for (var i = 0; i < 8; i++) {
+			for (var i = 0; i < potSize; i++) {
 				if (button[i] != undefined) {
 					button[i].addEventListener('mouseover', previewHelper.bind(null, probabilities2[i], i, opponent), false);
 					button[i].addEventListener('mouseout', updateTable.bind(null, probabilities, opponent), false);
@@ -502,11 +508,29 @@ function createButtonsW(opponent, probabilities) {
 			}
 		}
 	} else {
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				buttonList.appendChild(button[i]);
 			}
 		}
+	}
+	document.getElementById('button-randomteam').classList.remove('disabled');
+}
+
+
+function removeButtons() {
+	document.getElementById('button-randomteam').classList.add('disabled');
+	var buttonList = document.getElementById('cldraw-buttons');
+	while (buttonList.firstChild) {
+		buttonList.removeChild(buttonList.firstChild);
+	}
+}
+
+function disableButtons() {
+	document.getElementById('button-randomteam').classList.add('disabled');
+	var buttons = document.getElementById('cldraw-buttons').children;
+	for (var i = 0; i < buttons.length; i++) {
+		buttons[i].classList.add('disabled');
 	}
 }
 
@@ -533,10 +557,10 @@ function togglePreviewMode() {
 		reset();
 	} else {
 		var team = drawHistory.pop();
-		if (team < 8) {
+		if (team < potSize) {
 			drawRunnerUp(team);
 		} else {
-			drawWinner(team - 8, drawHistory[drawHistory.length - 1]);
+			drawWinner(team - potSize, drawHistory[drawHistory.length - 1]);
 		}
 	}
 }
@@ -548,9 +572,9 @@ function toggleHideMode() {
 		hideMode = false;
 		button.classList.remove('active');
 		var table = document.getElementById('cldraw-table');
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			table.rows[i + 1].style.display = '';
-			for (var j = 0; j < 9; j++) {
+			for (var j = 0; j < potSize + 1; j++) {
 				table.rows[j].cells[i + 1].style.display = '';
 			}
 		}
@@ -566,17 +590,17 @@ function transposeTable() {
 	swap = !swap;
 	var table = document.getElementById('cldraw-table');
 	var oldTable = [];
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		oldTable[i] = [];
-		for (var j = 0; j < 8; j++) {
+		for (var j = 0; j < potSize; j++) {
 			oldTable[i][j] = [];
 			oldTable[i][j][0] = table.rows[i + 1].cells[j + 1].innerHTML;
 			oldTable[i][j][1] = table.rows[i + 1].cells[j + 1].style.background;
 		}
 	}
 	createTable();
-	for (var i = 0; i < 8; i++) {
-		for (var j = 0; j < 8; j++) {
+	for (var i = 0; i < potSize; i++) {
+		for (var j = 0; j < potSize; j++) {
 			table.rows[i + 1].cells[j + 1].innerHTML = oldTable[j][i][0];
 			table.rows[i + 1].cells[j + 1].style.background = oldTable[j][i][1];
 		}
@@ -591,7 +615,7 @@ function showEditor() {
 	var button = document.getElementById('button-editor');
 	var div = document.getElementById('cldraw-editor');
 	if (!button.classList.contains('active')) {
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < potSize; i++) {
 			document.getElementById('cldraw-winner-' + i).value = teamsW[i];
 			document.getElementById('cldraw-winner-' + i + '-country').value = countriesW[i];
 			document.getElementById('cldraw-runner-up-' + i).value = teamsR[i];
@@ -611,11 +635,42 @@ function saveTeams() {
 	button.classList.remove('active');
 	var div = document.getElementById('cldraw-editor');
 	div.style.display = 'none';
-	for (var i = 0; i < 8; i++) {
+	for (var i = 0; i < potSize; i++) {
 		teamsW[i] = document.getElementById('cldraw-winner-' + i).value;
 		countriesW[i] = document.getElementById('cldraw-winner-' + i + '-country').value;
 		teamsR[i] = document.getElementById('cldraw-runner-up-' + i).value;
 		countriesR[i] = document.getElementById('cldraw-runner-up-' + i + '-country').value;
 	}
 	initialize();
+}
+
+
+function downloadJSON(limit) {
+	if (limit == undefined) {
+		limit = 0;
+	}
+	calculator.postMessage([GET_ALL_PROBABILITIES, limit]);
+	calculator.onmessage = function(e) {
+		var probabilities = e.data;
+		var filename = '';
+		var maxLength = -1;
+		for (var id in probabilities) {
+			if (id.length > maxLength) {
+				filename = id;
+				maxLength = id.length;
+			}
+		}
+		var a = document.createElement('a');
+		document.body.appendChild(a);
+		url = window.URL.createObjectURL(new Blob([JSON.stringify(probabilities)], {type: "octet/stream"}));
+		a.href = url;
+		a.download = filename + '.json';
+		a.click();
+		window.URL.revokeObjectURL(url);
+	}
+}
+
+
+function loadJSON() {
+	
 }

@@ -669,8 +669,3 @@ function downloadJSON(limit) {
 		window.URL.revokeObjectURL(url);
 	}
 }
-
-
-function loadJSON() {
-	
-}

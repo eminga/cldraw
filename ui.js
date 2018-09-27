@@ -23,8 +23,8 @@
 const SET_COUNTRIES = 0;
 const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
-const GET_ALL_PROBABILITIES = 3;
-const IMPORT_PROBABILITIES = 4;
+const IMPORT_PROBABILITIES = 3;
+const EXPORT_PROBABILITIES = 4;
 
 // drawn{W,R}[i] == true if team i has already been drawn
 var drawnW = [];
@@ -654,7 +654,7 @@ function downloadJSON(limit) {
 	if (limit == undefined) {
 		limit = 0;
 	}
-	calculator.postMessage([GET_ALL_PROBABILITIES, limit]);
+	calculator.postMessage([EXPORT_PROBABILITIES, limit]);
 	calculator.onmessage = function(e) {
 		var probabilities = e.data;
 		var filename = '';

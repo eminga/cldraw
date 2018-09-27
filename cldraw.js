@@ -23,8 +23,8 @@
 const SET_COUNTRIES = 0;
 const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
-const GET_ALL_PROBABILITIES = 3;
-const IMPORT_PROBABILITIES = 4;
+const IMPORT_PROBABILITIES = 3;
+const EXPORT_PROBABILITIES = 4;
 
 var calculatedProbabilities = {};
 
@@ -82,43 +82,10 @@ onmessage = function(e) {
 			}
 		}
 		postMessage(probabilities);
-	} else if (e.data[0] == GET_ALL_PROBABILITIES) {
-		var limit = 0;
-		if (e.data.length > 1) {
-			limit = e.data[1];
-		}
-		var croppedProbabilities = {};
-		for (var id in calculatedProbabilities) {
-			// only consider probabilities for cases where >= 'limit' teams are in the winners pot
-			if (id.length >= limit * 4) {
-				croppedProbabilities[id] = calculatedProbabilities[id];
-			}
-		}
-		postMessage(croppedProbabilities);
 	} else if (e.data[0] == IMPORT_PROBABILITIES) {
-		// if available, load precalculated probabilities
-		var drawnW = [];
-		var drawnR = [];
-		for (var i = 0; i < fullSize; i++) {
-			drawnW[i] = false;
-			drawnR[i] = false;
-		}
-		var id = generateId(drawnW, drawnR);
-		var s = idToString(id);
-		var filename = 'probabilities/' + s + '.json';
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (this.readyState == 4) {
-				if (this.status == 200) {
-					calculatedProbabilities = JSON.parse(this.responseText);
-					postMessage(true);
-				} else {
-					postMessage(false);
-				}
-			}
-		};
-		xhr.open('GET', filename);
-		xhr.send();
+		importProbabilities();
+	} else if (e.data[0] == EXPORT_PROBABILITIES) {
+		exportProbabilities();
 	}
 }
 
@@ -314,4 +281,46 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 	}
 
 	return probabilities;
+}
+
+
+function exportProbabilities() {
+	var limit = 0;
+	if (e.data.length > 1) {
+		limit = e.data[1];
+	}
+	var croppedProbabilities = {};
+	for (var id in calculatedProbabilities) {
+		// only consider probabilities for cases where >= 'limit' teams are in the winners pot
+		if (id.length >= limit * 4) {
+			croppedProbabilities[id] = calculatedProbabilities[id];
+		}
+	}
+	postMessage(croppedProbabilities);
+}
+
+function importProbabilities() {
+	// if available, load precalculated probabilities
+	var drawnW = [];
+	var drawnR = [];
+	for (var i = 0; i < fullSize; i++) {
+		drawnW[i] = false;
+		drawnR[i] = false;
+	}
+	var id = generateId(drawnW, drawnR);
+	var s = idToString(id);
+	var filename = 'probabilities/' + s + '.json';
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (this.readyState == 4) {
+			if (this.status == 200) {
+				calculatedProbabilities = JSON.parse(this.responseText);
+				postMessage(true);
+			} else {
+				postMessage(false);
+			}
+		}
+	};
+	xhr.open('GET', filename);
+	xhr.send();
 }

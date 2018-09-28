@@ -16,30 +16,34 @@
 				<h1>EL Draw Probabilities (2017/18 R32)</h1>
 			</div>
 			<div class="row">
-				<div class="panel panel-primary" align="center">
-					<div class="panel-heading">
-						<h3 class="panel-title">Fixtures</h3>
-					</div>
-						<div class="panel-body">
-							<div class="row">
-								<div class="col-sm-6">
-									<div class="col-md-6" id="cldraw-fixtures-0">
+				<div class="col-xs-12">
+					<div class="panel panel-primary" align="center">
+						<div class="panel-heading">
+							<h3 class="panel-title">Fixtures</h3>
+						</div>
+							<div class="panel-body">
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="col-md-6" id="cldraw-fixtures-0">
+										</div>
+										<div class="col-md-6" id="cldraw-fixtures-1">
+										</div>
 									</div>
-									<div class="col-md-6" id="cldraw-fixtures-1">
-									</div>
-								</div>
-								<div class="col-sm-6">
-									<div class="col-md-6" id="cldraw-fixtures-2">
-									</div>
-									<div class="col-md-6" id="cldraw-fixtures-3">
+									<div class="col-sm-6">
+										<div class="col-md-6" id="cldraw-fixtures-2">
+										</div>
+										<div class="col-md-6" id="cldraw-fixtures-3">
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
+					</div>
 				</div>
 			</div>
-			<div class="row table-responsive">
-				<table class="table table-condensed" id="cldraw-table"></table>
+			<div class="row">
+				<div class="col-xs-12 table-responsive">
+					<table class="table table-condensed" id="cldraw-table"></table>
+				</div>
 			</div>
 
 			<h3>Draw team</h3>
@@ -67,6 +71,9 @@
 				</button>
 				<button type="button" class="btn btn-default" id="button-editor" onclick="showEditor()">
 					Edit teams
+				</button>
+				<button type="button" class="btn btn-default" id="button-dl" style="display: none" onclick="downloadJSON(13)">
+					Download probabilities
 				</button>
 			</div>
 
@@ -264,7 +271,9 @@
 									<input id="cldraw-runner-up-15" size="15"> <input id="cldraw-runner-up-15-country" size="3">
 								</div>
 							</div>
-
+							<div class="alert alert-warning" role="alert">
+								<strong>Warning:</strong> Computing the new probabilities takes a few minutes. Don't try it on devices with less than 2GB RAM.
+							</div>
 							<button type="button" class="btn btn-default" onclick="saveTeams()">
 								Save
 							</button>
@@ -307,7 +316,6 @@
 			.btn {
 				margin-bottom: 5px;
 			}
-
 		</style>
 	</body>
 </html>

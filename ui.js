@@ -25,6 +25,7 @@ const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
 const IMPORT_PROBABILITIES = 3;
 const EXPORT_PROBABILITIES = 4;
+const CLEAR_CACHE = 5;
 
 // drawn{W,R}[i] == true if team i has already been drawn
 var drawnW = [];
@@ -42,35 +43,7 @@ function initialize() {
 	potSize = countriesW.length;
 	createTable();
 
-	var workerCountriesW = [];
-	var workerCountriesR = [];
-
-	// assign the same number c to all teams which are from the same country
-	var c = 1;
-	for (var i = 0; i < potSize; i++) {
-		var sameCountry = false;
-		for (var j = 0; j < i; j++) {
-			if (countriesW[j] == countriesW[i]) {
-				workerCountriesW[i] = workerCountriesW[j];
-				sameCountry = true;
-				break;
-			}
-		}
-		if (!sameCountry) {
-			workerCountriesW[i] = c;
-			c++;
-		}
-	}
-	for (var i = 0; i < potSize; i++) {
-		workerCountriesR[i] = 0;
-		for (var j = 0; j < potSize; j++) {
-			if (countriesW[j] == countriesR[i]) {
-				workerCountriesR[i] = workerCountriesW[j];
-			}
-		}
-	}
-
-	calculator.postMessage([SET_COUNTRIES, workerCountriesW, workerCountriesR]);
+	calculator.postMessage([SET_COUNTRIES, countriesW, countriesR]);
 
 	if (previewMode) {
 		document.getElementById('button-preview').classList.add('active');
@@ -83,10 +56,10 @@ function initialize() {
 		document.getElementById('button-hide').classList.remove('active');
 	}
 
-	if (potSize > 13) {
+	if (potSize > 12) {
 		calculator.postMessage([IMPORT_PROBABILITIES]);
 		calculator.onmessage = function(e) {
-			reset();
+			reset(e.data);
 		}
 	} else {
 		reset();
@@ -94,9 +67,7 @@ function initialize() {
 }
 
 
-
-
- function reset() {
+function reset(dlButton) {
 	for (var i = 0; i < potSize; i++) {
 		drawnW[i] = false;
 		drawnR[i] = false;
@@ -111,6 +82,17 @@ function initialize() {
 		updateTable(probabilities);
 		createButtonsR(probabilities);
 		document.getElementById('button-randomteam').classList.remove('disabled');
+		if (dlButton !== undefined) {
+			var button = document.getElementById('button-dl');
+			if (button != null) {
+				if (dlButton) {
+					button.style.display = 'none';
+				}
+				else {
+					button.style.display = '';
+				}
+			}
+		}
 	}
 	updateFixtures();
 }
@@ -646,6 +628,14 @@ function saveTeams() {
 		teamsR[i] = document.getElementById('cldraw-runner-up-' + i).value;
 		countriesR[i] = document.getElementById('cldraw-runner-up-' + i + '-country').value;
 	}
+	if (potSize > 12) {
+		calculator.postMessage([CLEAR_CACHE]);
+		var button = document.getElementById('button-dl');
+		if (button != null) {
+			button.style.display = 'none';
+		}
+	}
+	removeButtons();
 	initialize();
 }
 

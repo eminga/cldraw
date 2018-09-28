@@ -327,23 +327,22 @@ function updateTable(probabilities, highlight) {
 
 
 function updateFixtures() {
-	var l = Math.floor(potSize / 2);
-	var openPairings = potSize - Math.floor(drawHistory.length / 2);
-	for (var i = 0; i < 4; i++) {
+	var fixtures = document.getElementsByClassName('cldraw-fixtures');
+	var l = Math.ceil(potSize / fixtures.length);
+	for (var i = 0; i < fixtures.length; i++) {
 		var text = '';
 		for (var j = i * l; j < l * (i + 1); j++) {
-			if (j < drawHistory.length) {
-				team = drawHistory[j];
-				if (team < potSize) {
-					text += teamsR[team] + ' - ';
-				} else {
-					text += teamsW[team - potSize] + '<br>';
+			if (j * 2 < drawHistory.length) {
+				team = drawHistory[j * 2];
+				text += teamsR[team] + ' - ';
+				if (j * 2 + 1 < drawHistory.length) {
+					team = drawHistory[j * 2 + 1];
+					text += teamsW[team - potSize];
 				}
-			} else if (j % 2 == 1) {
-				text += '<br>';
 			}
+			text += '<br>';
 		}
-		document.getElementById('cldraw-fixtures-' + i).innerHTML = text;
+		fixtures[i].innerHTML = text;
 
 	}
 	if (drawHistory.length > 0) {

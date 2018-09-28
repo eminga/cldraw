@@ -200,18 +200,28 @@ function generateId(drawnW, drawnR) {
 			var order = columnOrder;
 		}
 		var subId = generateSubId(matrix2, order, row);
-		subId.sort(function(a,b) {
-			return a[0] - b[0];
-		});
 		var sorted = true;
+		var maximum = -1;
 		for (var i = 0; i < subId.length; i++) {
-			if (subId[i][1] != order[i]) {
+			if (subId[i][0] < maximum) {
 				sorted = false;
+				break;
+			} else {
+				maximum = subId[i][0];
 			}
-			order[i] = subId[i][1];
+		}
+		if (!sorted) {
+			subId.sort(function(a,b) {
+				return a[0] - b[0];
+			});
+			for (var i = 0; i < subId.length; i++) {
+				order[i] = subId[i][1];
+			}
 		}
 		if (row) {
 			var id = subId;
+		} else {
+			var id2 = subId;
 		}
 		if (sorted) {
 			break;

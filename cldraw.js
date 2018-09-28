@@ -25,14 +25,13 @@ const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
 const IMPORT_PROBABILITIES = 3;
 const EXPORT_PROBABILITIES = 4;
+const CLEAR_CACHE = 5;
 
-var calculatedProbabilities = {};
+calculatedProbabilities = {};
 
 onmessage = function(e) {
 	if (e.data[0] == SET_COUNTRIES) {
-		countriesW = e.data[1];
-		countriesR = e.data[2];
-		fullSize = countriesW.length;
+		setCountries(e.data[1], e.data[2]);
 	} else if (e.data[0] == GET_PROBABILITIES) {
 		if (e.data.length < 3) {
 			var drawnW = [];
@@ -85,50 +84,161 @@ onmessage = function(e) {
 	} else if (e.data[0] == IMPORT_PROBABILITIES) {
 		importProbabilities();
 	} else if (e.data[0] == EXPORT_PROBABILITIES) {
-		exportProbabilities();
+		if (e.data.length > 1) {
+			exportProbabilities(e.data[1]);
+		} else {
+			exportProbabilities();
+		}
+	} else if (e.data[0] == CLEAR_CACHE) {
+		calculatedProbabilities = {};
 	}
 }
 
 
-// generates an identifier for the remaining teams
-// each entry of the id array characterizes a column of the remaining table
-function generateId(drawnW, drawnR) {
-	var id = [];
-	var c = 0;
+// assigns the same number c to all teams which are from the same country
+function setCountries(inititalCountriesW, initialCountriesR) {
+	countriesW = [];
+	countriesR = [];
+	fullSize = inititalCountriesW.length;
+
+	var c = 1;
 	for (var i = 0; i < fullSize; i++) {
-		var temp = 0;
-		if (!drawnW[i]) {
-			var l2 = 0;
-			for (var j = 0; j < fullSize; j++) {
-				if (!drawnR[j]) {
-					temp <<= 1;
-					if ((i > 11 || j > 11 || i != j) && countriesW[i] != countriesR[j]) {
-						temp |= 1;
-					}
-				}
+		var sameCountry = false;
+		for (var j = 0; j < i; j++) {
+			if (inititalCountriesW[j] == inititalCountriesW[i]) {
+				countriesW[i] = countriesW[j];
+				sameCountry = true;
+				break;
 			}
-			id.push([temp, c]);
+		}
+		if (!sameCountry) {
+			countriesW[i] = c;
 			c++;
 		}
 	}
-	id.sort(function(a,b){
-		return a[0] - b[0];
-	});
+	for (var i = 0; i < fullSize; i++) {
+		countriesR[i] = 0;
+		for (var j = 0; j < fullSize; j++) {
+			if (inititalCountriesW[j] == initialCountriesR[i]) {
+				countriesR[i] = countriesW[j];
+			}
+		}
+	}
+}
+
+function sortMatrix(matrix, rowOrder, columnOrder, inverse) {
+	var result = [];
+	for (var i = 0; i < rowOrder.length; i++) {
+		result[i] = [];
+	}
+	for (var i = 0; i < rowOrder.length; i++) {
+		for (var j = 0; j < rowOrder.length; j++) {
+			if (!inverse) {
+				result[i][j] = matrix[rowOrder[i]][columnOrder[j]];
+			} else {
+				result[rowOrder[i]][columnOrder[j]] = matrix[i][j];
+			}
+		}
+	}
+	return result;
+}
+
+function generateSubId(matrix, order, rowMode) {
+	var id = [];
+	for (var i = 0; i < matrix.length; i++) {
+		var temp = 0;
+		for (var j = 0; j < matrix.length; j++) {
+			temp <<= 1;
+			if (rowMode) {
+				var entry = matrix[i][j];
+			} else {
+				var entry = matrix[j][i];
+			}
+			if (entry) {
+				temp |= 1;
+			}
+		}
+		id.push([temp, order[i]]);
+	}
 	return id;
+}
+
+// generates an identifier for the remaining teams
+// each entry of the id array characterizes a column of the remaining table
+function generateId(drawnW, drawnR) {
+	var matrix = [];
+	for (var i = 0; i < fullSize; i++) {
+		if (!drawnW[i]) {
+			var row = [];
+			for (var j = 0; j < fullSize; j++) {
+				if (!drawnR[j]) {
+					if ((i > 11 || j > 11 || i != j) && countriesW[i] != countriesR[j]) {
+						row.push(true);
+					} else {
+						row.push(false);
+					}
+				}
+			}
+			matrix.push(row);
+		}
+	}
+
+	var rowOrder = [];
+	var columnOrder = [];
+	for (var i = 0; i < matrix.length; i++) {
+		rowOrder.push(i);
+		columnOrder.push(i);
+	}
+
+	var matrix2 = matrix;
+	var row = true;
+	// alternatingly sort rows and columns
+	while (true) {
+		if (row) {
+			var order = rowOrder;
+		} else {
+			var order = columnOrder;
+		}
+		var subId = generateSubId(matrix2, order, row);
+		subId.sort(function(a,b) {
+			return a[0] - b[0];
+		});
+		var sorted = true;
+		for (var i = 0; i < subId.length; i++) {
+			if (subId[i][1] != order[i]) {
+				sorted = false;
+			}
+			order[i] = subId[i][1];
+		}
+		if (row) {
+			var id = subId;
+		}
+		if (sorted) {
+			break;
+		}
+		matrix2 = sortMatrix(matrix, rowOrder, columnOrder);
+		row = !row;
+	}
+	var temp = [];
+	for (var i = 0; i < id.length; i++) {
+		temp[i] = id[i][0];
+	}
+
+	return [temp, rowOrder, columnOrder];
 }
 
 
 function idToString(id) {
 	var s = '';
 	for (var i = 0; i < id.length; i++) {
-		if (id[i][0] < 16) {
-			s += '000' + (id[i][0]).toString(16);
-		} else if (id[i][0] < 256) {
-			s += '00' + (id[i][0]).toString(16);
-		} else if (id[i][0] < 4096) {
-			s += '0' + (id[i][0]).toString(16);
+		if (id[i] < 16) {
+			s += '000' + (id[i]).toString(16);
+		} else if (id[i] < 256) {
+			s += '00' + (id[i]).toString(16);
+		} else if (id[i] < 4096) {
+			s += '0' + (id[i]).toString(16);
 		} else {
-			s += (id[i][0]).toString(16);
+			s += (id[i]).toString(16);
 		}
 	}
 	return s;
@@ -136,36 +246,31 @@ function idToString(id) {
 
 // returns cached probabilities, null if dead end or undefined if not cached yet
 function loadProbabilities(id) {
-	var s = idToString(id);
+	var s = idToString(id[0]);
 	var temp = calculatedProbabilities[s];
 	if (temp == null) {
 		return temp;
 	}
-	var probabilities = [];
-	for (var i = 0; i < id.length; i++) {
-		probabilities[id[i][1]] = temp[i];
-	}
+	var probabilities = sortMatrix(temp, id[1], id[2], true);
 	return probabilities;
 }
 
 // caches probabilities
 function saveProbabilities(id, probabilities) {
-	var s = idToString(id);
+	var s = idToString(id[0]);
+	calculatedProbabilities[s] = probabilities;
 	if (probabilities == null) {
 		calculatedProbabilities[s] = null;
 	} else {
-		var temp = [];
-		for (var i = 0; i < id.length; i++) {
-			temp[i] = probabilities[id[i][1]];
-		}
+		var temp = sortMatrix(probabilities, id[1], id[2]);
 		calculatedProbabilities[s] = temp;
 	}
 }
 
 
 function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
-	// use cached probabilities if existing (only if there is no unmatched runner-up)
 	if (unmatchedRunnerUp == undefined) {
+		// use cached probabilities if existing
 		var id = generateId(drawnW, drawnR);
 		var cachedProbabilities = loadProbabilities(id);
 		if (cachedProbabilities !== undefined) {
@@ -209,7 +314,7 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 			}
 		}
 		// return null if the current draw is a dead end
-		if (options == 0 && id != '') {
+		if (options == 0 && id[0].length > 0) {
 			probabilities = null;
 		}
 
@@ -284,10 +389,9 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 }
 
 
-function exportProbabilities() {
-	var limit = 0;
-	if (e.data.length > 1) {
-		limit = e.data[1];
+function exportProbabilities(limit) {
+	if (limit == undefined) {
+		limit = 0;
 	}
 	var croppedProbabilities = {};
 	for (var id in calculatedProbabilities) {
@@ -308,7 +412,7 @@ function importProbabilities() {
 		drawnR[i] = false;
 	}
 	var id = generateId(drawnW, drawnR);
-	var s = idToString(id);
+	var s = idToString(id[0]);
 	var filename = 'probabilities/' + s + '.json';
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {

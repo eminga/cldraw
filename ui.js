@@ -43,6 +43,7 @@ initialize();
 function initialize() {
 	potSize = countriesW.length;
 	createTable();
+	createEditor();
 
 	calculator.postMessage([SET_COUNTRIES, countriesW, countriesR]);
 
@@ -607,6 +608,63 @@ function transposeTable() {
 	}
 	if (hideMode) {
 		hideDrawnTeams();
+	}
+}
+
+
+function createEditor() {
+	var editor = document.getElementById('cldraw-editor-groups');
+	while (editor.firstChild) {
+		editor.removeChild(editor.firstChild);
+	}
+	for (var i = 0; i < potSize; i++) {
+		String.fromCharCode(65 + i)
+		var row = document.createElement('div');
+		row.classList.add('row');
+		var div = document.createElement('div');
+		div.classList.add('col-xs-2');
+		var label = document.createElement('label');
+		label.setAttribute('for', 'cldraw-winner-' + i);
+		if (i < 12) {
+			label.appendChild(document.createTextNode('Group ' + String.fromCharCode(65 + i) + ':'));
+		} else {
+			label.appendChild(document.createTextNode('CL ' + (i - 11) + ':'));
+		}
+		label.appendChild(document.createElement('p'));
+		div.appendChild(label);
+		row.appendChild(div);
+		for (var j = 0; j < 2; j++) {
+			if (j == 0) {
+				var type = 'winner';
+			} else {
+				var type = 'runner-up';
+			}
+			var div = document.createElement('div');
+			div.classList.add('col-xs-5');
+			var input = document.createElement('input');
+			input.setAttribute('id', 'cldraw-' + type + '-' + i);
+			input.setAttribute('size', '15');
+			div.appendChild(input);
+			div.appendChild(document.createTextNode(' '));
+			input = document.createElement('input');
+			input.setAttribute('id', 'cldraw-' + type + '-' + i + '-country');
+			input.setAttribute('size', '3');
+			div.appendChild(input);
+			row.appendChild(div);
+		}
+		editor.appendChild(row);
+	}
+	if (potSize > 14) {
+		var div = document.createElement('div');
+		div.classList.add('alert');
+		div.classList.add('alert-warning');
+		div.setAttribute('role', 'alert');
+		var strong = document.createElement('strong');
+		strong.appendChild(document.createTextNode('Warning:'));
+		div.appendChild(strong);
+		var text = document.createTextNode(' Computing the new probabilities takes a few minutes. Don\'t try it on devices with less than 2GB RAM.');
+		div.appendChild(text);
+		editor.appendChild(div);
 	}
 }
 

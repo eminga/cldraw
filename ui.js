@@ -35,6 +35,7 @@ var drawnR = [];
 var matched = [];
 
 var drawHistory = [];
+var ignoreClicks = false;
 
 var calculator = new Worker('cldraw.js');
 initialize();
@@ -124,98 +125,112 @@ function getPossibleMatches(probabilities, team) {
 
 
 function drawRunnerUp(team) {
-	disableButtons();
-	drawnR[team] = true;
-	// write to history before table is updated, needed to hide drawn teams
-	drawHistory.push(team);
-	calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, team]);
-	calculator.onmessage = function(e) {
-		var probabilities = e.data;
-		updateTable(probabilities, team);
-		createButtonsW(team, probabilities);
-		updateFixtures();
+	if (!ignoreClicks) {
+		ignoreClicks = true;
+		disableButtons();
+		drawnR[team] = true;
+		// write to history before table is updated, needed to hide drawn teams
+		drawHistory.push(team);
+		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, team]);
+		calculator.onmessage = function(e) {
+			var probabilities = e.data;
+			updateTable(probabilities, team);
+			createButtonsW(team, probabilities);
+			updateFixtures();
+			ignoreClicks = false;
+		}
 	}
 }
 
 
 function drawWinner(team, opponent) {
-	disableButtons();
-	matched[team] = opponent;
-	drawnW[team] = true;
-	// write to history before table is updated, needed to hide drawn teams
-	drawHistory.push(team + potSize);
-	calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
-	calculator.onmessage = function(e) {
-		var probabilities = e.data;
-		updateTable(probabilities);
-		createButtonsR(probabilities);
-		updateFixtures();
+	if (!ignoreClicks) {
+		ignoreClicks = true;
+		disableButtons();
+		matched[team] = opponent;
+		drawnW[team] = true;
+		// write to history before table is updated, needed to hide drawn teams
+		drawHistory.push(team + potSize);
+		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
+		calculator.onmessage = function(e) {
+			var probabilities = e.data;
+			updateTable(probabilities);
+			createButtonsR(probabilities);
+			updateFixtures();
+			ignoreClicks = false;
+		}
 	}
 }
 
 
 function undo() {
-	team = drawHistory.pop();
-	if (team != undefined) {
-		if (team < potSize) {
-			drawnR[team] = false;
-			calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
-			calculator.onmessage = function(e) {
-				var probabilities = e.data;
-				updateTable(probabilities);
-				createButtonsR(probabilities);
+	if (!ignoreClicks) {
+		team = drawHistory.pop();
+		if (team != undefined) {
+			if (team < potSize) {
+				ignoreClicks = true;
+				drawnR[team] = false;
+				calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
+				calculator.onmessage = function(e) {
+					var probabilities = e.data;
+					updateTable(probabilities);
+					createButtonsR(probabilities);
+					ignoreClicks = false;
+				}
+				updateFixtures();
+			} else {
+				team -= potSize;
+				drawnW[team] = false;
+				matched[team] = -1;
+				opponent = drawHistory.pop();
+				drawnR[opponent] = false;
+				drawRunnerUp(opponent);
 			}
-			updateFixtures();
-		} else {
-			team -= potSize;
-			drawnW[team] = false;
-			matched[team] = -1;
-			opponent = drawHistory.pop();
-			drawnR[opponent] = false;
-			drawRunnerUp(opponent);
+			document.getElementById('button-randomteam').classList.remove('disabled');
 		}
-		document.getElementById('button-randomteam').classList.remove('disabled');
 	}
 }
 
 
 function drawRandomTeam() {
-	disableButtons();
-	if (drawHistory.length % 2 == 0) {
-		var numR = 0;
-		for (var i = 0; i < potSize; i++) {
-			if (!drawnR[i]) {
-				numR++;
-			}
-		}
-		if (numR > 0) {
-			var team = Math.floor(Math.random() * numR);
-			for (var i = 0; i <= team; i++) {
-				if (drawnR[i]) {
-					team++;
-				}
-			}
-			drawRunnerUp(team);
-		}
-	} else {
-		var opponent = drawHistory[drawHistory.length - 1];
-		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, opponent]);
-		calculator.onmessage = function(e) {
-			var probabilities = e.data;
-			var possibleMatch = getPossibleMatches(probabilities, opponent);
-			var numW = 0;
+	if (!ignoreClicks) {
+		disableButtons();
+		if (drawHistory.length % 2 == 0) {
+			var numR = 0;
 			for (var i = 0; i < potSize; i++) {
-				if (possibleMatch[i]) {
-					numW++;
+				if (!drawnR[i]) {
+					numR++;
 				}
 			}
-			var team = Math.floor(Math.random() * numW);
-			for (var i = 0; i <= team && i < 20; i++) {
-				if (!possibleMatch[i]) {
-					team++;
+			if (numR > 0) {
+				var team = Math.floor(Math.random() * numR);
+				for (var i = 0; i <= team; i++) {
+					if (drawnR[i]) {
+						team++;
+					}
 				}
+				drawRunnerUp(team);
 			}
-			drawWinner(team, opponent);
+		} else {
+			var opponent = drawHistory[drawHistory.length - 1];
+			calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, opponent]);
+			calculator.onmessage = function(e) {
+				var probabilities = e.data;
+				var possibleMatch = getPossibleMatches(probabilities, opponent);
+				var numW = 0;
+				for (var i = 0; i < potSize; i++) {
+					if (possibleMatch[i]) {
+						numW++;
+					}
+				}
+				var team = Math.floor(Math.random() * numW);
+				for (var i = 0; i <= team && i < 20; i++) {
+					if (!possibleMatch[i]) {
+						team++;
+					}
+				}
+				drawWinner(team, opponent);
+			}
 		}
 	}
 }
@@ -422,7 +437,6 @@ function createButtonsR(probabilities) {
 			var text = document.createTextNode(teamsR[i]);
 			button[i].appendChild(text);
 			button[i].addEventListener('click', drawRunnerUp.bind(null, i, false), false);
-			buttonList.appendChild(button[i]);
 		}
 	}
 

@@ -4,28 +4,56 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="UEFA Champions League round of 16 draw probabilities and simulation.">
+	<meta name="description" content="UEFA Champions League round of 16 &amp; UEFA Europa League round of 32 draw probabilities and simulation.">
 	<meta name="author" content="eminga">
 	<title>CL R16 Draw Probabilities</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="bootstrap/bootstrap-theme.min.css">
 	</head>
 	<body>
 		<div class="container" role="main">
 			<div class="page-header">
-				<h1>CL Draw Probabilities <small>(2017/18 Round of 16)</small></h1>
+				<h1>CL Draw Probabilities <small>(Round of 16)</small></h1>
 			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Competition</h3>
+				</div>
+				<div class="panel-body">
+					<div class="btn-toolbar btn-group-sm" id="cldraw-competitions">
+						<button type="button" class="btn btn-default" onclick="bla()">
+							UEFA Champions League
+						</button>
+						<button type="button" class="btn btn-default" onclick="bla()">
+							UEFA Europa League
+						</button>
+					</div>
+					<div class="btn-toolbar btn-group-xs" id="cldraw-seasons">
+
+					</div>
+				</div>
+			</div>
+
+
 			<div class="row">
-				<div class="col-md-3 col-md-push-9">
+				<div class="col-md-3 col-md-push-9" id="cldraw-fixtures-panel">
 					<div class="panel panel-primary" align="center">
 						<div class="panel-heading">
 							<h3 class="panel-title">Fixtures</h3>
 						</div>
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-sm-6 col-md-12 cldraw-fixtures">
+								<div class="col-sm-6 col-md-12 cldraw-fixtures-wrapper">
+									<div class="cldraw-fixtures">
+									</div>
+									<div class="cldraw-fixtures">
+									</div>
 								</div>
-								<div class="col-sm-6 col-md-12 cldraw-fixtures">
+								<div class="col-sm-6 col-md-12 cldraw-fixtures-wrapper">
+									<div class="cldraw-fixtures">
+									</div>
+									<div class="cldraw-fixtures">
+									</div>
 								</div>
 							</div>
 						</div>
@@ -85,11 +113,24 @@
 									<label for="cldraw-runners-up">Group runners-up:</label>
 								</div>
 							</div>
-							<div id="cldraw-editor-groups">
+							<div id="cldraw-editor-groups" class="form-group">
 							</div>
-							<button type="button" class="btn btn-default" onclick="saveTeams()">
-								Save
-							</button>
+							<div class="row">
+								<div class="col-xs-2">
+									<label for="cldraw-editor-season">Season:</label>
+								</div>
+								<div class="col-xs-3">
+									<input id="cldraw-editor-season" size="10"></input>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12">
+									<button type="button" class="btn btn-default" onclick="saveTeams()">
+										Save
+									</button>
+								</div>
+							</div>
+
 						</div>
 					</div>
 				</div>
@@ -106,7 +147,6 @@
 			</div>
 		</footer>
 
-		<script src="settings.js"></script>
 		<script src="ui.js"></script>
 
 		<style>

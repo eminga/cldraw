@@ -1,0 +1,198 @@
+<config>
+	<competition id="cl">
+		<name>UEFA Champions League</name>
+		<short>CL</short>
+	</competition>
+	<competition id="el">
+		<name>UEFA Europa League</name>
+		<short>EL</short>
+	</competition>
+
+	<!-- the uppermost teams element is loaded by default -->
+	<teams competition="cl" season="2017/18">
+		<winners>
+			<team country="EN">Man. United</team>
+			<team country="FR">Paris SG</team>
+			<team country="IT">AS Roma</team>
+			<team country="ES">FC Barcelona</team>
+			<team country="EN">Liverpool FC</team>
+			<team country="EN">Man. City</team>
+			<team country="TR">Beşiktaş JK</team>
+			<team country="EN">Tottenham</team>
+		</winners>
+		<runners-up>
+			<team country="CH">FC Basel</team>
+			<team country="DE">FC Bayern</team>
+			<team country="EN">Chelsea FC</team>
+			<team country="IT">Juventus</team>
+			<team country="ES">Sevilla FC</team>
+			<team country="UA">Shakhtar</team>
+			<team country="PT">FC Porto</team>
+			<team country="ES">Real Madrid</team>
+		</runners-up>
+	</teams>
+	<teams competition="el" season="2017/18">
+		<winners>
+			<team country="ES">Villareal</team>
+			<team country="RU">Kyiv</team>
+			<team country="PT">Braga</team>
+			<team country="IT">Milan</team>
+			<team country="IT">Atalanta</team>
+			<team country="RU">Lokomotiv</team>
+			<team country="CZ">Plzen</team>
+			<team country="EN">Arsenal</team>
+			<team country="AT">Salzburg</team>
+			<team country="ES">Bilbao</team>
+			<team country="IT">Lazio</team>
+			<team country="RU">Zenit</team>
+			<team country="RU">CSKA</team>
+			<team country="ES">Atletico</team>
+			<team country="DE">Leipzig</team>
+			<team country="PT">Sporting</team>
+		</winners>
+		<runners-up>
+			<team country="KZ">Astana</team>
+			<team country="RS">Partizan</team>
+			<team country="BG">Razgrad</team>
+			<team country="GR">Athens</team>
+			<team country="FR">Lyon</team>
+			<team country="DK">København</team>
+			<team country="RO">FCSB</team>
+			<team country="RS">Belgrad</team>
+			<team country="FR">Marseille</team>
+			<team country="SE">Östersund</team>
+			<team country="FR">Nice</team>
+			<team country="ES">Sociedad</team>
+			<team country="IT">Napoli</team>
+			<team country="RU">Spartak</team>
+			<team country="SC">Celtic</team>
+			<team country="DE">Dortmund</team>
+		</runners-up>
+	</teams>
+	<teams competition="cl" season="2016/17">
+		<winners>
+			<team country="EN">Arsenal</team>
+			<team country="IT">Napoli</team>
+			<team country="ES">FC Barcelona</team>
+			<team country="ES">Atlético</team>
+			<team country="FR">AS Monaco</team>
+			<team country="DE">Dortmund</team>
+			<team country="EN">Leicester</team>
+			<team country="IT">Juventus</team>
+		</winners>
+		<runners-up>
+			<team country="FR">Paris SG</team>
+			<team country="PT">Benfica</team>
+			<team country="EN">Man. City</team>
+			<team country="DE">FC Bayern</team>
+			<team country="DE">Leverkusen</team>
+			<team country="ES">Real Madrid</team>
+			<team country="PT">FC Porto</team>
+			<team country="ES">Sevilla FC</team>
+		</runners-up>
+	</teams>
+	<teams competition="el" season="2016/17">
+		<winners>
+			<team country="TR">Fenerbahçe</team>
+			<team country="CY">APOEL</team>
+			<team country="FR">Saint-Étienne</team>
+			<team country="RU">Zenit</team>
+			<team country="IT">Roma</team>
+			<team country="BE">Genk</team>
+			<team country="NL">Ajax</team>
+			<team country="RU">Shakhtar</team>
+			<team country="DE">Schalke</team>
+			<team country="IT">Fiorentina</team>
+			<team country="CZ">Sparta</team>
+			<team country="TR">Osmanlıspor</team>
+			<team country="DK">København</team>
+			<team country="FR">Lyon</team>
+			<team country="EN">Tottenham</team>
+			<team country="TR">Beşiktaş</team>
+		</winners>
+		<runners-up>
+			<team country="EN">ManUtd</team>
+			<team country="GR">Olympiacos</team>
+			<team country="BE">Anderlecht</team>
+			<team country="NL">Alkmaar</team>
+			<team country="RO">Astra</team>
+			<team country="ES">Bilbao</team>
+			<team country="ES">Celta</team>
+			<team country="BE">Gent</team>
+			<team country="RU">Krasnodar</team>
+			<team country="GR">PAOK</team>
+			<team country="IL">Be'er Sheva</team>
+			<team country="ES">Villareal</team>
+			<team country="RU">Rostov</team>
+			<team country="DE">Gladbach</team>
+			<team country="PL">Legia</team>
+			<team country="BG">Razgrad</team>
+		</runners-up>
+	</teams>
+	<teams competition="cl" season="2015/16">
+		<winners>
+			<team country="ES">Real Madrid</team>
+			<team country="DE">Wolfsburg</team>
+			<team country="ES">Atlético</team>
+			<team country="EN">Man. City</team>
+			<team country="ES">FC Barcelona</team>
+			<team country="DE">FC Bayern</team>
+			<team country="EN">Chelsea FC</team>
+			<team country="RU">Zenit</team>
+		</winners>
+		<runners-up>
+			<team country="FR">Paris SG</team>
+			<team country="NL">Eindhoven</team>
+			<team country="PT">Benfica</team>
+			<team country="IT">Juventus</team>
+			<team country="IT">AS Roma</team>
+			<team country="EN">Arsenal</team>
+			<team country="RU">Kyiv</team>
+			<team country="BE">Gent</team>
+		</runners-up>
+	</teams>
+	<teams competition="cl" season="2014/15">
+		<winners>
+			<team country="ES">Atlético</team>
+			<team country="ES">Real Madrid</team>
+			<team country="FR">AS Monaco</team>
+			<team country="DE">Dortmund</team>
+			<team country="DE">FC Bayern</team>
+			<team country="ES">FC Barcelona</team>
+			<team country="EN">Chelsea FC</team>
+			<team country="PT">FC Porto</team>
+		</winners>
+		<runners-up>
+			<team country="IT">Juventus</team>
+			<team country="CH">FC Basel</team>
+			<team country="DE">Leverkusen</team>
+			<team country="EN">Arsenal</team>
+			<team country="EN">Man. City</team>
+			<team country="FR">Paris SG</team>
+			<team country="DE">Schalke 04</team>
+			<team country="UA">Shakhtar</team>
+		</runners-up>
+	</teams>
+	<teams competition="cl" season="2013/14">
+		<winners>
+			<team country="EN">Man. United</team>
+			<team country="ES">Real Madrid</team>
+			<team country="FR">Paris SG</team>
+			<team country="DE">FC Bayern</team>
+			<team country="EN">Chelsea FC</team>
+			<team country="DE">Dortmund</team>
+			<team country="ES">Atlético</team>
+			<team country="ES">FC Barcelona</team>
+		</winners>
+		<runners-up>
+			<team country="DE">Leverkusen</team>
+			<team country="TR">Galatasaray</team>
+			<team country="GR">Olympiacos</team>
+			<team country="EN">Man. City</team>
+			<team country="DE">Schalke 04</team>
+			<team country="EN">Arsenal</team>
+			<team country="RU">Zenit</team>
+			<team country="IT">AC Milan</team>
+		</runners-up>
+	</teams>
+</config>

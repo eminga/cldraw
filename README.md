@@ -1,9 +1,9 @@
 # CL Draw Probabilities
-An interactive probability calculator for the round of 16 of the UEFA Champions League.
+An interactive probability calculator for the round of 16 of the UEFA Champions League and the round of 32 of the UEFA Europa League.
 
 Try it: https://eminga.github.io/cldraw/
 
-## Background
+## Background (Champions League)
 In the round of 16 of the UEFA Champions League, the UEFA imposes some regulations on how the teams are matched:
 1. Group winners play against group runners-up.
 2. Winners and runners-up are drawn alternatingly, starting with a runner-up.
@@ -14,20 +14,23 @@ Regulations 3. and 4. require a calculation after each drawn runner-up to avoid 
 
 These regulations lead to non-uniform probabilities regarding the outcome of the draw.
 
-## Europa League Version
-There is also a version for the round of 32 of the UEFA Europa League. In contrast to the CL version, the EL version includes precomputed probabilities as a local computation would take too long (3 minutes, 800 MB RAM on my PC). After the 7th team is drawn, the remaining probabilities are computed locally which can take up to 30 seconds on old mobile devices.
+## Background (Europa League)
+The regulations in the round of 32 of the UEFA Europa League are similar to those of the Champions League described above.
 
-Try it: https://eminga.github.io/cldraw/el.html
+Regulation 1. differs: One pot consists of the twelve EL group winners and the four best third-placed teams from the CL group phase. The other pot consists of the EL group runners-up and the four other third-placed teams from the CL group phase.
+
 
 ## How this tool works
 This tool simply computes the conditional probabilities of all possible pairings with respect to the calculation step described in the background section.
 
 To speed up the computation, memoization is used.
 
+The EL mode includes precomputed probabilities for the latest season as a local computation would take too long (3 minutes, 800 MB RAM on my PC). After the 7th team is drawn, the remaining probabilities are computed locally which can take up to 30 seconds on old mobile devices.
+
 ## Host yourself
 If this tool wasn't updated in time or you want to host it yourself for another reason, feel free to do so! To host it on GitHub, fork this repo and enable the GitHub Pages feature.
 
-You can edit the teams and other settings in the settings.js file (elsettings.js for the Europa League version). In the EL version, you can download the calculated probabilities (the computation takes some minutes). Upload the JSON file to the probabilities folder afterwards.
+You can edit the teams in the config.xml file. In the EL mode, you can download the calculated probabilities (the computation takes some minutes). Upload the JSON file to the probabilities folder afterwards.
 
 It is also possible to use the calculation part without the UI. Here is a minimal example for using it as a Web Worker:
 ```javascript

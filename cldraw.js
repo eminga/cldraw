@@ -19,6 +19,8 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+ 
+'use strict';
 
 const SET_COUNTRIES = 0;
 const GET_PROBABILITIES = 1;
@@ -27,7 +29,10 @@ const IMPORT_PROBABILITIES = 3;
 const EXPORT_PROBABILITIES = 4;
 const CLEAR_CACHE = 5;
 
-calculatedProbabilities = {};
+var calculatedProbabilities = {};
+var countriesW;
+var countriesR;
+var fullSize;
 
 onmessage = function(e) {
 	if (e.data[0] == SET_COUNTRIES) {
@@ -50,7 +55,7 @@ onmessage = function(e) {
 			postMessage(calculateProbabilities(drawnW, drawnR, e.data[3]));
 		}
 	} else if (e.data[0] == GET_PROBABILITIES_PREVIEW) {
-		probabilities = [];
+		var probabilities = [];
 		var drawnW = e.data[1];
 		var drawnR = e.data[2];
 		var possibleOpponent = e.data[3];
@@ -220,8 +225,6 @@ function generateId(drawnW, drawnR) {
 		}
 		if (row) {
 			var id = subId;
-		} else {
-			var id2 = subId;
 		}
 		if (sorted) {
 			break;
@@ -229,12 +232,12 @@ function generateId(drawnW, drawnR) {
 		matrix2 = sortMatrix(matrix, rowOrder, columnOrder);
 		row = !row;
 	}
-	var temp = [];
+	var key = [];
 	for (var i = 0; i < id.length; i++) {
-		temp[i] = id[i][0];
+		key[i] = id[i][0];
 	}
 
-	return [temp, rowOrder, columnOrder];
+	return [key, rowOrder, columnOrder];
 }
 
 
@@ -423,6 +426,10 @@ function importProbabilities() {
 	}
 	var id = generateId(drawnW, drawnR);
 	var s = idToString(id[0]);
+	if (calculatedProbabilities[s] !== undefined) {
+		postMessage(true);
+		return;
+	}
 	var filename = 'probabilities/' + s + '.json';
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {

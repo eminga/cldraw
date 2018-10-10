@@ -47,17 +47,22 @@ var matched = [];
 var drawHistory = [];
 var ignoreClicks = false;
 
-var calculator = new Worker('cldraw.js');
+// check if browser supports used js features
+if (typeof(XPathResult) == 'undefined' || typeof(Worker) == 'undefined') {
+	document.getElementById('cldraw-browser').style.display = '';
+} else {
+	var calculator = new Worker('cldraw.js');
 
-var xhr = new XMLHttpRequest();
-xhr.onreadystatechange = function() {
-	if (this.readyState == 4 && this.status == 200) {
-		config = this.responseXML;
-		initialize();
-	}
-};
-xhr.open('GET', 'config.xml');
-xhr.send();
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			config = this.responseXML;
+			initialize();
+		}
+	};
+	xhr.open('GET', 'config.xml');
+	xhr.send();
+}
 
 
 function initialize(competition, season) {

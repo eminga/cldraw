@@ -90,11 +90,26 @@ function initialize(competition, season) {
 		team = iterator.iterateNext();
 	}
 	potSize = countriesW.length;
+	for (var i = 0; i < potSize; i++) {
+		drawnW[i] = false;
+		drawnR[i] = false;
+		matched[i] = -1;
+	}
+	drawHistory = [];
 	createTable();
 	createEditor();
 	adjustSizes(competition, season);
 	createCompetitions();
 	createSeasons(competition);
+	removeButtons();
+	updateFixtures();
+
+	// terminate web worker and spawn a new one if there is an ongoing expensive computation
+	if (document.getElementById('cldraw-computation-running').style.display === '') {
+		calculator.terminate();
+		calculator = new Worker('cldraw.js');
+		document.getElementById('cldraw-computation-running').style.display = 'none';
+	}
 
 	calculator.postMessage([SET_COUNTRIES, countriesW, countriesR]);
 
@@ -108,13 +123,31 @@ function initialize(competition, season) {
 	} else {
 		document.getElementById('button-hide').classList.remove('active');
 	}
+	document.getElementById('button-dl').style.display = 'none';
 
 	if (potSize > 12) {
-		calculator.postMessage([IMPORT_PROBABILITIES]);
+		calculator.postMessage([IMPORT_PROBABILITIES, true]);
 		calculator.onmessage = function(e) {
-			reset(e.data);
+			if (e.data === true) {
+				reset();
+			} else {
+				document.getElementById('cldraw-computation').style.display = '';
+				if (e.data === 200) {
+					document.getElementById('cldraw-computation-download').style.display = '';
+				} else {
+					document.getElementById('cldraw-computation-download').style.display = 'none';
+				}
+			}
 		}
 	} else {
+		reset();
+	}
+}
+
+
+function downloadProbabilities() {
+	calculator.postMessage([IMPORT_PROBABILITIES]);
+	calculator.onmessage = function(e) {
 		reset();
 	}
 }
@@ -216,7 +249,7 @@ function createSeasons(competition) {
 }
 
 
-function reset(dlButton) {
+function reset(expensive) {
 	for (var i = 0; i < potSize; i++) {
 		drawnW[i] = false;
 		drawnR[i] = false;
@@ -224,22 +257,25 @@ function reset(dlButton) {
 	}
 	drawHistory = [];
 	document.getElementById('button-randomteam').classList.add('disabled');
+	document.getElementById('cldraw-computation').style.display = 'none';
+	if (expensive) {
+		document.getElementById('cldraw-computation-running').style.display = '';
+	}
 
 	calculator.postMessage([GET_PROBABILITIES]);
 	calculator.onmessage = function(e) {
 		var probabilities = e.data;
 		updateTable(probabilities);
 		createButtonsR(probabilities);
+		document.getElementById('cldraw-computation-running').style.display = 'none';
 		document.getElementById('button-randomteam').classList.remove('disabled');
-		if (dlButton !== undefined) {
+		if (expensive !== undefined) {
 			var button = document.getElementById('button-dl');
-			if (button != null) {
-				if (dlButton) {
-					button.style.display = 'none';
-				}
-				else {
-					button.style.display = '';
-				}
+			if (expensive) {
+				button.style.display = '';
+			}
+			else {
+				button.style.display = 'none';
 			}
 		}
 	}
@@ -811,18 +847,6 @@ function createEditor() {
 		}
 		editor.appendChild(row);
 	}
-	if (potSize > 14) {
-		var div = document.createElement('div');
-		div.classList.add('alert');
-		div.classList.add('alert-warning');
-		div.setAttribute('role', 'alert');
-		var strong = document.createElement('strong');
-		strong.appendChild(document.createTextNode('Warning:'));
-		div.appendChild(strong);
-		var text = document.createTextNode(' Computing the new probabilities takes a few minutes. Don\'t try it on devices with less than 2GB RAM.');
-		div.appendChild(text);
-		editor.appendChild(div);
-	}
 	document.getElementById('cldraw-editor-season').value = selectedSeason[1];
 }
 
@@ -872,19 +896,13 @@ function saveTeams() {
 	} else {
 		config.firstChild.replaceChild(teams, oldTeams);
 	}
-	if (potSize > 12) {
-		calculator.postMessage([CLEAR_CACHE]);
-		var button = document.getElementById('button-dl');
-		if (button != null) {
-			button.style.display = 'none';
-		}
-	}
+
 	removeButtons();
 	initialize(selectedSeason[0], season);
 }
 
 
-function downloadJSON(limit) {
+function exportJSON(limit) {
 	if (limit == undefined) {
 		limit = 0;
 	}

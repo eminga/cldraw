@@ -87,7 +87,12 @@ onmessage = function(e) {
 		}
 		postMessage(probabilities);
 	} else if (e.data[0] == IMPORT_PROBABILITIES) {
-		importProbabilities();
+		if (e.data.length > 1) {
+			importProbabilities(e.data[1]);
+		}
+		else {
+			importProbabilities();
+		}
 	} else if (e.data[0] == EXPORT_PROBABILITIES) {
 		if (e.data.length > 1) {
 			exportProbabilities(e.data[1]);
@@ -416,7 +421,7 @@ function exportProbabilities(limit) {
 	postMessage(croppedProbabilities);
 }
 
-function importProbabilities() {
+function importProbabilities(onlyCheckAvailability) {
 	// if available, load precalculated probabilities
 	var drawnW = [];
 	var drawnR = [];
@@ -432,16 +437,23 @@ function importProbabilities() {
 	}
 	var filename = 'probabilities/' + s + '.json';
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (this.readyState == 4) {
-			if (this.status == 200) {
-				calculatedProbabilities = JSON.parse(this.responseText);
-				postMessage(true);
-			} else {
-				postMessage(false);
+
+	if (onlyCheckAvailability) {
+		xhr.open('HEAD', filename, false);
+		xhr.send();
+		postMessage(xhr.status);
+	} else {
+		xhr.onreadystatechange = function() {
+			if (this.readyState == 4) {
+				if (this.status == 200) {
+					calculatedProbabilities = JSON.parse(this.responseText);
+					postMessage(true);
+				} else {
+					postMessage(false);
+				}
 			}
-		}
-	};
-	xhr.open('GET', filename);
-	xhr.send();
+		};
+		xhr.open('GET', filename);
+		xhr.send();
+	}
 }

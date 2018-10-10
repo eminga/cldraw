@@ -21,17 +21,25 @@
 				</div>
 				<div class="panel-body">
 					<div class="btn-toolbar btn-group-sm" id="cldraw-competitions">
-						<button type="button" class="btn btn-default" onclick="bla()">
-							UEFA Champions League
-						</button>
-						<button type="button" class="btn btn-default" onclick="bla()">
-							UEFA Europa League
-						</button>
 					</div>
 					<div class="btn-toolbar btn-group-xs" id="cldraw-seasons">
-
 					</div>
 				</div>
+			</div>
+
+			<div class="panel panel-warning" id="cldraw-computation" style="display: none">
+				<div class="panel-heading">
+					<h3 class="panel-title">Please select an option</h3>
+				</div>
+				<div class="list-group">
+					<button class="list-group-item" id="cldraw-computation-download" onclick="downloadProbabilities()" style="display: none"><span class="badge">recommended</span><strong>Download precomputed probabilities</strong> (ca. 5MB)</button>
+					<button class="list-group-item" onclick="reset(true)"><strong>Compute probabilities locally</strong> (Does not work on devices with less than 2GB of RAM. The computation takes ~5 minutes on modern computers and ~15 minutes on modern tablets and smartphones.)</button>
+					<button class="list-group-item" onclick="initialize()"><strong>Cancel</strong></button>
+				</div>
+			</div>
+
+			<div class="alert alert-info" id="cldraw-computation-running" role="alert" style="display: none">
+				The probabilities are being computed. Please wait...
 			</div>
 
 
@@ -90,8 +98,8 @@
 				<button type="button" class="btn btn-default" id="button-editor" onclick="showEditor()">
 					Edit teams
 				</button>
-				<button type="button" class="btn btn-default" id="button-dl" style="display: none" onclick="downloadJSON(13)">
-					Download probabilities
+				<button type="button" class="btn btn-default" id="button-dl" style="display: none" onclick="exportJSON(13)">
+					Export probabilities
 				</button>
 			</div>
 

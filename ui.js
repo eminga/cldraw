@@ -45,6 +45,7 @@ var drawnR = [];
 // matched[i] == j if teams i and j are matched
 var matched = [];
 var drawHistory = [];
+var precomputedSeasons = new Set();
 var ignoreClicks = false;
 
 // check if browser supports used js features
@@ -113,6 +114,7 @@ function initialize(competition, season) {
 	if (document.getElementById('cldraw-computation-running').style.display === '') {
 		calculator.terminate();
 		calculator = new Worker('cldraw.js');
+		precomputedSeasons = new Set();
 		document.getElementById('cldraw-computation-running').style.display = 'none';
 	}
 
@@ -151,6 +153,7 @@ function initialize(competition, season) {
 
 
 function downloadProbabilities() {
+	precomputedSeasons.add(selectedSeason.toString());
 	calculator.postMessage([IMPORT_PROBABILITIES]);
 	calculator.onmessage = function(e) {
 		reset();
@@ -274,14 +277,11 @@ function reset(expensive) {
 		createButtonsR(probabilities);
 		document.getElementById('cldraw-computation-running').style.display = 'none';
 		document.getElementById('button-randomteam').classList.remove('disabled');
-		if (expensive !== undefined) {
-			var button = document.getElementById('button-dl');
-			if (expensive) {
-				button.style.display = '';
-			}
-			else {
-				button.style.display = 'none';
-			}
+		var button = document.getElementById('button-dl');
+		if (potSize > 12 && !precomputedSeasons.has(selectedSeason.toString())) {
+			button.style.display = '';
+		} else {
+			button.style.display = 'none';
 		}
 	}
 	updateFixtures();

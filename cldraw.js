@@ -34,6 +34,10 @@ var countriesW;
 var countriesR;
 var fullSize;
 
+// needed for export function
+var seasonId;
+var seasonLog = {};
+
 onmessage = function(e) {
 	if (e.data[0] == SET_COUNTRIES) {
 		setCountries(e.data[1], e.data[2]);
@@ -133,6 +137,17 @@ function setCountries(inititalCountriesW, initialCountriesR) {
 				countriesR[i] = countriesW[j];
 			}
 		}
+	}
+
+	var drawnW = [];
+	var drawnR = [];
+	for (var i = 0; i < fullSize; i++) {
+		drawnW[i] = false;
+		drawnR[i] = false;
+	}
+	seasonId = idToString(generateId(drawnW, drawnR)[0]);
+	if (seasonLog[seasonId] == undefined) {
+		seasonLog[seasonId] = new Set();
 	}
 }
 
@@ -265,6 +280,7 @@ function idToString(id) {
 // returns cached probabilities, null if dead end or undefined if not cached yet
 function loadProbabilities(id) {
 	var s = idToString(id[0]);
+	seasonLog[seasonId].add(s);
 	var temp = calculatedProbabilities[s];
 	if (temp == null) {
 		return temp;
@@ -412,7 +428,7 @@ function exportProbabilities(limit) {
 		limit = 0;
 	}
 	var croppedProbabilities = {};
-	for (var id in calculatedProbabilities) {
+	for (let id of seasonLog[seasonId]) {
 		// only consider probabilities for cases where >= 'limit' teams are in the winners pot
 		if (id.length >= limit * 4) {
 			croppedProbabilities[id] = calculatedProbabilities[id];
@@ -446,7 +462,10 @@ function importProbabilities(onlyCheckAvailability) {
 		xhr.onreadystatechange = function() {
 			if (this.readyState == 4) {
 				if (this.status == 200) {
-					calculatedProbabilities = JSON.parse(this.responseText);
+					var newProbabilities = JSON.parse(this.responseText);
+					for (var id in newProbabilities) {
+						calculatedProbabilities[id] = newProbabilities[id];
+					}
 					postMessage(true);
 				} else {
 					postMessage(false);

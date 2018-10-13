@@ -524,7 +524,7 @@ function updateTable(probabilities, highlight) {
 			var color = '';
 			var text;
 			if (matched[i] == j) {
-				text = 'drawn';
+				text = '\u2714';
 				color = '#4998ff';
 			} else {
 				text = (100 * fullProbabilities[i][j]).toFixed(2) + "%";

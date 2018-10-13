@@ -46,6 +46,7 @@ var drawnR = [];
 var matched = [];
 var drawHistory = [];
 var precomputedSeasons = new Set();
+var importedLimit;
 var ignoreClicks = false;
 
 // check if browser supports used js features
@@ -102,6 +103,7 @@ function initialize(competition, season) {
 		matched[i] = -1;
 	}
 	drawHistory = [];
+	importedLimit = -1;
 	createTable();
 	createEditor();
 	adjustSizes(competition, season);
@@ -117,6 +119,7 @@ function initialize(competition, season) {
 		precomputedSeasons = new Set();
 		document.getElementById('cldraw-computation-running').style.display = 'none';
 	}
+	document.getElementById('cldraw-computation-running2').style.display = 'none';
 
 	calculator.postMessage([SET_COUNTRIES, countriesW, countriesR]);
 
@@ -161,6 +164,7 @@ function downloadProbabilities() {
 	precomputedSeasons.add(selectedSeason.toString());
 	calculator.postMessage([IMPORT_PROBABILITIES]);
 	calculator.onmessage = function(e) {
+		importedLimit = e.data;
 		reset();
 	}
 }
@@ -322,6 +326,16 @@ function drawRunnerUp(team) {
 	if (!ignoreClicks) {
 		ignoreClicks = true;
 		disableButtons();
+		var remainingTeams = 0;
+		for (var i = 0; i < potSize; i++) {
+			if (!drawnR[i]) {
+				remainingTeams++;
+			}
+		}
+		// show alert if probabilities were imported and remaining probabilities need to be computed now
+		if (remainingTeams == importedLimit) {
+			document.getElementById('cldraw-computation-running2').style.display = '';
+		}
 		drawnR[team] = true;
 		// write to history before table is updated, needed to hide drawn teams
 		drawHistory.push(team);
@@ -529,6 +543,7 @@ function updateTable(probabilities, highlight) {
 			}
 		}
 	}
+	document.getElementById('cldraw-computation-running2').style.display = 'none';
 	if (hideMode) {
 		hideDrawnTeams();
 	}

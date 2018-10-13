@@ -475,10 +475,14 @@ function importProbabilities(onlyCheckAvailability) {
 			if (this.readyState == 4) {
 				if (this.status == 200) {
 					var newProbabilities = JSON.parse(this.responseText);
+					var minLength = 999999;
 					for (var id in newProbabilities) {
+						if (id.length < minLength) {
+							minLength = id.length;
+						}
 						calculatedProbabilities[id] = newProbabilities[id];
 					}
-					postMessage(true);
+					postMessage(minLength / 4);
 				} else {
 					postMessage(false);
 				}

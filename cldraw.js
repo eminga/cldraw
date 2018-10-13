@@ -189,8 +189,12 @@ function generateSubId(matrix, order, rowMode) {
 }
 
 // generates an identifier for the remaining teams
-// each entry of the id array characterizes a column of the remaining table
+// Each entry of the subId array characterizes a row or column of the remaining matrix.
+// The matrix is sorted until the ID doesn't change anymore.
+// The result is then an ID characterizing the rows of the sorted matrix and two order arrays
+// characterizing the permutation of the original matrix to undo or redo the sorting.
 function generateId(drawnW, drawnR) {
+	// create initial unsorted matrix
 	var matrix = [];
 	for (var i = 0; i < fullSize; i++) {
 		if (!drawnW[i]) {
@@ -354,6 +358,12 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 
 	// if an opponent for team 'unmatchedRunnerUp' is to be drawn next
 	} else {
+		var indexR = unmatchedRunnerUp;
+		for (var i = 0; i < unmatchedRunnerUp; i++) {
+			if (drawnR[i]) {
+				indexR--;
+			}
+		}
 		for (var i = 0; i < fullSize; i++) {
 			if (!drawnW[i] && (i > 11 || unmatchedRunnerUp > 11 || i != unmatchedRunnerUp) && countriesW[i] != countriesR[unmatchedRunnerUp]) {
 				options++;
@@ -364,12 +374,6 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 				for (var j = 0; j < i; j++) {
 					if (drawnW[j]) {
 						indexW--;
-					}
-				}
-				var indexR = unmatchedRunnerUp;
-				for (var j = 0; j < unmatchedRunnerUp; j++) {
-					if (drawnR[j]) {
-						indexR--;
 					}
 				}
 
@@ -457,7 +461,15 @@ function importProbabilities(onlyCheckAvailability) {
 	if (onlyCheckAvailability) {
 		xhr.open('HEAD', filename, false);
 		xhr.send();
-		postMessage(xhr.status);
+		if (xhr.status != 200) {
+			postMessage(false);
+		} else {
+			var contentLength = xhr.getResponseHeader('Content-Length');
+			if (contentLength == null) {
+				contentLength = -1;
+			}
+			postMessage(contentLength);
+		}
 	} else {
 		xhr.onreadystatechange = function() {
 			if (this.readyState == 4) {

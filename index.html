@@ -42,8 +42,8 @@
 					<h3 class="panel-title">Please select an option</h3>
 				</div>
 				<div class="list-group">
-					<button class="list-group-item" id="cldraw-computation-download" onclick="downloadProbabilities()" style="display: none"><span class="badge">recommended</span><strong>Download precomputed probabilities</strong> (ca. 5MB)</button>
-					<button class="list-group-item" onclick="reset(true)"><strong>Compute probabilities locally</strong> (Does not work on devices with less than 2GB of RAM. The computation takes ~5 minutes on modern computers and ~15 minutes on modern tablets and smartphones.)</button>
+					<button class="list-group-item" id="cldraw-computation-download" onclick="downloadProbabilities()" style="display: none"><span class="badge">recommended</span><strong>Download precomputed probabilities</strong> (<span id="cldraw-dlsize">ca. 5</span> MB)</button>
+					<button class="list-group-item" onclick="reset(true)"><strong>Compute probabilities locally</strong> (Does not work on devices with less than 2GB of RAM. The computation usually takes ~5 minutes on modern computers and ~15 minutes on modern tablets and smartphones. In difficult cases, the computation can take up to 3 times longer.)</button>
 					<button class="list-group-item" onclick="initialize()"><strong>Cancel</strong></button>
 				</div>
 			</div>
@@ -51,7 +51,6 @@
 			<div class="alert alert-info" id="cldraw-computation-running" role="alert" style="display: none">
 				The probabilities are being computed. Please wait...
 			</div>
-
 
 			<div class="row">
 				<div class="col-md-3 col-md-push-9" id="cldraw-fixtures-panel">
@@ -108,7 +107,7 @@
 				<button type="button" class="btn btn-default" id="button-editor" onclick="showEditor()">
 					Edit teams
 				</button>
-				<button type="button" class="btn btn-default" id="button-dl" style="display: none" onclick="exportJSON(13)">
+				<button type="button" class="btn btn-default" id="button-dl" style="display: none" onclick="exportJSON(13, true)">
 					Export probabilities
 				</button>
 			</div>

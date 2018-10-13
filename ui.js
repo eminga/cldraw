@@ -139,7 +139,12 @@ function initialize(competition, season) {
 				reset();
 			} else {
 				document.getElementById('cldraw-computation').style.display = '';
-				if (e.data === 200) {
+				if (e.data) {
+					if (e.data != -1) {
+						document.getElementById('cldraw-dlsize').innerHTML = (e.data / 1000000).toFixed(1);
+					} else {
+						document.getElementById('cldraw-dlsize').innerHTML = 'ca. 5';
+					}
 					document.getElementById('cldraw-computation-download').style.display = '';
 				} else {
 					document.getElementById('cldraw-computation-download').style.display = 'none';
@@ -907,7 +912,7 @@ function saveTeams() {
 }
 
 
-function exportJSON(limit) {
+function exportJSON(limit, auto) {
 	if (limit == undefined) {
 		limit = 0;
 	}
@@ -924,10 +929,16 @@ function exportJSON(limit) {
 		}
 		var a = document.createElement('a');
 		document.body.appendChild(a);
-		url = window.URL.createObjectURL(new Blob([JSON.stringify(probabilities)], {type: "octet/stream"}));
-		a.href = url;
-		a.download = filename + '.json';
-		a.click();
-		window.URL.revokeObjectURL(url);
+		var blob = new Blob([JSON.stringify(probabilities)], {type: "octet/stream"});
+		// increase limit if file is larger than 50MB (usually 5-10MB gzipped)
+		if (auto && blob.size > 50000000) {
+			calculator.postMessage([EXPORT_PROBABILITIES, limit + 1]);
+		} else {
+			url = window.URL.createObjectURL(blob);
+			a.href = url;
+			a.download = filename + '.json';
+			a.click();
+			window.URL.revokeObjectURL(url);
+		}
 	}
 }

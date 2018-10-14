@@ -89,32 +89,34 @@
 			<div class="btn-toolbar" id="cldraw-buttons">
 			</div>
 			<h3>Options</h3>
-			<div class="btn-toolbar">
-				<button type="button" class="btn btn-primary" id="button-randomteam" onclick="drawRandomTeam()">
-					Draw random team
-				</button>
+			<button type="button" class="btn btn-primary" id="button-randomteam" onclick="drawRandomTeam()">
+				<strong>❔</strong> Draw random team
+			</button>
+			<div class="btn-group">
 				<button type="button" class="btn btn-warning" id="button-undo" onclick="undo()">
-					Undo
+					<strong>↶</strong> Undo
 				</button>
 				<button type="button" class="btn btn-danger" id="button-restart" onclick="reset()">
-					Restart
-				</button>
-				<button type="button" class="btn btn-default hidden-xs hidden-sm" id="button-preview" onclick="togglePreviewMode()">
-					Preview on mouseover
-				</button>
-				<button type="button" class="btn btn-default" id="button-hide" onclick="toggleHideMode()">
-					Hide drawn teams
-				</button>
-				<button type="button" class="btn btn-default" onclick="transposeTable()">
-					Transpose table
-				</button>
-				<button type="button" class="btn btn-default" id="button-editor" onclick="showEditor()">
-					Edit teams
-				</button>
-				<button type="button" class="btn btn-default" id="button-dl" style="display: none" onclick="exportJSON(13, true)">
-					Export probabilities
+					<strong>↺</strong> Restart
 				</button>
 			</div>
+			<div class="btn-group">
+				<button type="button" class="btn btn-default" id="button-hide" onclick="toggleHideMode()">
+					<strong>🙈</strong> Hide drawn teams
+				</button>
+				<button type="button" class="btn btn-default hidden-xs hidden-sm" id="button-preview" onclick="togglePreviewMode()">
+					<strong>🔮</strong> Preview on mouseover
+				</button>
+				<button type="button" class="btn btn-default" onclick="transposeTable()">
+					<strong>⤢</strong> Transpose table
+				</button>
+			</div>
+			<button type="button" class="btn btn-default" id="button-editor" onclick="showEditor()">
+				<strong>🖉</strong> Edit teams
+			</button>
+			<button type="button" class="btn btn-default" id="button-dl" style="display: none" onclick="exportJSON(13, true)">
+				<strong>💾</strong> Export probabilities
+			</button>
 
 			<div class="row" id="cldraw-editor" style="display: none">
 				<br>

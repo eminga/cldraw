@@ -46,8 +46,8 @@ var drawnR = [];
 var matched = [];
 var drawHistory = [];
 var precomputedSeasons = new Set();
-var importedLimit;
-var ignoreClicks = false;
+var importedLimit = {};
+var ignoreClicks = true;
 
 // check if browser supports used js features
 if (typeof(XPathResult) == 'undefined' || typeof(Worker) == 'undefined') {
@@ -68,20 +68,23 @@ if (typeof(XPathResult) == 'undefined' || typeof(Worker) == 'undefined') {
 
 
 function initialize(competition, season) {
+	ignoreClicks = true;
 	teamsW = [];
 	teamsR = [];
 	countriesW = [];
 	countriesR = [];
 
+	// select first config entry unless competition/season is explicitly specified
 	if (competition === undefined) {
 		competition = config.evaluate('//teams[1]/@competition', config, null, XPathResult.STRING_TYPE, null).stringValue;
 	}
 	if (season === undefined) {
 		season = config.evaluate('//teams[@competition = "' + competition + '"][1]/@season', config, null, XPathResult.STRING_TYPE, null).stringValue;
 	}
+
+	// load teams from config
 	predicates = '[../@competition = "' + competition + '"][../@season = "' + season + '"]';
 	selectedSeason = [competition, season];
-
 	var iterator = config.evaluate('//winners' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	var team = iterator.iterateNext();
 	while (team) {
@@ -97,13 +100,13 @@ function initialize(competition, season) {
 		team = iterator.iterateNext();
 	}
 	potSize = countriesW.length;
+
 	for (var i = 0; i < potSize; i++) {
 		drawnW[i] = false;
 		drawnR[i] = false;
 		matched[i] = -1;
 	}
 	drawHistory = [];
-	importedLimit = -1;
 	createTable();
 	createEditor();
 	adjustSizes(competition, season);
@@ -117,6 +120,7 @@ function initialize(competition, season) {
 		calculator.terminate();
 		calculator = new Worker('cldraw.js');
 		precomputedSeasons = new Set();
+		importedLimit = {};
 		document.getElementById('cldraw-computation-running').style.display = 'none';
 	}
 	document.getElementById('cldraw-computation-running2').style.display = 'none';
@@ -139,6 +143,7 @@ function initialize(competition, season) {
 		calculator.postMessage([IMPORT_PROBABILITIES, true]);
 		calculator.onmessage = function(e) {
 			if (e.data === true) {
+				ignoreClicks = false;
 				reset();
 			} else {
 				document.getElementById('cldraw-computation').style.display = '';
@@ -155,61 +160,111 @@ function initialize(competition, season) {
 			}
 		}
 	} else {
+		ignoreClicks = false;
 		reset();
 	}
 }
 
 
-function downloadProbabilities() {
-	precomputedSeasons.add(selectedSeason.toString());
-	calculator.postMessage([IMPORT_PROBABILITIES]);
-	calculator.onmessage = function(e) {
-		importedLimit = e.data;
-		reset();
+function createTable() {
+	var table = document.getElementById('cldraw-table');
+	while (table.firstChild) {
+		table.removeChild(table.firstChild);
 	}
+	var thead = document.createElement('thead');
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	tr.appendChild(th)
+	for (var i = 0; i < potSize; i++) {
+		th = document.createElement('th');
+		if (!swap) {
+			th.appendChild(document.createTextNode(teamsR[i]));
+		} else {
+			th.appendChild(document.createTextNode(teamsW[i]));
+		}
+		th.scope = 'col';
+		tr.appendChild(th);
+	}
+	thead.appendChild(tr);
+
+	var tbody = document.createElement('tbody');
+	for (var i = 0; i < potSize; i++) {
+		var tr = document.createElement('tr');
+		var th = document.createElement('th');
+		th.scope = 'row';
+		if (!swap) {
+			th.appendChild(document.createTextNode(teamsW[i]));
+		} else {
+			th.appendChild(document.createTextNode(teamsR[i]));
+		}
+		tr.appendChild(th);
+		for (var j = 0; j < potSize; j++) {
+			var td = document.createElement('td');
+			td.style.textAlign = 'center';
+			td.appendChild(document.createTextNode('\u231B'));
+			tr.appendChild(td);
+		}
+		tbody.appendChild(tr);
+	}
+
+	table.appendChild(thead);
+	table.appendChild(tbody);
 }
 
 
-function adjustSizes(competition, season) {
-	//var title = config.evaluate('//competition[@id = "' + competition + '"]/name', config, null, XPathResult.STRING_TYPE, null).stringValue;
-	var short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
-	var roundOf = countriesW.length * 2;
-	document.title = short + ' R' + roundOf + ' Draw Probabilities';
-	var heading = document.getElementsByTagName("h1")[0];
-	heading.innerHTML = short + ' Draw Probabilities <small>(' + season + ' Round of ' + roundOf + ')</small>';
-	if (potSize < 9) {
-		document.getElementById('cldraw-table').classList.remove('table-condensed');
-		document.getElementById('cldraw-table').parentNode.classList.remove('col-xs-12');
-		document.getElementById('cldraw-table').parentNode.classList.add('col-md-9');
-		document.getElementById('cldraw-table').parentNode.classList.add('col-md-pull-3');
-		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-3');
-		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-push-9');
-		document.getElementById('cldraw-fixtures-panel').classList.remove('col-xs-12');
-		var fixtures = document.getElementsByClassName('cldraw-fixtures');
-		for (var i = 0; i < fixtures.length; i++) {
-			fixtures[i].classList.remove("col-md-6");
-		}
-		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
-		for (var i = 0; i < wrapper.length; i++) {
-			wrapper[i].classList.add("col-md-12");
-		}
-	} else {
-		document.getElementById('cldraw-table').classList.add('table-condensed');
-		document.getElementById('cldraw-table').parentNode.classList.add('col-xs-12');
-		document.getElementById('cldraw-table').parentNode.classList.remove('col-md-9');
-		document.getElementById('cldraw-table').parentNode.classList.remove('col-md-pull-3');
-		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-3');
-		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-push-9');
-		document.getElementById('cldraw-fixtures-panel').classList.add('col-xs-12');
-		var fixtures = document.getElementsByClassName('cldraw-fixtures');
-		for (var i = 0; i < fixtures.length; i++) {
-			fixtures[i].classList.add("col-md-6");
-		}
-		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
-		for (var i = 0; i < wrapper.length; i++) {
-			wrapper[i].classList.remove("col-md-12");
-		}
+function createEditor() {
+	var editor = document.getElementById('cldraw-editor-groups');
+	while (editor.firstChild) {
+		editor.removeChild(editor.firstChild);
 	}
+	for (var i = 0; i < potSize; i++) {
+		String.fromCharCode(65 + i)
+		var row = document.createElement('div');
+		row.classList.add('row');
+		var div = document.createElement('div');
+		div.classList.add('col-xs-2');
+		var label = document.createElement('label');
+		label.setAttribute('for', 'cldraw-winner-' + i);
+		if (i < 12) {
+			label.appendChild(document.createTextNode('Group ' + String.fromCharCode(65 + i) + ':'));
+		} else {
+			label.appendChild(document.createTextNode('CL ' + (i - 11) + ':'));
+		}
+		label.appendChild(document.createElement('p'));
+		div.appendChild(label);
+		row.appendChild(div);
+		for (var j = 0; j < 2; j++) {
+			if (j == 0) {
+				var type = 'winner';
+			} else {
+				var type = 'runner-up';
+			}
+			var div = document.createElement('div');
+			div.classList.add('col-xs-5');
+			var input = document.createElement('input');
+			input.setAttribute('id', 'cldraw-' + type + '-' + i);
+			input.setAttribute('size', '15');
+			if (type == 'winner') {
+				input.value = teamsW[i];
+			} else {
+				input.value = teamsR[i];
+			}
+			div.appendChild(input);
+			div.appendChild(document.createTextNode(' '));
+			input = document.createElement('input');
+			input.setAttribute('id', 'cldraw-' + type + '-' + i + '-country');
+			input.setAttribute('size', '3');
+			if (type == 'winner') {
+				input.value = countriesW[i];
+			} else {
+				input.value = countriesR[i];
+			}
+			div.appendChild(input);
+			row.appendChild(div);
+		}
+		editor.appendChild(row);
+	}
+	document.getElementById('cldraw-editor-season').value = selectedSeason[1];
 }
 
 
@@ -266,34 +321,89 @@ function createSeasons(competition) {
 }
 
 
-function reset(expensive) {
-	for (var i = 0; i < potSize; i++) {
-		drawnW[i] = false;
-		drawnR[i] = false;
-		matched[i] = -1;
-	}
-	drawHistory = [];
-	document.getElementById('button-randomteam').classList.add('disabled');
-	document.getElementById('cldraw-computation').style.display = 'none';
-	if (expensive) {
-		document.getElementById('cldraw-computation-running').style.display = '';
-	}
-
-	calculator.postMessage([GET_PROBABILITIES]);
-	calculator.onmessage = function(e) {
-		var probabilities = e.data;
-		updateTable(probabilities);
-		createButtonsR(probabilities);
-		document.getElementById('cldraw-computation-running').style.display = 'none';
-		document.getElementById('button-randomteam').classList.remove('disabled');
-		var button = document.getElementById('button-dl');
-		if (potSize > 12 && !precomputedSeasons.has(selectedSeason.toString())) {
-			button.style.display = '';
-		} else {
-			button.style.display = 'none';
+function adjustSizes(competition, season) {
+	var short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
+	var roundOf = countriesW.length * 2;
+	document.title = short + ' R' + roundOf + ' Draw Probabilities';
+	var heading = document.getElementsByTagName("h1")[0];
+	heading.innerHTML = short + ' Draw Probabilities <small>(' + season + ' Round of ' + roundOf + ')</small>';
+	if (potSize < 9) {
+		document.getElementById('cldraw-table').classList.remove('table-condensed');
+		document.getElementById('cldraw-table').parentNode.classList.remove('col-xs-12');
+		document.getElementById('cldraw-table').parentNode.classList.add('col-md-9');
+		document.getElementById('cldraw-table').parentNode.classList.add('col-md-pull-3');
+		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-3');
+		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-push-9');
+		document.getElementById('cldraw-fixtures-panel').classList.remove('col-xs-12');
+		var fixtures = document.getElementsByClassName('cldraw-fixtures');
+		for (var i = 0; i < fixtures.length; i++) {
+			fixtures[i].classList.remove("col-md-6");
+		}
+		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
+		for (var i = 0; i < wrapper.length; i++) {
+			wrapper[i].classList.add("col-md-12");
+		}
+	} else {
+		document.getElementById('cldraw-table').classList.add('table-condensed');
+		document.getElementById('cldraw-table').parentNode.classList.add('col-xs-12');
+		document.getElementById('cldraw-table').parentNode.classList.remove('col-md-9');
+		document.getElementById('cldraw-table').parentNode.classList.remove('col-md-pull-3');
+		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-3');
+		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-push-9');
+		document.getElementById('cldraw-fixtures-panel').classList.add('col-xs-12');
+		var fixtures = document.getElementsByClassName('cldraw-fixtures');
+		for (var i = 0; i < fixtures.length; i++) {
+			fixtures[i].classList.add("col-md-6");
+		}
+		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
+		for (var i = 0; i < wrapper.length; i++) {
+			wrapper[i].classList.remove("col-md-12");
 		}
 	}
-	updateFixtures();
+}
+
+
+function reset(expensive) {
+	if (!ignoreClicks || expensive) {
+		for (var i = 0; i < potSize; i++) {
+			drawnW[i] = false;
+			drawnR[i] = false;
+			matched[i] = -1;
+		}
+		drawHistory = [];
+		document.getElementById('button-randomteam').classList.add('disabled');
+		document.getElementById('cldraw-computation').style.display = 'none';
+		if (expensive) {
+			document.getElementById('cldraw-computation-running').style.display = '';
+		}
+
+		calculator.postMessage([GET_PROBABILITIES]);
+		calculator.onmessage = function(e) {
+			var probabilities = e.data;
+			updateTable(probabilities);
+			createButtonsR(probabilities);
+			document.getElementById('cldraw-computation-running').style.display = 'none';
+			document.getElementById('button-randomteam').classList.remove('disabled');
+			var button = document.getElementById('button-dl');
+			if (potSize > 12 && !precomputedSeasons.has(selectedSeason.toString())) {
+				button.style.display = '';
+			} else {
+				button.style.display = 'none';
+			}
+		}
+		updateFixtures();
+	}
+}
+
+
+function downloadProbabilities() {
+	precomputedSeasons.add(selectedSeason.toString());
+	calculator.postMessage([IMPORT_PROBABILITIES]);
+	calculator.onmessage = function(e) {
+		importedLimit[selectedSeason.toString()] = e.data;
+		ignoreClicks = false;
+		reset();
+	}
 }
 
 
@@ -333,7 +443,7 @@ function drawRunnerUp(team) {
 			}
 		}
 		// show alert if probabilities were imported and remaining probabilities need to be computed now
-		if (remainingTeams == importedLimit) {
+		if (remainingTeams == importedLimit[selectedSeason.toString()]) {
 			document.getElementById('cldraw-computation-running2').style.display = '';
 		}
 		drawnR[team] = true;
@@ -441,52 +551,6 @@ function drawRandomTeam() {
 			}
 		}
 	}
-}
-
-
-function createTable() {
-	var table = document.getElementById('cldraw-table');
-	while (table.firstChild) {
-		table.removeChild(table.firstChild);
-	}
-	var thead = document.createElement('thead');
-	var tr = document.createElement('tr');
-	var th = document.createElement('th');
-	tr.appendChild(th)
-	for (var i = 0; i < potSize; i++) {
-		th = document.createElement('th');
-		if (!swap) {
-			th.appendChild(document.createTextNode(teamsR[i]));
-		} else {
-			th.appendChild(document.createTextNode(teamsW[i]));
-		}
-		th.scope = 'col';
-		tr.appendChild(th);
-	}
-	thead.appendChild(tr);
-
-	var tbody = document.createElement('tbody');
-	for (var i = 0; i < potSize; i++) {
-		var tr = document.createElement('tr');
-		var th = document.createElement('th');
-		th.scope = 'row';
-		if (!swap) {
-			th.appendChild(document.createTextNode(teamsW[i]));
-		} else {
-			th.appendChild(document.createTextNode(teamsR[i]));
-		}
-		tr.appendChild(th);
-		for (var j = 0; j < potSize; j++) {
-			var td = document.createElement('td');
-			td.style.textAlign = 'center';
-			td.appendChild(document.createTextNode('\u231B'));
-			tr.appendChild(td);
-		}
-		tbody.appendChild(tr);
-	}
-
-	table.appendChild(thead);
-	table.appendChild(tbody);
 }
 
 
@@ -735,6 +799,7 @@ function removeButtons() {
 	}
 }
 
+
 function disableButtons() {
 	document.getElementById('button-randomteam').classList.add('disabled');
 	var buttons = document.getElementById('cldraw-buttons').children;
@@ -820,62 +885,6 @@ function transposeTable() {
 }
 
 
-function createEditor() {
-	var editor = document.getElementById('cldraw-editor-groups');
-	while (editor.firstChild) {
-		editor.removeChild(editor.firstChild);
-	}
-	for (var i = 0; i < potSize; i++) {
-		String.fromCharCode(65 + i)
-		var row = document.createElement('div');
-		row.classList.add('row');
-		var div = document.createElement('div');
-		div.classList.add('col-xs-2');
-		var label = document.createElement('label');
-		label.setAttribute('for', 'cldraw-winner-' + i);
-		if (i < 12) {
-			label.appendChild(document.createTextNode('Group ' + String.fromCharCode(65 + i) + ':'));
-		} else {
-			label.appendChild(document.createTextNode('CL ' + (i - 11) + ':'));
-		}
-		label.appendChild(document.createElement('p'));
-		div.appendChild(label);
-		row.appendChild(div);
-		for (var j = 0; j < 2; j++) {
-			if (j == 0) {
-				var type = 'winner';
-			} else {
-				var type = 'runner-up';
-			}
-			var div = document.createElement('div');
-			div.classList.add('col-xs-5');
-			var input = document.createElement('input');
-			input.setAttribute('id', 'cldraw-' + type + '-' + i);
-			input.setAttribute('size', '15');
-			if (type == 'winner') {
-				input.value = teamsW[i];
-			} else {
-				input.value = teamsR[i];
-			}
-			div.appendChild(input);
-			div.appendChild(document.createTextNode(' '));
-			input = document.createElement('input');
-			input.setAttribute('id', 'cldraw-' + type + '-' + i + '-country');
-			input.setAttribute('size', '3');
-			if (type == 'winner') {
-				input.value = countriesW[i];
-			} else {
-				input.value = countriesR[i];
-			}
-			div.appendChild(input);
-			row.appendChild(div);
-		}
-		editor.appendChild(row);
-	}
-	document.getElementById('cldraw-editor-season').value = selectedSeason[1];
-}
-
-
 function showEditor() {
 	var button = document.getElementById('button-editor');
 	var div = document.getElementById('cldraw-editor');
@@ -891,7 +900,6 @@ function showEditor() {
 
 function saveTeams() {
 	var season = document.getElementById('cldraw-editor-season').value;
-
 	var button = document.getElementById('button-editor');
 	button.classList.remove('active');
 	var div = document.getElementById('cldraw-editor');

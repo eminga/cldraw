@@ -168,13 +168,41 @@ function initialize(competition, season) {
 
 function createTable() {
 	var table = document.getElementById('cldraw-table');
+	var buttonShrink = document.getElementById('button-shrink');
+	if (buttonShrink == null) {
+		buttonShrink = document.createElement('button');
+		buttonShrink.id = 'button-shrink';
+		buttonShrink.classList.add('btn');
+		buttonShrink.classList.add('btn-default');
+		buttonShrink.appendChild(document.createTextNode('－'));
+		buttonShrink.addEventListener('click', resizeTable.bind(null, false), false);
+	}
+	var buttonEnlarge = document.getElementById('button-enlarge');
+	if (buttonEnlarge == null) {
+		buttonEnlarge = document.createElement('button');
+		buttonEnlarge.id = 'button-enlarge';
+		buttonEnlarge.classList.add('btn');
+		buttonEnlarge.classList.add('btn-default');
+		buttonEnlarge.classList.add('disabled');
+		buttonEnlarge.appendChild(document.createTextNode('＋'));
+		buttonEnlarge.addEventListener('click', resizeTable.bind(null, true), false);
+	}
+
 	while (table.firstChild) {
 		table.removeChild(table.firstChild);
 	}
 	var thead = document.createElement('thead');
 	var tr = document.createElement('tr');
 	var th = document.createElement('th');
-	tr.appendChild(th)
+	tr.appendChild(th);
+	var div = document.createElement('div');
+	div.classList.add('btn-group');
+	div.classList.add('btn-group-xs');
+	div.role = 'group';
+	div.appendChild(buttonShrink);
+	div.appendChild(buttonEnlarge);
+	th.appendChild(div);
+
 	for (var i = 0; i < potSize; i++) {
 		th = document.createElement('th');
 		if (!swap) {
@@ -894,6 +922,45 @@ function showEditor() {
 	} else {
 		button.classList.remove('active');
 		div.style.display = 'none';
+	}
+}
+
+
+function resizeTable(enlarge) {
+	var table = document.getElementById('cldraw-table');
+	if (table.classList.contains('table-smallest')) {
+		if (enlarge) {
+			document.getElementById('button-shrink').classList.remove('disabled');
+			table.classList.remove('table-smallest');
+			table.classList.add('table-smaller');
+		}
+	} else if (table.classList.contains('table-smaller')) {
+		table.classList.remove('table-smaller');
+		if (enlarge) {
+			table.classList.add('table-small');
+		} else {
+			document.getElementById('button-shrink').classList.add('disabled');
+			table.classList.add('table-smallest');
+		}
+	} else if (table.classList.contains('table-small')) {
+		table.classList.remove('table-small');
+		if (enlarge) {
+			table.classList.add('table-medium');
+		} else {
+			table.classList.add('table-smaller');
+		}
+	} else if (table.classList.contains('table-medium')) {
+		table.classList.remove('table-medium');
+		if (enlarge) {
+			document.getElementById('button-enlarge').classList.add('disabled');
+		} else {
+			table.classList.add('table-small');
+		}
+	} else {
+		if (!enlarge) {
+			document.getElementById('button-enlarge').classList.remove('disabled');
+			table.classList.add('table-medium');
+		}
 	}
 }
 

@@ -89,7 +89,7 @@ function initialize(competition, season) {
 	var team = iterator.iterateNext();
 	while (team) {
 		teamsW.push(team.textContent);
-		countriesW.push(team.getAttribute("country"));
+		countriesW.push(team.getAttribute('country'));
 		team = iterator.iterateNext();
 	}
 	iterator = config.evaluate('//runners-up' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
@@ -149,13 +149,16 @@ function initialize(competition, season) {
 				document.getElementById('cldraw-computation').style.display = '';
 				if (e.data) {
 					if (e.data != -1) {
-						document.getElementById('cldraw-dlsize').innerHTML = (e.data / 1000000).toFixed(1);
+						document.getElementById('cldraw-dlsize').innerHTML = '(' + (e.data / 1000000).toFixed(1) + ' MB)';
 					} else {
-						document.getElementById('cldraw-dlsize').innerHTML = 'ca. 5';
+						document.getElementById('cldraw-dlsize').innerHTML = '(ca. 5 MB)';
 					}
-					document.getElementById('cldraw-computation-download').style.display = '';
+					document.getElementById('cldraw-computation-download').classList.remove('disabled');
+					document.getElementById('cldraw-dlbadge').innerHTML = 'recommended';
 				} else {
-					document.getElementById('cldraw-computation-download').style.display = 'none';
+					document.getElementById('cldraw-computation-download').classList.add('disabled');
+					document.getElementById('cldraw-dlbadge').innerHTML = 'not available';
+					document.getElementById('cldraw-dlsize').innerHTML = '';
 				}
 			}
 		}
@@ -308,7 +311,7 @@ function createCompetitions() {
 		button.id = ('competition-' + competition.getAttribute('id'));
 		button.classList.add('btn');
 		button.classList.add('btn-default');
-		var text = document.createTextNode(competition.getElementsByTagName("name")[0].textContent);
+		var text = document.createTextNode(competition.getElementsByTagName('name')[0].textContent);
 		button.appendChild(text);
 		button.addEventListener('click', createSeasons.bind(null, competition.getAttribute('id')), false);
 		buttonList.appendChild(button);
@@ -353,7 +356,7 @@ function adjustSizes(competition, season) {
 	var short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
 	var roundOf = countriesW.length * 2;
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
-	var heading = document.getElementsByTagName("h1")[0];
+	var heading = document.getElementsByTagName('h1')[0];
 	heading.innerHTML = short + ' Draw Probabilities <small>(' + season + ' Round of ' + roundOf + ')</small>';
 	if (potSize < 9) {
 		document.getElementById('cldraw-table').classList.remove('table-condensed');
@@ -365,11 +368,11 @@ function adjustSizes(competition, season) {
 		document.getElementById('cldraw-fixtures-panel').classList.remove('col-xs-12');
 		var fixtures = document.getElementsByClassName('cldraw-fixtures');
 		for (var i = 0; i < fixtures.length; i++) {
-			fixtures[i].classList.remove("col-md-6");
+			fixtures[i].classList.remove('col-md-6');
 		}
 		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
 		for (var i = 0; i < wrapper.length; i++) {
-			wrapper[i].classList.add("col-md-12");
+			wrapper[i].classList.add('col-md-12');
 		}
 	} else {
 		document.getElementById('cldraw-table').classList.add('table-condensed');
@@ -381,11 +384,11 @@ function adjustSizes(competition, season) {
 		document.getElementById('cldraw-fixtures-panel').classList.add('col-xs-12');
 		var fixtures = document.getElementsByClassName('cldraw-fixtures');
 		for (var i = 0; i < fixtures.length; i++) {
-			fixtures[i].classList.add("col-md-6");
+			fixtures[i].classList.add('col-md-6');
 		}
 		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
 		for (var i = 0; i < wrapper.length; i++) {
-			wrapper[i].classList.remove("col-md-12");
+			wrapper[i].classList.remove('col-md-12');
 		}
 	}
 }
@@ -425,12 +428,14 @@ function reset(expensive) {
 
 
 function downloadProbabilities() {
-	precomputedSeasons.add(selectedSeason.toString());
-	calculator.postMessage([IMPORT_PROBABILITIES]);
-	calculator.onmessage = function(e) {
-		importedLimit[selectedSeason.toString()] = e.data;
-		ignoreClicks = false;
-		reset();
+	if (!document.getElementById('cldraw-computation-download').classList.contains('disabled')) {
+		precomputedSeasons.add(selectedSeason.toString());
+		calculator.postMessage([IMPORT_PROBABILITIES]);
+		calculator.onmessage = function(e) {
+			importedLimit[selectedSeason.toString()] = e.data;
+			ignoreClicks = false;
+			reset();
+		}
 	}
 }
 
@@ -619,7 +624,7 @@ function updateTable(probabilities, highlight) {
 				text = '\u2714';
 				color = '#4998ff';
 			} else {
-				text = (100 * fullProbabilities[i][j]).toFixed(2) + "%";
+				text = (100 * fullProbabilities[i][j]).toFixed(2) + '%';
 				if (fullProbabilities[i][j] == 0) {
 					color = '#999999';
 				} else if (j == highlight) {
@@ -1019,7 +1024,7 @@ function exportJSON(limit, auto) {
 		}
 		var a = document.createElement('a');
 		document.body.appendChild(a);
-		var blob = new Blob([JSON.stringify(probabilities)], {type: "octet/stream"});
+		var blob = new Blob([JSON.stringify(probabilities)], {type: 'octet/stream'});
 		// increase limit if file is larger than 50MB (usually 5-10MB gzipped)
 		if (auto && blob.size > 50000000) {
 			calculator.postMessage([EXPORT_PROBABILITIES, limit + 1]);

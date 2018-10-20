@@ -421,6 +421,7 @@ function reset(expensive) {
 			} else {
 				button.style.display = 'none';
 			}
+			ignoreClicks = false;
 		}
 		updateFixtures();
 	}

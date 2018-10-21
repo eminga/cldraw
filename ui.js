@@ -186,7 +186,12 @@ function createTable() {
 		buttonEnlarge.id = 'button-enlarge';
 		buttonEnlarge.classList.add('btn');
 		buttonEnlarge.classList.add('btn-default');
-		buttonEnlarge.classList.add('disabled');
+		// initialize table with smaller size on extra small to medium devices (bootstrap classification)
+		if (window.innerWidth > 1199) {
+			buttonEnlarge.classList.add('disabled');
+		} else {
+			table.classList.add('table-medium');
+		}
 		buttonEnlarge.appendChild(document.createTextNode('＋'));
 		buttonEnlarge.addEventListener('click', resizeTable.bind(null, true), false);
 	}

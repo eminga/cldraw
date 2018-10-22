@@ -22,7 +22,7 @@ Regulation 1. differs: One pot consists of the twelve EL group winners and the f
 ## Host yourself
 If this tool wasn't updated in time or you want to host it yourself for another reason, feel free to do so! To host it on GitHub, fork this repo and enable the GitHub Pages feature.
 
-You can edit the teams in the config.xml file. In EL mode, you can offer precomputed probabilities. To do so, press the "Export probabilities" button and upload the JSON file to the probabilities folder afterwards.
+You can edit the teams in the config.xml file. In EL mode, you can provide precomputed probabilities. To do so, press the "Export probabilities" button and upload the JSON file to the probabilities folder afterwards.
 
 It is also possible to use the calculation part without the UI. Here is a minimal example for using it as a Web Worker:
 ```javascript
@@ -59,19 +59,21 @@ drawnRunnersUp[7] = true;
 calculator.postMessage([1, drawnWinners, drawnRunnersUp, 7]);
 ```
 
-## The algorithm
-The algorithm (cldraw.js:calculateProbabilities()) computes the probabilities of all possible pairings using the [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability). To determine the possible opponents of drawn runners-up (calculation step described in the background section), a "dead end check" is included.
+## Algorithm
+The algorithm (cldraw.js:calculateProbabilities()) computes the probabilities of all possible pairings using the [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability). To determine the possible opponents of drawn runners-up (calculation step described in the background section), an implicit "dead end check" is included: All opponents which meet the regulations are tried, the ones that lead to a dead end are ignored afterwards.
 
-To avoid redundant computations, [memoization](https://en.wikipedia.org/wiki/Memoization) is used. Intermediate results are stored and identified using Boolean matrices. Entry e[i,j] states whether teams i and j can be matched. As a further optimization, each matrix is sorted by alternatingly sorting rows and columns until the order doesn't change anymore.
+To avoid redundant computations, [memoization](https://en.wikipedia.org/wiki/Memoization) is used. Intermediate results are stored and identified using Boolean matrices of size m x m (m := number of unmatched winners). Entry e[i,j] states whether teams i and j can be matched.
+
+Rows and columns of the probability table can be ordered arbitrarily without changing the probabilities. Hence, as a further optimization, each matrix is sorted by alternatingly sorting rows and columns until the order doesn't change anymore. 
 
 ## Performance
 The memoization technique described above works better the more similar the teams are (e.g. the algorithm is faster if there are 2 runners-up and 2 winners from country A and 2 runners-up and 2 winners from country B, compared to 1 runner-up and 3 winners from country A and 2 runners-up and 1 winner from country B).
 
 Tests with a Pentium G4600 in Firefox 62 yield computation times of 120ms for the CL draw 2017/18 and 4:10 minutes (1.2GB RAM usage) for the EL draw 2017/18. However, there are cases where the EL draw takes much longer, like season 2015/16 which takes around 20 minutes and up to 3GB of RAM.
 
-Due to the long computation times, precomputed probabilities can be used in EL mode. With a gzipped filesize of 5MB all possible combinations of the first 4 or 6 draw steps can be stored. The probabilities for the remaining 26/28 teams are then computed locally which takes a couple of seconds / up to 1 minute.
+To bypass the long computation times, precomputed probabilities can be used in EL mode. With a gzipped filesize of 5MB all possible combinations of the first 4 or 6 draw steps can be stored. The probabilities for the remaining 26/28 teams are then computed locally which takes a couple of seconds / up to 1 minute.
 
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.
 
-It uses [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs).
+It uses CSS by [bootstrap](https://github.com/twbs/bootstrap) ([Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs)), the favicons were generated with [RealFaviconGenerator](https://realfavicongenerator.net/).

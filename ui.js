@@ -867,7 +867,9 @@ function togglePreviewMode() {
 		button.classList.add('active');
 	}
 	if (drawHistory.length == 0) {
-		reset();
+		if (!ignoreClicks) {
+			reset();
+		}
 	} else {
 		var team = drawHistory.pop();
 		if (team < potSize) {

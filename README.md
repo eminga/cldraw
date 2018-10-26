@@ -27,10 +27,10 @@ You can edit the teams in the config.xml file. In EL mode, you can provide preco
 It is also possible to use the calculation part without the UI. Here is a minimal example for using it as a Web Worker:
 ```javascript
 var calculator = new Worker('cldraw.js');
-// set the countries
-countriesWinners = ["EN", "FR", "IT", "ES", "EN", "EN", "TR", "EN"];
-countriesRunnersUp = ["CH", "DE", "EN", "IT", "ES", "UA", "PT", "ES"];
-calculator.postMessage([0, countriesWinners, countriesRunnersUp]);
+// set groups and countries
+winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
+runnersUp = ["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"];
+calculator.postMessage([0, winners, runnersUp]);
 // write output to console
 calculator.onmessage = function(e) {
   var probabilities = e.data;

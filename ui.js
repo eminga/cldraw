@@ -20,7 +20,7 @@
  *  SOFTWARE.
  */
 
-const SET_COUNTRIES = 0;
+const INITIALIZE = 0;
 const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
 const IMPORT_PROBABILITIES = 3;
@@ -36,8 +36,8 @@ var config;
 var selectedSeason = [];
 var teamsW;
 var teamsR;
-var countriesW;
-var countriesR;
+var attrW;
+var attrR;
 var potSize;
 // drawn{W,R}[i] == true if team i has already been drawn
 var drawnW = [];
@@ -71,8 +71,8 @@ function initialize(competition, season) {
 	ignoreClicks = true;
 	teamsW = [];
 	teamsR = [];
-	countriesW = [];
-	countriesR = [];
+	attrW = [];
+	attrR = [];
 
 	// select first config entry unless competition/season is explicitly specified
 	if (competition === undefined) {
@@ -89,17 +89,17 @@ function initialize(competition, season) {
 	var team = iterator.iterateNext();
 	while (team) {
 		teamsW.push(team.textContent);
-		countriesW.push(team.getAttribute('country'));
+		attrW.push([team.getAttribute('group'), team.getAttribute('country')]);
 		team = iterator.iterateNext();
 	}
 	iterator = config.evaluate('//runners-up' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	team = iterator.iterateNext();
 	while (team) {
 		teamsR.push(team.textContent);
-		countriesR.push(team.getAttribute('country'));
+		attrR.push([team.getAttribute('group'), team.getAttribute('country')]);
 		team = iterator.iterateNext();
 	}
-	potSize = countriesW.length;
+	potSize = attrW.length;
 
 	for (var i = 0; i < potSize; i++) {
 		drawnW[i] = false;
@@ -125,7 +125,7 @@ function initialize(competition, season) {
 	}
 	document.getElementById('cldraw-computation-running2').style.display = 'none';
 
-	calculator.postMessage([SET_COUNTRIES, countriesW, countriesR]);
+	calculator.postMessage([INITIALIZE, attrW, attrR]);
 
 	if (previewMode) {
 		document.getElementById('button-preview').classList.add('active');
@@ -291,9 +291,9 @@ function createEditor() {
 			input.setAttribute('id', 'cldraw-' + type + '-' + i + '-country');
 			input.setAttribute('size', '3');
 			if (type == 'winner') {
-				input.value = countriesW[i];
+				input.value = attrW[i][1];
 			} else {
-				input.value = countriesR[i];
+				input.value = attrR[i][1];
 			}
 			div.appendChild(input);
 			row.appendChild(div);
@@ -359,7 +359,7 @@ function createSeasons(competition) {
 
 function adjustSizes(competition, season) {
 	var short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
-	var roundOf = countriesW.length * 2;
+	var roundOf = attrW.length * 2;
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
 	var heading = document.getElementsByTagName('h1')[0];
 	heading.innerHTML = short + ' Draw Probabilities <small>(' + season + ' Round of ' + roundOf + ')</small>';
@@ -992,11 +992,17 @@ function saveTeams() {
 	for (var i = 0; i < potSize; i++) {
 		var team = document.createElementNS('', 'team');
 		team.textContent = document.getElementById('cldraw-winner-' + i).value;
+		if (i < 12) {
+			team.setAttribute('group', i);
+		}
 		team.setAttribute('country', document.getElementById('cldraw-winner-' + i + '-country').value);
 		winners.appendChild(team);
 
 		team = document.createElementNS('', 'team');
 		team.textContent = document.getElementById('cldraw-runner-up-' + i).value;
+		if (i < 12) {
+			team.setAttribute('group', i);
+		}
 		team.setAttribute('country', document.getElementById('cldraw-runner-up-' + i + '-country').value);
 		runnersUp.appendChild(team);
 	}

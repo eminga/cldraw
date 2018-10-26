@@ -22,7 +22,7 @@
  
 'use strict';
 
-const SET_COUNTRIES = 0;
+const INITIALIZE = 0;
 const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
 const IMPORT_PROBABILITIES = 3;
@@ -30,6 +30,8 @@ const EXPORT_PROBABILITIES = 4;
 const CLEAR_CACHE = 5;
 
 var calculatedProbabilities = {};
+var groupsW;
+var groupsR;
 var countriesW;
 var countriesR;
 var fullSize;
@@ -39,8 +41,8 @@ var seasonId;
 var seasonLog = {};
 
 onmessage = function(e) {
-	if (e.data[0] == SET_COUNTRIES) {
-		setCountries(e.data[1], e.data[2]);
+	if (e.data[0] == INITIALIZE) {
+		initialize(e.data[1], e.data[2]);
 	} else if (e.data[0] == GET_PROBABILITIES) {
 		if (e.data.length < 3) {
 			var drawnW = [];
@@ -110,32 +112,49 @@ onmessage = function(e) {
 
 
 // assigns the same number c to all teams which are from the same country
-function setCountries(inititalCountriesW, initialCountriesR) {
-	countriesW = [];
-	countriesR = [];
-	fullSize = inititalCountriesW.length;
+function initialize(attrW, attrR) {
+	fullSize = attrW.length;
 
-	var c = 1;
-	for (var i = 0; i < fullSize; i++) {
-		var sameCountry = false;
-		for (var j = 0; j < i; j++) {
-			if (inititalCountriesW[j] == inititalCountriesW[i]) {
-				countriesW[i] = countriesW[j];
-				sameCountry = true;
-				break;
+	for (var k = 0; k <= 1; k++) {
+		var restrictionW = [];
+		var restrictionR = [];
+		var c = 1;
+		for (var i = 0; i < fullSize; i++) {
+			if (attrW[i][k] == null || attrW[i][k] === '') {
+				restrictionW[i] = -1;
+			} else {
+				var same = false;
+				for (var j = 0; j < i; j++) {
+					if (attrW[j][k] == attrW[i][k]) {
+						restrictionW[i] = restrictionW[j];
+						same = true;
+						break;
+					}
+				}
+				if (!same) {
+					restrictionW[i] = c;
+					c++;
+				}
 			}
 		}
-		if (!sameCountry) {
-			countriesW[i] = c;
-			c++;
-		}
-	}
-	for (var i = 0; i < fullSize; i++) {
-		countriesR[i] = 0;
-		for (var j = 0; j < fullSize; j++) {
-			if (inititalCountriesW[j] == initialCountriesR[i]) {
-				countriesR[i] = countriesW[j];
+		for (var i = 0; i < fullSize; i++) {
+			if (attrR[i][k] == null || attrR[i][k] === '') {
+				restrictionR[i] = -2;
+			} else {
+				restrictionR[i] = 0;
+				for (var j = 0; j < fullSize; j++) {
+					if (attrW[j][k] == attrR[i][k]) {
+						restrictionR[i] = restrictionW[j];
+					}
+				}
 			}
+		}
+		if (k == 0) {
+			groupsW = restrictionW;
+			groupsR = restrictionR;
+		} else {
+			countriesW = restrictionW;
+			countriesR = restrictionR;
 		}
 	}
 
@@ -201,7 +220,7 @@ function generateId(drawnW, drawnR) {
 			var row = [];
 			for (var j = 0; j < fullSize; j++) {
 				if (!drawnR[j]) {
-					if ((i > 11 || j > 11 || i != j) && countriesW[i] != countriesR[j]) {
+					if (groupsW[i] != groupsR[j] && countriesW[i] != countriesR[j]) {
 						row.push(true);
 					} else {
 						row.push(false);
@@ -365,7 +384,7 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 			}
 		}
 		for (var i = 0; i < fullSize; i++) {
-			if (!drawnW[i] && (i > 11 || unmatchedRunnerUp > 11 || i != unmatchedRunnerUp) && countriesW[i] != countriesR[unmatchedRunnerUp]) {
+			if (!drawnW[i] && groupsW[i] != groupsR[unmatchedRunnerUp] && countriesW[i] != countriesR[unmatchedRunnerUp]) {
 				options++;
 				// temporarily match unmatchedRunnerUp with winner i and calculate the resulting probabilities
 				drawnW[i] = true;

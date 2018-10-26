@@ -29,7 +29,7 @@ It is also possible to use the calculation part without the UI. Here is a minima
 var calculator = new Worker('cldraw.js');
 // set groups and countries
 winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
-runnersUp = ["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"];
+runnersUp = ["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
 calculator.postMessage([0, winners, runnersUp]);
 // write output to console
 calculator.onmessage = function(e) {

@@ -340,6 +340,11 @@ function createSeasons(competition) {
 	}
 	var iterator = config.evaluate('//teams[@competition = "' + competition + '"]/@season', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	season = iterator.iterateNext();
+
+	if (competition != selectedSeason[0]) {
+		initialize(competition, season.textContent);
+	}
+
 	while (season) {
 		var button = document.createElement('button');
 		button.id = ('season-' + competition + '-' + season.textContent);

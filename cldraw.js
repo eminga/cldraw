@@ -19,7 +19,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
- 
+
 'use strict';
 
 const INITIALIZE = 0;
@@ -29,9 +29,8 @@ const IMPORT_PROBABILITIES = 3;
 const EXPORT_PROBABILITIES = 4;
 const CLEAR_CACHE = 5;
 
-var calculatedProbabilities = {};
-var compatibilityMatrix;
-var fullSize;
+var computedProbabilities = {};
+var fullCompatibilityMatrix;
 
 // needed for export function
 var seasonId;
@@ -45,29 +44,14 @@ onmessage = function(e) {
 			initialize(e.data[1]);
 		}
 	} else if (e.data[0] == GET_PROBABILITIES) {
-		if (e.data.length < 3) {
-			var drawnW = [];
-			var drawnR = [];
-			for (var i = 0; i < fullSize; i++) {
-				drawnW[i] = false;
-				drawnR[i] = false;
-			}
-		} else {
-			var drawnW = e.data[1];
-			var drawnR = e.data[2];
-		}
-		if (e.data.length < 4) {
-			postMessage(calculateProbabilities(drawnW, drawnR));
-		} else {
-			postMessage(calculateProbabilities(drawnW, drawnR, e.data[3]));
-		}
+		postMessage(getProbabilities(e.data[1], e.data[2], e.data[3]));
 	} else if (e.data[0] == GET_PROBABILITIES_PREVIEW) {
 		var probabilities = [];
 		var drawnW = e.data[1];
 		var drawnR = e.data[2];
 		var possibleOpponent = e.data[3];
 		var num = 0;
-		for (var i = 0; i < fullSize; i++) {
+		for (var i = 0; i < drawnR.length; i++) {
 			if (drawnR[i]) {
 				num++;
 			}
@@ -76,48 +60,38 @@ onmessage = function(e) {
 			}
 		}
 		if (num == 0) {
-			for (var i = 0; i < fullSize; i++) {
+			for (var i = 0; i < drawnR.length; i++) {
 				if (possibleOpponent[i]) {
 					drawnR[i] = true;
-					probabilities[i] = calculateProbabilities(drawnW, drawnR, i);
+					probabilities[i] = getProbabilities(drawnW, drawnR, i);
 					drawnR[i] = false;
 				}
 			}
 		} else {
-			for (var i = 0; i < fullSize; i++) {
+			for (var i = 0; i < drawnR.length; i++) {
 				if (possibleOpponent[i]) {
 					drawnW[i] = true;
-					probabilities[i] = calculateProbabilities(drawnW, drawnR);
+					probabilities[i] = getProbabilities(drawnW, drawnR);
 					drawnW[i] = false;
 				}
 			}
 		}
 		postMessage(probabilities);
 	} else if (e.data[0] == IMPORT_PROBABILITIES) {
-		if (e.data.length > 1) {
-			importProbabilities(e.data[1]);
-		}
-		else {
-			importProbabilities();
-		}
+		importProbabilities(e.data[1]);
 	} else if (e.data[0] == EXPORT_PROBABILITIES) {
-		if (e.data.length > 1) {
-			exportProbabilities(e.data[1]);
-		} else {
-			exportProbabilities();
-		}
+		exportProbabilities(e.data[1]);
 	} else if (e.data[0] == CLEAR_CACHE) {
-		calculatedProbabilities = {};
+		computedProbabilities = {};
 	}
 }
 
 
 function initialize(attributes) {
-	fullSize = attributes[0].length;
-	compatibilityMatrix = [];
-	for (var i = 0; i < fullSize; i++) {
+	fullCompatibilityMatrix = [];
+	for (var i = 0; i < attributes[0].length; i++) {
 		var row = [];
-		for (var j = 0; j < fullSize; j++) {
+		for (var j = 0; j < attributes[0].length; j++) {
 			var matchable = true;
 			for (var k = 0; k < attributes[0][i].length; k++) {
 				if (attributes[0][i][k] == attributes[1][j][k] && attributes[0][i][k] != null
@@ -131,16 +105,10 @@ function initialize(attributes) {
 				row.push(false);
 			}
 		}
-		compatibilityMatrix.push(row);
+		fullCompatibilityMatrix.push(row);
 	}
 
-	var drawnW = [];
-	var drawnR = [];
-	for (var i = 0; i < fullSize; i++) {
-		drawnW[i] = false;
-		drawnR[i] = false;
-	}
-	seasonId = idToString(generateId(drawnW, drawnR)[0]);
+	seasonId = idToString(generateId(fullCompatibilityMatrix)[0]);
 	if (seasonLog[seasonId] == undefined) {
 		seasonLog[seasonId] = new Set();
 	}
@@ -188,33 +156,15 @@ function generateSubId(matrix, order, rowMode) {
 // The matrix is sorted until the ID doesn't change anymore.
 // The result is then an ID characterizing the rows of the sorted matrix and two order arrays
 // characterizing the permutation of the original matrix to undo or redo the sorting.
-function generateId(drawnW, drawnR) {
-	// create initial unsorted matrix
-	var matrix = [];
-	for (var i = 0; i < fullSize; i++) {
-		if (!drawnW[i]) {
-			var row = [];
-			for (var j = 0; j < fullSize; j++) {
-				if (!drawnR[j]) {
-					if (compatibilityMatrix[i][j]) {
-						row.push(true);
-					} else {
-						row.push(false);
-					}
-				}
-			}
-			matrix.push(row);
-		}
-	}
-
+function generateId(compatibilityMatrix) {
 	var rowOrder = [];
 	var columnOrder = [];
-	for (var i = 0; i < matrix.length; i++) {
+	for (var i = 0; i < compatibilityMatrix.length; i++) {
 		rowOrder.push(i);
 		columnOrder.push(i);
 	}
 
-	var matrix2 = matrix;
+	var matrix2 = compatibilityMatrix;
 	var row = true;
 	// alternatingly sort rows and columns
 	while (true) {
@@ -248,7 +198,7 @@ function generateId(drawnW, drawnR) {
 		if (sorted) {
 			break;
 		}
-		matrix2 = sortMatrix(matrix, rowOrder, columnOrder);
+		matrix2 = sortMatrix(compatibilityMatrix, rowOrder, columnOrder);
 		row = !row;
 	}
 	var key = [];
@@ -280,7 +230,7 @@ function idToString(id) {
 function loadProbabilities(id) {
 	var s = idToString(id[0]);
 	seasonLog[seasonId].add(s);
-	var temp = calculatedProbabilities[s];
+	var temp = computedProbabilities[s];
 	if (temp == null) {
 		return temp;
 	}
@@ -291,20 +241,20 @@ function loadProbabilities(id) {
 // caches probabilities
 function saveProbabilities(id, probabilities) {
 	var s = idToString(id[0]);
-	calculatedProbabilities[s] = probabilities;
+	computedProbabilities[s] = probabilities;
 	if (probabilities == null) {
-		calculatedProbabilities[s] = null;
+		computedProbabilities[s] = null;
 	} else {
 		var temp = sortMatrix(probabilities, id[1], id[2]);
-		calculatedProbabilities[s] = temp;
+		computedProbabilities[s] = temp;
 	}
 }
 
 
-function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
+function computeProbabilities(compatibilityMatrix, unmatchedRunnerUp) {
 	if (unmatchedRunnerUp == undefined) {
 		// use cached probabilities if existing
-		var id = generateId(drawnW, drawnR);
+		var id = generateId(compatibilityMatrix);
 		var cachedProbabilities = loadProbabilities(id);
 		if (cachedProbabilities !== undefined) {
 			return cachedProbabilities;
@@ -313,12 +263,8 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 
 	var probabilities = [];
 	var options = 0;
-	var size = fullSize;
-	for (var i = 0; i < fullSize; i++) {
-		if (drawnW[i]) {
-			size--;
-		}
-	}
+	var size = compatibilityMatrix.length;
+
 	for (var i = 0; i < size; i++) {
 		probabilities[i] = [];
 		for (var j = 0; j < size; j++) {
@@ -328,76 +274,68 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 
 	// if the same number of winners and runners-up has been drawn
 	if (unmatchedRunnerUp == undefined) {
-		for (var i = 0; i < fullSize; i++) {
-			if (!drawnR[i]) {
-				options++;
-				// temporarily draw runner-up i and calculate the resulting probabilities
-				drawnR[i] = true;
-				var temp = calculateProbabilities(drawnW, drawnR, i);
-				if (temp === null) {
-					options--;
-				} else {
-					for (var j = 0; j < size; j++) {
-						for (var k = 0; k < size; k++) {
-							probabilities[j][k] += temp[j][k];
-						}
+		for (var i = 0; i < size; i++) {
+			options++;
+			// temporarily draw runner-up i and compute the resulting probabilities
+			var partialProbabilities = computeProbabilities(compatibilityMatrix, i);
+			if (partialProbabilities === null) {
+				options--;
+			} else {
+				for (var j = 0; j < size; j++) {
+					for (var k = 0; k < size; k++) {
+						probabilities[j][k] += partialProbabilities[j][k];
 					}
 				}
-				drawnR[i] = false;
 			}
 		}
 		// return null if the current draw is a dead end
-		if (options == 0 && id[0].length > 0) {
+		if (options == 0 && size > 0) {
 			probabilities = null;
 		}
 
 	// if an opponent for team 'unmatchedRunnerUp' is to be drawn next
 	} else {
-		var indexR = unmatchedRunnerUp;
-		for (var i = 0; i < unmatchedRunnerUp; i++) {
-			if (drawnR[i]) {
-				indexR--;
-			}
-		}
-		for (var i = 0; i < fullSize; i++) {
-			if (!drawnW[i] && compatibilityMatrix[i][unmatchedRunnerUp]) {
+		for (var i = 0; i < size; i++) {
+			if (compatibilityMatrix[i][unmatchedRunnerUp]) {
 				options++;
-				// temporarily match unmatchedRunnerUp with winner i and calculate the resulting probabilities
-				drawnW[i] = true;
-
-				var indexW = i;
-				for (var j = 0; j < i; j++) {
-					if (drawnW[j]) {
-						indexW--;
+				// temporarily match unmatchedRunnerUp with winner i and compute the resulting probabilities
+				var subMatrix = [];
+				for (var j = 0; j < size; j++) {
+					if (j != i) {
+						var row = [];
+						for (var k = 0; k < size; k++) {
+							if (k != unmatchedRunnerUp) {
+								row.push(compatibilityMatrix[j][k]);
+							}
+						}
+						subMatrix.push(row);
 					}
 				}
-
-				var temp = calculateProbabilities(drawnW, drawnR);
-				if (temp === null) {
+				var partialProbabilities = computeProbabilities(subMatrix);
+				if (partialProbabilities === null) {
 					options--;
 				} else {
 					for (var j = 0; j < size; j++) {
 						for (var k = 0; k < size; k++) {
-							if (j < indexW) {
-								if (k < indexR) {
-									probabilities[j][k] += temp[j][k];
+							if (j < i) {
+								if (k < unmatchedRunnerUp) {
+									probabilities[j][k] += partialProbabilities[j][k];
 								}
-								if (k > indexR) {
-									probabilities[j][k] += temp[j][k - 1];
+								if (k > unmatchedRunnerUp) {
+									probabilities[j][k] += partialProbabilities[j][k - 1];
 								}
-							} else if (j > indexW) {
-								if (k < indexR) {
-									probabilities[j][k] += temp[j - 1][k];
+							} else if (j > i) {
+								if (k < unmatchedRunnerUp) {
+									probabilities[j][k] += partialProbabilities[j - 1][k];
 								}
-								if (k > indexR) {
-									probabilities[j][k] += temp[j - 1][k - 1];
+								if (k > unmatchedRunnerUp) {
+									probabilities[j][k] += partialProbabilities[j - 1][k - 1];
 								}
 							}
 						}
 					}
-					probabilities[indexW][indexR] += 1;
+					probabilities[i][unmatchedRunnerUp] += 1;
 				}
-				drawnW[i] = false;
 			}
 		}
 		// return null if the current draw is a dead end
@@ -422,6 +360,35 @@ function calculateProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 }
 
 
+function getProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
+	if (drawnW == null) {
+		return computeProbabilities(fullCompatibilityMatrix);
+	}
+	var compatibilityMatrix = [];
+	for (var i = 0; i < fullCompatibilityMatrix.length; i++) {
+		if (!drawnW[i]) {
+			var row = [];
+			for (var j = 0; j < fullCompatibilityMatrix.length; j++) {
+				if (!drawnR[j] || j == unmatchedRunnerUp) {
+					if (fullCompatibilityMatrix[i][j]) {
+						row.push(true);
+					} else {
+						row.push(false);
+					}
+				}
+			}
+			compatibilityMatrix.push(row);
+		}
+	}
+	for (var i = unmatchedRunnerUp - 1; i >= 0; i--) {
+		if (drawnR[i]) {
+			unmatchedRunnerUp--;
+		}
+	}
+	return computeProbabilities(compatibilityMatrix, unmatchedRunnerUp);
+}
+
+
 function exportProbabilities(limit) {
 	if (limit == undefined) {
 		limit = 0;
@@ -430,23 +397,17 @@ function exportProbabilities(limit) {
 	for (let id of seasonLog[seasonId]) {
 		// only consider probabilities for cases where >= 'limit' teams are in the winners pot
 		if (id.length >= limit * 4) {
-			croppedProbabilities[id] = calculatedProbabilities[id];
+			croppedProbabilities[id] = computedProbabilities[id];
 		}
 	}
 	postMessage(croppedProbabilities);
 }
 
 function importProbabilities(onlyCheckAvailability) {
-	// if available, load precalculated probabilities
-	var drawnW = [];
-	var drawnR = [];
-	for (var i = 0; i < fullSize; i++) {
-		drawnW[i] = false;
-		drawnR[i] = false;
-	}
-	var id = generateId(drawnW, drawnR);
+	// if available, load precomputed probabilities
+	var id = generateId(fullCompatibilityMatrix);
 	var s = idToString(id[0]);
-	if (calculatedProbabilities[s] !== undefined) {
+	if (computedProbabilities[s] !== undefined) {
 		postMessage(true);
 		return;
 	}
@@ -475,7 +436,7 @@ function importProbabilities(onlyCheckAvailability) {
 						if (id.length < minLength) {
 							minLength = id.length;
 						}
-						calculatedProbabilities[id] = newProbabilities[id];
+						computedProbabilities[id] = newProbabilities[id];
 					}
 					postMessage(minLength / 4);
 				} else {

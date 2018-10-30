@@ -166,6 +166,7 @@ function generateId(compatibilityMatrix) {
 
 	var matrix2 = compatibilityMatrix;
 	var row = true;
+	var sorted = [false, false];
 	// alternatingly sort rows and columns
 	while (true) {
 		if (row) {
@@ -174,17 +175,17 @@ function generateId(compatibilityMatrix) {
 			var order = columnOrder;
 		}
 		var subId = generateSubId(matrix2, order, row);
-		var sorted = true;
+		sorted[row ? 0 : 1] = true;
 		var maximum = -1;
 		for (var i = 0; i < subId.length; i++) {
 			if (subId[i][0] < maximum) {
-				sorted = false;
+				sorted[row ? 0 : 1] = false;
 				break;
 			} else {
 				maximum = subId[i][0];
 			}
 		}
-		if (!sorted) {
+		if (!sorted[row ? 0 : 1]) {
 			subId.sort(function(a,b) {
 				return a[0] - b[0];
 			});
@@ -195,7 +196,7 @@ function generateId(compatibilityMatrix) {
 		if (row) {
 			var id = subId;
 		}
-		if (sorted) {
+		if (sorted[0] && sorted[1]) {
 			break;
 		}
 		matrix2 = sortMatrix(compatibilityMatrix, rowOrder, columnOrder);

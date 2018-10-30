@@ -69,7 +69,7 @@ Rows and columns of the probability table can be ordered arbitrarily without cha
 ## Performance
 The memoization technique described above works better the more similar the teams are (e.g. the algorithm is faster if there are 2 runners-up and 2 winners from country A and 2 runners-up and 2 winners from country B, compared to 1 runner-up and 3 winners from country A and 2 runners-up and 1 winner from country B).
 
-Tests with a Pentium G4600 in Firefox 62 yield computation times of 120ms for the CL draw 2017/18 and 3:40 minutes (1.2GB RAM usage) for the EL draw 2017/18. However, there are cases where the EL draw takes much longer, like season 2015/16 which takes around 20 minutes and up to 3GB of RAM.
+Tests with a Pentium G4600 in Firefox 62 yield computation times of 120ms for the CL draw 2017/18 and 1:45 minutes (450MB RAM usage) for the EL draw 2017/18. However, there are cases where the EL draw takes much longer, like season 2015/16 which takes around 15 minutes and up to 3.5GB of RAM.
 
 To bypass the long computation times, precomputed probabilities can be used in EL mode. With a gzipped filesize of 5MB all possible combinations of the first 4 or 6 draw steps can be stored. The probabilities for the remaining 26/28 teams are then computed locally which takes a couple of seconds / up to 1 minute.
 

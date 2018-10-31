@@ -250,6 +250,20 @@ function createTable() {
 
 
 function createEditor() {
+	document.getElementById('button-editor').style.display = 'none';
+	// only create team editor if the loaded configuration is a sorted cl/el config with group names A...H/L
+	for (var i = 0; i < potSize; i++) {
+		if (i < 12) {
+			if (attrW[i][0] !== String.fromCharCode(65 + i) || attrR[i][0] !== String.fromCharCode(65 + i)) {
+				return;
+			}
+		} else {
+			if ((attrW[i][0] !== '' && attrW[i][0] != null) || (attrR[i][0] !== '' && attrR[i][0] != null)) {
+				return;
+			}
+		}
+	}
+	document.getElementById('button-editor').style.display = '';
 	var editor = document.getElementById('cldraw-editor-groups');
 	while (editor.firstChild) {
 		editor.removeChild(editor.firstChild);

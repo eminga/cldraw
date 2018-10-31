@@ -195,6 +195,7 @@ function createTable() {
 		buttonEnlarge.appendChild(document.createTextNode('＋'));
 		buttonEnlarge.addEventListener('click', resizeTable.bind(null, true), false);
 	}
+	document.getElementById('cldraw-impossible').style.display = 'none';
 
 	while (table.firstChild) {
 		table.removeChild(table.firstChild);
@@ -599,6 +600,10 @@ function drawRandomTeam() {
 
 
 function updateTable(probabilities, highlight) {
+	if (probabilities == null) {
+		document.getElementById('cldraw-impossible').style.display = '';
+		return;
+	}
 	var fullProbabilities = [];
 	var indexW = 0;
 	for (var i = 0; i < potSize; i++) {
@@ -651,6 +656,7 @@ function updateTable(probabilities, highlight) {
 			}
 		}
 	}
+	document.getElementById('cldraw-impossible').style.display = 'none';
 	document.getElementById('cldraw-computation-running2').style.display = 'none';
 	if (hideMode) {
 		hideDrawnTeams();

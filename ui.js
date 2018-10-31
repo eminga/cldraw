@@ -109,6 +109,7 @@ function initialize(competition, season) {
 	drawHistory = [];
 	createTable();
 	createEditor();
+	showEditor(false);
 	adjustSizes(competition, season);
 	createCompetitions();
 	createSeasons(competition);
@@ -951,10 +952,10 @@ function transposeTable() {
 }
 
 
-function showEditor() {
+function showEditor(visible) {
 	var button = document.getElementById('button-editor');
 	var div = document.getElementById('cldraw-editor');
-	if (!button.classList.contains('active')) {
+	if (visible || (visible == null && !button.classList.contains('active'))) {
 		button.classList.add('active');
 		div.style.display = '';
 	} else {
@@ -1018,7 +1019,7 @@ function saveTeams() {
 		var team = document.createElementNS('', 'team');
 		team.textContent = document.getElementById('cldraw-winner-' + i).value;
 		if (i < 12) {
-			team.setAttribute('group', i);
+			team.setAttribute('group', String.fromCharCode(65 + i));
 		}
 		team.setAttribute('country', document.getElementById('cldraw-winner-' + i + '-country').value);
 		winners.appendChild(team);
@@ -1026,7 +1027,7 @@ function saveTeams() {
 		team = document.createElementNS('', 'team');
 		team.textContent = document.getElementById('cldraw-runner-up-' + i).value;
 		if (i < 12) {
-			team.setAttribute('group', i);
+			team.setAttribute('group', String.fromCharCode(65 + i));
 		}
 		team.setAttribute('country', document.getElementById('cldraw-runner-up-' + i + '-country').value);
 		runnersUp.appendChild(team);

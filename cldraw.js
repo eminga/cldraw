@@ -22,13 +22,6 @@
 
 'use strict';
 
-const INITIALIZE = 0;
-const GET_PROBABILITIES = 1;
-const GET_PROBABILITIES_PREVIEW = 2;
-const IMPORT_PROBABILITIES = 3;
-const EXPORT_PROBABILITIES = 4;
-const CLEAR_CACHE = 5;
-
 var computedProbabilities = {};
 var fullCompatibilityMatrix;
 
@@ -36,76 +29,69 @@ var fullCompatibilityMatrix;
 var seasonId;
 var seasonLog = {};
 
-onmessage = function(e) {
-	if (e.data[0] == INITIALIZE) {
-		if (e.data.length > 2) {
-			initialize([e.data[1], e.data[2]]);
-		} else {
-			initialize(e.data[1]);
+// Web Worker
+if (typeof(onmessage) !== 'undefined') {
+	const INITIALIZE = 0;
+	const GET_PROBABILITIES = 1;
+	const GET_PROBABILITIES_PREVIEW = 2;
+	const IMPORT_PROBABILITIES = 3;
+	const EXPORT_PROBABILITIES = 4;
+	const CLEAR_CACHE = 5;
+	onmessage = function(e) {
+		if (e.data[0] == INITIALIZE) {
+			initialize(e.data[1], e.data[2]);
+		} else if (e.data[0] == GET_PROBABILITIES) {
+			postMessage(getProbabilities(e.data[1], e.data[2], e.data[3]));
+		} else if (e.data[0] == GET_PROBABILITIES_PREVIEW) {
+			postMessage(getProbabilitiesPreview(e.data[1], e.data[2], e.data[3]));
+		} else if (e.data[0] == IMPORT_PROBABILITIES) {
+			postMessage(importProbabilities(e.data[1]));
+		} else if (e.data[0] == EXPORT_PROBABILITIES) {
+			postMessage(exportProbabilities(e.data[1]));
+		} else if (e.data[0] == CLEAR_CACHE) {
+			clearCache();
 		}
-	} else if (e.data[0] == GET_PROBABILITIES) {
-		postMessage(getProbabilities(e.data[1], e.data[2], e.data[3]));
-	} else if (e.data[0] == GET_PROBABILITIES_PREVIEW) {
-		var probabilities = [];
-		var drawnW = e.data[1];
-		var drawnR = e.data[2];
-		var possibleOpponent = e.data[3];
-		var num = 0;
-		for (var i = 0; i < drawnR.length; i++) {
-			if (drawnR[i]) {
-				num++;
-			}
-			if (drawnW[i]) {
-				num--;
-			}
-		}
-		if (num == 0) {
-			for (var i = 0; i < drawnR.length; i++) {
-				if (possibleOpponent[i]) {
-					drawnR[i] = true;
-					probabilities[i] = getProbabilities(drawnW, drawnR, i);
-					drawnR[i] = false;
-				}
-			}
-		} else {
-			for (var i = 0; i < drawnR.length; i++) {
-				if (possibleOpponent[i]) {
-					drawnW[i] = true;
-					probabilities[i] = getProbabilities(drawnW, drawnR);
-					drawnW[i] = false;
-				}
-			}
-		}
-		postMessage(probabilities);
-	} else if (e.data[0] == IMPORT_PROBABILITIES) {
-		importProbabilities(e.data[1]);
-	} else if (e.data[0] == EXPORT_PROBABILITIES) {
-		exportProbabilities(e.data[1]);
-	} else if (e.data[0] == CLEAR_CACHE) {
-		computedProbabilities = {};
 	}
+}
+// Node.js
+if (typeof(exports) !== 'undefined') {
+	exports.initialize = initialize;
+	exports.getProbabilities = getProbabilities;
+	exports.getProbabilitiesPreview = getProbabilitiesPreview;
+	//exports.importProbabilities = importProbabilities;
+	exports.exportProbabilities = exportProbabilities;
+	exports.clearCache = clearCache;
 }
 
 
-function initialize(attributes) {
-	fullCompatibilityMatrix = [];
-	for (var i = 0; i < attributes[0].length; i++) {
-		var row = [];
-		for (var j = 0; j < attributes[0].length; j++) {
-			var matchable = true;
-			for (var k = 0; k < attributes[0][i].length; k++) {
-				if (attributes[0][i][k] == attributes[1][j][k] && attributes[0][i][k] != null
-						&& attributes[1][j][k] != null && attributes[0][i][k] !== '' && attributes[1][j][k] !== '') {
-					matchable = false;
+function initialize(attr1, attr2) {
+	if (attr2 == null && !Array.isArray(attr1[0][0])) {
+		fullCompatibilityMatrix = attr1;
+	} else {
+		if (attr2 != null) {
+			var attributes = [attr1, attr2];
+		} else {
+			var attributes = attr1;
+		}
+		fullCompatibilityMatrix = [];
+		for (var i = 0; i < attributes[0].length; i++) {
+			var row = [];
+			for (var j = 0; j < attributes[0].length; j++) {
+				var matchable = true;
+				for (var k = 0; k < attributes[0][i].length; k++) {
+					if (attributes[0][i][k] == attributes[1][j][k] && attributes[0][i][k] != null
+							&& attributes[1][j][k] != null && attributes[0][i][k] !== '' && attributes[1][j][k] !== '') {
+						matchable = false;
+					}
+				}
+				if (matchable) {
+					row.push(true);
+				} else {
+					row.push(false);
 				}
 			}
-			if (matchable) {
-				row.push(true);
-			} else {
-				row.push(false);
-			}
+			fullCompatibilityMatrix.push(row);
 		}
-		fullCompatibilityMatrix.push(row);
 	}
 
 	seasonId = idToString(generateId(fullCompatibilityMatrix)[0]);
@@ -390,6 +376,38 @@ function getProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 }
 
 
+function getProbabilitiesPreview(drawnW, drawnR, possibleOpponent) {
+	var probabilities = [];
+	var num = 0;
+	for (var i = 0; i < drawnR.length; i++) {
+		if (drawnR[i]) {
+			num++;
+		}
+		if (drawnW[i]) {
+			num--;
+		}
+	}
+	if (num == 0) {
+		for (var i = 0; i < drawnR.length; i++) {
+			if (possibleOpponent[i]) {
+				drawnR[i] = true;
+				probabilities[i] = getProbabilities(drawnW, drawnR, i);
+				drawnR[i] = false;
+			}
+		}
+	} else {
+		for (var i = 0; i < drawnR.length; i++) {
+			if (possibleOpponent[i]) {
+				drawnW[i] = true;
+				probabilities[i] = getProbabilities(drawnW, drawnR);
+				drawnW[i] = false;
+			}
+		}
+	}
+	return probabilities;
+}
+
+
 function exportProbabilities(limit) {
 	if (limit == undefined) {
 		limit = 0;
@@ -401,16 +419,16 @@ function exportProbabilities(limit) {
 			croppedProbabilities[id] = computedProbabilities[id];
 		}
 	}
-	postMessage(croppedProbabilities);
+	return croppedProbabilities;
 }
+
 
 function importProbabilities(onlyCheckAvailability) {
 	// if available, load precomputed probabilities
 	var id = generateId(fullCompatibilityMatrix);
 	var s = idToString(id[0]);
 	if (computedProbabilities[s] !== undefined) {
-		postMessage(true);
-		return;
+		return true;
 	}
 	var filename = 'probabilities/' + s + '.json';
 	var xhr = new XMLHttpRequest();
@@ -419,33 +437,34 @@ function importProbabilities(onlyCheckAvailability) {
 		xhr.open('HEAD', filename, false);
 		xhr.send();
 		if (xhr.status != 200) {
-			postMessage(false);
+			return false;
 		} else {
 			var contentLength = xhr.getResponseHeader('Content-Length');
 			if (contentLength == null) {
 				contentLength = -1;
 			}
-			postMessage(contentLength);
+			return contentLength;
 		}
 	} else {
-		xhr.onreadystatechange = function() {
-			if (this.readyState == 4) {
-				if (this.status == 200) {
-					var newProbabilities = JSON.parse(this.responseText);
-					var minLength = 999999;
-					for (var id in newProbabilities) {
-						if (id.length < minLength) {
-							minLength = id.length;
-						}
-						computedProbabilities[id] = newProbabilities[id];
-					}
-					postMessage(minLength / 4);
-				} else {
-					postMessage(false);
-				}
-			}
-		};
-		xhr.open('GET', filename);
+		xhr.open('GET', filename, false);
 		xhr.send();
+		if (xhr.status == 200) {
+			var newProbabilities = JSON.parse(xhr.responseText);
+			var minLength = 999999;
+			for (var id in newProbabilities) {
+				if (id.length < minLength) {
+					minLength = id.length;
+				}
+				computedProbabilities[id] = newProbabilities[id];
+			}
+			return minLength / 4;
+		} else {
+			return false;
+		}
 	}
+}
+
+
+function clearCache() {
+	computedProbabilities = {};
 }

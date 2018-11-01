@@ -28,8 +28,8 @@ It is also possible to use the calculation part without the UI. Here is a minima
 ```javascript
 var calculator = new Worker('cldraw.js');
 // set groups and countries
-winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
-runnersUp = [["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
+var winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
+var runnersUp = [["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
 calculator.postMessage([0, winners, runnersUp]);
 // write output to console
 calculator.onmessage = function(e) {
@@ -51,12 +51,43 @@ Array(8) [
 ]
 */
 // calculate probabilities after winners B and F and runners-up A and G have been drawn, returns 6x6 matrix
-drawnWinners = [false, true, false, false, false, true, false, false];
-drawnRunnersUp = [true, false, false, false, false, false, true, false];
+var drawnWinners = [false, true, false, false, false, true, false, false];
+var drawnRunnersUp = [true, false, false, false, false, false, true, false];
 calculator.postMessage([1, drawnWinners, drawnRunnersUp]);
 // draw runner-up H (still unmatched) and calculate probabilites, returns 6x6 matrix
 drawnRunnersUp[7] = true;
 calculator.postMessage([1, drawnWinners, drawnRunnersUp, 7]);
+```
+
+The same example in Node.js:
+```javascript
+var calculator = require('./cldraw');
+// set groups and countries
+var winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
+var runnersUp = [["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
+calculator.initialize(winners, runnersUp);
+
+// calculate overall probabilities, returns 8x8 matrix
+calculator.getProbabilities();
+/*
+[ [ 0,
+    0.1479738518753526,
+    0,
+    0.18287403171354827,
+    ...
+    0,
+    0.12801464076468033 ],
+  [ 0.15933148967312719,
+    0.15155718280510136,
+    ... ] ]
+*/
+// calculate probabilities after winners B and F and runners-up A and G have been drawn, returns 6x6 matrix
+var drawnWinners = [false, true, false, false, false, true, false, false];
+var drawnRunnersUp = [true, false, false, false, false, false, true, false];
+calculator.getProbabilities(drawnWinners, drawnRunnersUp);
+// draw runner-up H (still unmatched) and calculate probabilites, returns 6x6 matrix
+drawnRunnersUp[7] = true;
+calculator.getProbabilities(drawnWinners, drawnRunnersUp, 7);
 ```
 
 ## Algorithm

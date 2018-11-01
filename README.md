@@ -29,7 +29,7 @@ It is also possible to use the calculation part without the UI. Here is a minima
 var calculator = new Worker('cldraw.js');
 // set groups and countries
 winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
-runnersUp = ["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
+runnersUp = [["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
 calculator.postMessage([0, winners, runnersUp]);
 // write output to console
 calculator.onmessage = function(e) {
@@ -62,9 +62,9 @@ calculator.postMessage([1, drawnWinners, drawnRunnersUp, 7]);
 ## Algorithm
 The algorithm (cldraw.js:computeProbabilities()) computes the probabilities of all possible pairings using the [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability). To determine the possible opponents of drawn runners-up (calculation step described in the background section), an implicit "dead end check" is included: All opponents which meet the regulations are tried, the ones that lead to a dead end are ignored afterwards.
 
-To avoid redundant computations, [memoization](https://en.wikipedia.org/wiki/Memoization) is used. Intermediate results are stored and identified using Boolean matrices of size m x m (m := number of unmatched winners). Entry e[i,j] states whether teams i and j can be matched.
+To avoid redundant computations, [memoization](https://en.wikipedia.org/wiki/Memoization) is used. Intermediate results are stored and identified using Boolean matrices of size m x m (m := number of unmatched winners). Entry e[i][j] states whether teams i and j can be matched.
 
-Rows and columns of the probability table can be ordered arbitrarily without changing the probabilities. Hence, as a further optimization, each matrix is sorted by alternatingly sorting rows and columns until the order doesn't change anymore. 
+Rows and columns of the probability table can be ordered arbitrarily without changing the probabilities. Hence, as a further optimization, each matrix is sorted by alternatingly sorting rows and columns until the order doesn't change anymore. *(Note: There might be a better way to sort the matrices, as the number of cached elements depends on whether the sorting is started with rows or with columns. Hence, there exist matrices A and B which could be transformed to the same matrix C but aren't by this approach. Example CL Draw 2017/18: don't sort: 4002 elements, start with rows: 495 elements, start with columns: 554 elements.)*
 
 ## Performance
 The memoization technique described above works better the more similar the teams are (e.g. the algorithm is faster if there are 2 runners-up and 2 winners from country A and 2 runners-up and 2 winners from country B, compared to 1 runner-up and 3 winners from country A and 2 runners-up and 1 winner from country B).

@@ -115,6 +115,8 @@ function initialize(competition, season) {
 	createSeasons(competition);
 	removeButtons();
 	updateFixtures();
+	window.addEventListener('resize', autoResizeTable, false);
+	autoResizeTable();
 
 	// terminate web worker and spawn a new one if there is an ongoing expensive computation
 	if (document.getElementById('cldraw-computation-running').style.display === '') {
@@ -187,12 +189,6 @@ function createTable() {
 		buttonEnlarge.id = 'button-enlarge';
 		buttonEnlarge.classList.add('btn');
 		buttonEnlarge.classList.add('btn-default');
-		// initialize table with smaller size on extra small to medium devices (bootstrap classification)
-		if (window.innerWidth > 1199) {
-			buttonEnlarge.classList.add('disabled');
-		} else {
-			table.classList.add('table-medium');
-		}
 		buttonEnlarge.appendChild(document.createTextNode('＋'));
 		buttonEnlarge.addEventListener('click', resizeTable.bind(null, true), false);
 	}
@@ -966,6 +962,7 @@ function showEditor(visible) {
 
 
 function resizeTable(enlarge) {
+	window.removeEventListener('resize', autoResizeTable, false);
 	var table = document.getElementById('cldraw-table');
 	if (table.classList.contains('table-smallest')) {
 		if (enlarge) {
@@ -1000,6 +997,17 @@ function resizeTable(enlarge) {
 			document.getElementById('button-enlarge').classList.remove('disabled');
 			table.classList.add('table-medium');
 		}
+	}
+}
+
+// shrink table on extra small to medium devices (bootstrap classification)
+function autoResizeTable() {
+	if (window.innerWidth > 1199) {
+		document.getElementById('button-enlarge').classList.add('disabled');
+		document.getElementById('cldraw-table').classList.remove('table-medium');
+	} else {
+		document.getElementById('button-enlarge').classList.remove('disabled');
+		document.getElementById('cldraw-table').classList.add('table-medium');
 	}
 }
 

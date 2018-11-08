@@ -1,0 +1,90 @@
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+body {
+	margin-bottom: 120px;
+}
+
+.padding-0 {
+	padding-right: 0;
+	padding-left: 0;
+}
+
+.navbar {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	color: #555753;
+	text-align: center;
+	background-color: #eeeeec;
+}
+.footer p {
+	margin-bottom: 0;
+}
+.footer a {
+	color: #000000;
+}
+@media (min-width:768px) {
+	.footer {
+		text-align: left;
+	}
+}
+
+.btn-toolbar .btn {
+	margin-bottom: 5px;
+}
+
+.btn-options .btn {
+	margin-bottom: 5px;
+}
+
+.table-medium > thead > tr > th,
+.table-medium > tbody > tr > th,
+.table-medium > tfoot > tr > th,
+.table-medium > thead > tr > td,
+.table-medium > tbody > tr > td,
+.table-medium > tfoot > tr > td {
+	padding: 5px;
+	font-size: 12px;
+}
+
+.table-small > thead > tr > th,
+.table-small > tbody > tr > th,
+.table-small > tfoot > tr > th,
+.table-small > thead > tr > td,
+.table-small > tbody > tr > td,
+.table-small > tfoot > tr > td {
+	padding: 3px;
+	font-size: 10px;
+}
+
+.table-smaller > thead > tr > th,
+.table-smaller > tbody > tr > th,
+.table-smaller > tfoot > tr > th,
+.table-smaller > thead > tr > td,
+.table-smaller > tbody > tr > td,
+.table-smaller > tfoot > tr > td {
+	padding: 2px;
+	font-size: 8px;
+}
+
+.table-smallest > thead > tr > th,
+.table-smallest > tbody > tr > th,
+.table-smallest > tfoot > tr > th,
+.table-smallest > thead > tr > td,
+.table-smallest > tbody > tr > td,
+.table-smallest > tfoot > tr > td {
+	padding: 2px;
+	font-size: 6px;
+}

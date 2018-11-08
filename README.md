@@ -107,4 +107,4 @@ To bypass the long computation times, precomputed probabilities can be used in E
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.
 
-It uses CSS by [bootstrap](https://github.com/twbs/bootstrap) ([Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs)), the favicons were generated with [RealFaviconGenerator](https://realfavicongenerator.net/).
+It uses [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs) and [bootstrap.native](https://github.com/thednp/bootstrap.native) by [thednp](https://github.com/thednp). The favicons were generated with [RealFaviconGenerator](https://realfavicongenerator.net/).

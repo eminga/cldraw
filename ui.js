@@ -109,7 +109,6 @@ function initialize(competition, season) {
 	drawHistory = [];
 	createTable();
 	createEditor();
-	showEditor(false);
 	adjustSizes(competition, season);
 	createCompetitions();
 	createSeasons(competition);
@@ -246,7 +245,7 @@ function createTable() {
 }
 
 
-function createEditor() {
+function createEditor(empty) {
 	document.getElementById('button-editor').style.display = 'none';
 	// only create team editor if the loaded configuration is a sorted cl/el config with group names A...H/L
 	for (var i = 0; i < potSize; i++) {
@@ -291,28 +290,40 @@ function createEditor() {
 			div.classList.add('col-xs-5');
 			var input = document.createElement('input');
 			input.setAttribute('id', 'cldraw-' + type + '-' + i);
-			input.setAttribute('size', '15');
-			if (type == 'winner') {
-				input.value = teamsW[i];
-			} else {
-				input.value = teamsR[i];
+			input.classList.add('col-xs-8');
+			input.classList.add('padding-0');
+			if (!empty) {
+				if (type == 'winner') {
+					input.value = teamsW[i];
+				} else {
+					input.value = teamsR[i];
+				}
 			}
+			input.placeholder = "Team";
 			div.appendChild(input);
 			div.appendChild(document.createTextNode(' '));
 			input = document.createElement('input');
 			input.setAttribute('id', 'cldraw-' + type + '-' + i + '-country');
-			input.setAttribute('size', '3');
-			if (type == 'winner') {
-				input.value = attrW[i][1];
-			} else {
-				input.value = attrR[i][1];
+			input.classList.add('col-xs-4');
+			input.classList.add('padding-0');
+			if (!empty) {
+				if (type == 'winner') {
+					input.value = attrW[i][1];
+				} else {
+					input.value = attrR[i][1];
+				}
 			}
+			input.placeholder = "Country";
 			div.appendChild(input);
 			row.appendChild(div);
 		}
 		editor.appendChild(row);
 	}
-	document.getElementById('cldraw-editor-season').value = selectedSeason[1];
+	if (!empty) {
+		document.getElementById('cldraw-editor-season').value = selectedSeason[1];
+	} else {
+		document.getElementById('cldraw-editor-season').value = "";
+	}
 }
 
 
@@ -324,12 +335,13 @@ function createCompetitions() {
 	var iterator = config.evaluate('//competition', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	competition = iterator.iterateNext();
 	while (competition) {
-		var button = document.createElement('button');
+		var button = document.createElement('li');
 		button.id = ('competition-' + competition.getAttribute('id'));
-		button.classList.add('btn');
-		button.classList.add('btn-default');
+		var a = document.createElement('a');
+		a.setAttribute("role", "button");
 		var text = document.createTextNode(competition.getElementsByTagName('name')[0].textContent);
-		button.appendChild(text);
+		a.appendChild(text);
+		button.appendChild(a);
 		button.addEventListener('click', createSeasons.bind(null, competition.getAttribute('id')), false);
 		buttonList.appendChild(button);
 		competition = iterator.iterateNext();
@@ -347,9 +359,10 @@ function createSeasons(competition) {
 		}
 	}
 	var buttonList = document.getElementById('cldraw-seasons');
-	while (buttonList.firstChild) {
+	while (buttonList.firstChild.id !=='cldraw-seasons-separator') {
 		buttonList.removeChild(buttonList.firstChild);
 	}
+	var seasonSeparator = document.getElementById('cldraw-seasons-separator');
 	var iterator = config.evaluate('//teams[@competition = "' + competition + '"]/@season', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	season = iterator.iterateNext();
 
@@ -358,17 +371,18 @@ function createSeasons(competition) {
 	}
 
 	while (season) {
-		var button = document.createElement('button');
+		var button = document.createElement('li');
 		button.id = ('season-' + competition + '-' + season.textContent);
-		button.classList.add('btn');
-		button.classList.add('btn-default');
 		if (competition == selectedSeason[0] && season.textContent == selectedSeason[1]) {
 			button.classList.add('active');
 		}
+		var a = document.createElement('a');
+		a.setAttribute("role", "button");
 		var text = document.createTextNode(season.textContent);
-		button.appendChild(text);
+		a.appendChild(text);
+		button.appendChild(a);
 		button.addEventListener('click', initialize.bind(null, competition, season.textContent), false);
-		buttonList.appendChild(button);
+		buttonList.insertBefore(button, seasonSeparator);
 		season = iterator.iterateNext();
 	}
 }
@@ -948,19 +962,6 @@ function transposeTable() {
 }
 
 
-function showEditor(visible) {
-	var button = document.getElementById('button-editor');
-	var div = document.getElementById('cldraw-editor');
-	if (visible || (visible == null && !button.classList.contains('active'))) {
-		button.classList.add('active');
-		div.style.display = '';
-	} else {
-		button.classList.remove('active');
-		div.style.display = 'none';
-	}
-}
-
-
 function resizeTable(enlarge) {
 	window.removeEventListener('resize', autoResizeTable, false);
 	var table = document.getElementById('cldraw-table');
@@ -1016,8 +1017,6 @@ function saveTeams() {
 	var season = document.getElementById('cldraw-editor-season').value;
 	var button = document.getElementById('button-editor');
 	button.classList.remove('active');
-	var div = document.getElementById('cldraw-editor');
-	div.style.display = 'none';
 	var teams = document.createElementNS('', 'teams');
 	teams.setAttribute('competition', selectedSeason[0]);
 	teams.setAttribute('season', season);

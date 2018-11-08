@@ -108,7 +108,7 @@ function initialize(competition, season) {
 	}
 	drawHistory = [];
 	createTable();
-	createEditor();
+	showEditorButtons();
 	adjustSizes(competition, season);
 	createCompetitions();
 	createSeasons(competition);
@@ -244,10 +244,11 @@ function createTable() {
 	table.appendChild(tbody);
 }
 
-
-function createEditor(empty) {
+// only show team editor buttons if the loaded configuration is a sorted cl/el config with group names A...H/L
+function showEditorButtons() {
 	document.getElementById('button-editor').style.display = 'none';
-	// only create team editor if the loaded configuration is a sorted cl/el config with group names A...H/L
+	document.getElementById('cldraw-seasons-separator').style.display = 'none';
+	document.getElementById('cldraw-add-season').style.display = 'none';
 	for (var i = 0; i < potSize; i++) {
 		if (i < 12) {
 			if (attrW[i][0] !== String.fromCharCode(65 + i) || attrR[i][0] !== String.fromCharCode(65 + i)) {
@@ -260,6 +261,12 @@ function createEditor(empty) {
 		}
 	}
 	document.getElementById('button-editor').style.display = '';
+	document.getElementById('cldraw-seasons-separator').style.display = '';
+	document.getElementById('cldraw-add-season').style.display = '';
+}
+
+
+function createEditor(empty) {
 	var editor = document.getElementById('cldraw-editor-groups');
 	while (editor.firstChild) {
 		editor.removeChild(editor.firstChild);
@@ -359,7 +366,7 @@ function createSeasons(competition) {
 		}
 	}
 	var buttonList = document.getElementById('cldraw-seasons');
-	while (buttonList.firstChild.id !=='cldraw-seasons-separator') {
+	while (buttonList.firstChild.id !== 'cldraw-seasons-separator') {
 		buttonList.removeChild(buttonList.firstChild);
 	}
 	var seasonSeparator = document.getElementById('cldraw-seasons-separator');

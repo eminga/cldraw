@@ -26,6 +26,7 @@ const GET_PROBABILITIES_PREVIEW = 2;
 const IMPORT_PROBABILITIES = 3;
 const EXPORT_PROBABILITIES = 4;
 const CLEAR_CACHE = 5;
+const GET_ID = 6;
 
 var previewMode = false;
 var hideMode = false;
@@ -142,26 +143,34 @@ function initialize(competition, season) {
 	document.getElementById('button-dl').style.display = 'none';
 
 	if (potSize > 12) {
-		calculator.postMessage([IMPORT_PROBABILITIES, true]);
+		// check if precomputed probabilities are available
+		calculator.postMessage([GET_ID]);
 		calculator.onmessage = function(e) {
-			if (e.data === true) {
+			if (e.data[1] === true) {
 				ignoreClicks = false;
 				reset();
 			} else {
-				document.getElementById('cldraw-computation').style.display = '';
-				if (e.data) {
-					if (e.data != -1) {
-						document.getElementById('cldraw-dlsize').innerHTML = '(' + (e.data / 1000000).toFixed(1) + ' MB)';
+				var filename = 'probabilities/' + e.data[0] + '.json';
+				var xhr = new XMLHttpRequest();
+				xhr.open('HEAD', filename);
+				xhr.onreadystatechange = function() {
+					if (xhr.status != 200) {
+						document.getElementById('cldraw-computation-download').classList.add('disabled');
+						document.getElementById('cldraw-dlbadge').innerHTML = 'not available';
+						document.getElementById('cldraw-dlsize').innerHTML = '';
 					} else {
-						document.getElementById('cldraw-dlsize').innerHTML = '(ca. 5 MB)';
+						var contentLength = xhr.getResponseHeader('Content-Length');
+						if (contentLength != null) {
+							document.getElementById('cldraw-dlsize').innerHTML = '(' + (contentLength / 1000000).toFixed(1) + ' MB)';
+						} else {
+							document.getElementById('cldraw-dlsize').innerHTML = '(ca. 5 MB)';
+						}
+						document.getElementById('cldraw-computation-download').classList.remove('disabled');
+						document.getElementById('cldraw-dlbadge').innerHTML = 'recommended';
 					}
-					document.getElementById('cldraw-computation-download').classList.remove('disabled');
-					document.getElementById('cldraw-dlbadge').innerHTML = 'recommended';
-				} else {
-					document.getElementById('cldraw-computation-download').classList.add('disabled');
-					document.getElementById('cldraw-dlbadge').innerHTML = 'not available';
-					document.getElementById('cldraw-dlsize').innerHTML = '';
-				}
+					document.getElementById('cldraw-computation').style.display = '';
+				};
+				xhr.send();
 			}
 		}
 	} else {
@@ -473,13 +482,49 @@ function reset(expensive) {
 
 function downloadProbabilities() {
 	if (!document.getElementById('cldraw-computation-download').classList.contains('disabled')) {
+		document.getElementById('cldraw-computation').style.display = 'none';
 		precomputedSeasons.add(selectedSeason.toString());
-		calculator.postMessage([IMPORT_PROBABILITIES]);
+		calculator.postMessage([GET_ID]);
 		calculator.onmessage = function(e) {
-			importedLimit[selectedSeason.toString()] = e.data;
-			ignoreClicks = false;
-			reset();
+			var filename = 'probabilities/' + e.data[0] + '.json';
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener('load', processDownload);
+			xhr.addEventListener('progress', updateProgress);
+			//xhr.addEventListener('error', transferFailed);
+			//xhr.addEventListener('abort', transferCanceled);
+			xhr.open('GET', filename);
+			xhr.send();
 		}
+	}
+}
+
+
+function processDownload() {
+	var probabilities = JSON.parse(this.responseText);
+	var minLength = 999999;
+	for (var id in probabilities) {
+		if (id.length < minLength) {
+			minLength = id.length;
+		}
+	}
+	calculator.postMessage([IMPORT_PROBABILITIES, probabilities]);
+	importedLimit[selectedSeason.toString()] = minLength / 4;
+
+	document.getElementById("cldraw-dlprogress").style.display = 'none';
+	ignoreClicks = false;
+	reset();
+}
+
+
+function updateProgress(progress) {
+	if (progress.lengthComputable) {
+		document.getElementById("cldraw-dlprogress").style.display = '';
+		var percentComplete = progress.loaded / progress.total * 100;
+		document.getElementById("cldraw-dlprogress-value").innerHTML = (progress.loaded / 1000000).toFixed(1) + "MB / " + (progress.total / 1000000).toFixed(1) + "MB";
+		document.getElementById("cldraw-dlprogressbar").style.width = percentComplete + '%';
+		document.getElementById("cldraw-dlprogressbar").setAttribute('aria-valuenow', percentComplete);
+	} else {
+		document.getElementById("cldraw-dlprogress").style.display = 'none';
 	}
 }
 

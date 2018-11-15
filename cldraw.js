@@ -37,6 +37,7 @@ if (typeof(onmessage) !== 'undefined') {
 	const IMPORT_PROBABILITIES = 3;
 	const EXPORT_PROBABILITIES = 4;
 	const CLEAR_CACHE = 5;
+	const GET_ID = 6;
 	onmessage = function(e) {
 		if (e.data[0] == INITIALIZE) {
 			initialize(e.data[1], e.data[2]);
@@ -50,6 +51,8 @@ if (typeof(onmessage) !== 'undefined') {
 			postMessage(exportProbabilities(e.data[1]));
 		} else if (e.data[0] == CLEAR_CACHE) {
 			clearCache();
+		} else if (e.data[0] == GET_ID) {
+			postMessage(getId());
 		}
 	}
 }
@@ -58,9 +61,10 @@ if (typeof(exports) !== 'undefined') {
 	exports.initialize = initialize;
 	exports.getProbabilities = getProbabilities;
 	exports.getProbabilitiesPreview = getProbabilitiesPreview;
-	//exports.importProbabilities = importProbabilities;
+	exports.importProbabilities = importProbabilities;
 	exports.exportProbabilities = exportProbabilities;
 	exports.clearCache = clearCache;
+	exports.getId = getId;
 }
 
 
@@ -94,7 +98,7 @@ function initialize(attr1, attr2) {
 		}
 	}
 
-	seasonId = idToString(generateId(fullCompatibilityMatrix)[0]);
+	seasonId = idToString(generateSortedId(fullCompatibilityMatrix)[0]);
 	if (seasonLog[seasonId] == undefined) {
 		seasonLog[seasonId] = new Set();
 	}
@@ -117,7 +121,7 @@ function sortMatrix(matrix, rowOrder, columnOrder, inverse) {
 	return result;
 }
 
-function generateSubId(matrix, order, rowMode) {
+function generateUnsortedId(matrix, order, rowMode) {
 	var id = [];
 	for (var i = 0; i < matrix.length; i++) {
 		var temp = 0;
@@ -142,7 +146,7 @@ function generateSubId(matrix, order, rowMode) {
 // The matrix is sorted until the ID doesn't change anymore.
 // The result is then an ID characterizing the rows of the sorted matrix and two order arrays
 // characterizing the permutation of the original matrix to undo or redo the sorting.
-function generateId(compatibilityMatrix) {
+function generateSortedId(compatibilityMatrix) {
 	var rowOrder = [];
 	var columnOrder = [];
 	for (var i = 0; i < compatibilityMatrix.length; i++) {
@@ -160,7 +164,7 @@ function generateId(compatibilityMatrix) {
 		} else {
 			var order = columnOrder;
 		}
-		var subId = generateSubId(matrix2, order, row);
+		var subId = generateUnsortedId(matrix2, order, row);
 		sorted[row ? 0 : 1] = true;
 		var maximum = -1;
 		for (var i = 0; i < subId.length; i++) {
@@ -241,7 +245,7 @@ function saveProbabilities(id, probabilities) {
 function computeProbabilities(compatibilityMatrix, unmatchedRunnerUp) {
 	if (unmatchedRunnerUp == undefined) {
 		// use cached probabilities if existing
-		var id = generateId(compatibilityMatrix);
+		var id = generateSortedId(compatibilityMatrix);
 		var cachedProbabilities = loadProbabilities(id);
 		if (cachedProbabilities !== undefined) {
 			return cachedProbabilities;
@@ -423,48 +427,18 @@ function exportProbabilities(limit) {
 }
 
 
-function importProbabilities(onlyCheckAvailability) {
-	// if available, load precomputed probabilities
-	var id = generateId(fullCompatibilityMatrix);
-	var s = idToString(id[0]);
-	if (computedProbabilities[s] !== undefined) {
-		return true;
-	}
-	var filename = 'probabilities/' + s + '.json';
-	var xhr = new XMLHttpRequest();
-
-	if (onlyCheckAvailability) {
-		xhr.open('HEAD', filename, false);
-		xhr.send();
-		if (xhr.status != 200) {
-			return false;
-		} else {
-			var contentLength = xhr.getResponseHeader('Content-Length');
-			if (contentLength == null) {
-				contentLength = -1;
-			}
-			return contentLength;
-		}
-	} else {
-		xhr.open('GET', filename, false);
-		xhr.send();
-		if (xhr.status == 200) {
-			var newProbabilities = JSON.parse(xhr.responseText);
-			var minLength = 999999;
-			for (var id in newProbabilities) {
-				if (id.length < minLength) {
-					minLength = id.length;
-				}
-				computedProbabilities[id] = newProbabilities[id];
-			}
-			return minLength / 4;
-		} else {
-			return false;
-		}
+function importProbabilities(probabilities) {
+	for (var id in probabilities) {
+		computedProbabilities[id] = probabilities[id];
 	}
 }
 
 
 function clearCache() {
 	computedProbabilities = {};
+}
+
+
+function getId() {
+	return [seasonId, computedProbabilities[seasonId] !== undefined];
 }

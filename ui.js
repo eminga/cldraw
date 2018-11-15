@@ -490,6 +490,8 @@ function downloadProbabilities() {
 			var xhr = new XMLHttpRequest();
 			xhr.addEventListener('load', processDownload);
 			xhr.addEventListener('progress', updateProgress);
+			xhr.addEventListener('error', abortDownload);
+			xhr.addEventListener('abort', abortDownload);
 			xhr.open('GET', filename);
 			xhr.send();
 		}
@@ -511,6 +513,11 @@ function processDownload() {
 	document.getElementById("cldraw-dlprogress").style.display = 'none';
 	ignoreClicks = false;
 	reset();
+}
+
+
+function abortDownload() {
+	initialize(selectedSeason[0], selectedSeason[1]);
 }
 
 

@@ -750,20 +750,33 @@ function updateFixtures() {
 	var fixtures = document.getElementsByClassName('cldraw-fixtures');
 	var l = Math.ceil(potSize / fixtures.length);
 	for (var i = 0; i < fixtures.length; i++) {
-		var text = '';
-		for (var j = i * l; j < l * (i + 1); j++) {
-			if (j * 2 < drawHistory.length) {
-				team = drawHistory[j * 2];
-				text += teamsR[team] + ' - ';
-				if (j * 2 + 1 < drawHistory.length) {
-					team = drawHistory[j * 2 + 1];
-					text += teamsW[team - potSize];
-				}
-			}
-			text += '<br>';
+		while (fixtures[i].firstChild) {
+			fixtures[i].removeChild(fixtures[i].firstChild);
 		}
-		fixtures[i].innerHTML = text;
-
+		for (var j = i * l; j < l * (i + 1); j++) {
+			var row = document.createElement('div');
+			row.classList.add('row');
+			var col = document.createElement('div');
+			col.classList.add('col-xs-6');
+			col.classList.add('text-right');
+			col.classList.add('padding-0');
+			if (j * 2 < drawHistory.length) {
+				col.appendChild(document.createTextNode(teamsR[drawHistory[j * 2]] + '\u00A0–'));
+				row.appendChild(col);
+				if (j * 2 + 1 < drawHistory.length) {
+					var col = document.createElement('div');
+					col.classList.add('col-xs-6');
+					col.classList.add('text-left');
+					col.classList.add('padding-0');
+					col.appendChild(document.createTextNode('\u00A0' + teamsW[drawHistory[j * 2 + 1] - potSize]));
+					row.appendChild(col);
+				}
+			} else {
+				col.appendChild(document.createTextNode('\u00A0–'));
+				row.appendChild(col);
+			}
+			fixtures[i].appendChild(row);
+		}
 	}
 	if (drawHistory.length > 0) {
 		document.getElementById('button-undo').classList.remove('disabled');

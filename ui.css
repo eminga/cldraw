@@ -49,6 +49,12 @@ body {
 	margin-bottom: 5px;
 }
 
+@media not all and (any-pointer: fine) {
+	#button-preview {
+		display: none;
+	}
+}
+
 .table-medium > thead > tr > th,
 .table-medium > tbody > tr > th,
 .table-medium > tfoot > tr > th,

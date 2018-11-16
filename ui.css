@@ -49,7 +49,7 @@ body {
 	margin-bottom: 5px;
 }
 
-@media not all and (any-pointer: fine) {
+@media (any-hover: none) {
 	#button-preview {
 		display: none;
 	}

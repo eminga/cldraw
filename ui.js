@@ -727,25 +727,28 @@ function updateFixtures() {
 		for (var j = i * l; j < l * (i + 1); j++) {
 			var row = document.createElement('div');
 			row.classList.add('row');
-			var col = document.createElement('div');
-			col.classList.add('col-xs-6');
-			col.classList.add('text-right');
-			col.classList.add('padding-0');
+			var left = document.createElement('div');
+			left.classList.add('col-xs-6');
+			left.classList.add('text-right');
+			left.classList.add('padding-0');
+			var right = document.createElement('div');
+			right.classList.add('col-xs-6');
+			right.classList.add('text-left');
+			right.classList.add('padding-0');
+			var small = document.createElement('small');
+			small.appendChild(document.createTextNode('s\u00A0\u00A0'));
+			right.appendChild(small);
 			if (j * 2 < drawHistory.length) {
-				col.appendChild(document.createTextNode(teamsR[drawHistory[j * 2]] + '\u00A0–'));
-				row.appendChild(col);
+				left.appendChild(document.createTextNode(teamsR[drawHistory[j * 2]]));
 				if (j * 2 + 1 < drawHistory.length) {
-					var col = document.createElement('div');
-					col.classList.add('col-xs-6');
-					col.classList.add('text-left');
-					col.classList.add('padding-0');
-					col.appendChild(document.createTextNode('\u00A0' + teamsW[drawHistory[j * 2 + 1] - potSize]));
-					row.appendChild(col);
+					right.appendChild(document.createTextNode(teamsW[drawHistory[j * 2 + 1] - potSize]));
 				}
-			} else {
-				col.appendChild(document.createTextNode('\u00A0–'));
-				row.appendChild(col);
 			}
+			small = document.createElement('small');
+			small.appendChild(document.createTextNode('\u00A0\u00A0v'));
+			left.appendChild(small);
+			row.appendChild(left);
+			row.appendChild(right);
 			fixtures[i].appendChild(row);
 		}
 	}

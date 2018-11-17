@@ -277,63 +277,34 @@ function showEditorButtons() {
 
 function createEditor(empty) {
 	var editor = document.getElementById('cldraw-editor-groups');
-	while (editor.firstChild) {
-		editor.removeChild(editor.firstChild);
+	while (editor.children.length > potSize) {
+		editor.removeChild(editor.lastChild);
+	}
+	while (editor.children.length < potSize) {
+		editor.appendChild(editor.firstElementChild.cloneNode(true));
 	}
 	for (var i = 0; i < potSize; i++) {
-		String.fromCharCode(65 + i)
-		var row = document.createElement('div');
-		row.classList.add('row');
-		var div = document.createElement('div');
-		div.classList.add('col-xs-2');
-		var label = document.createElement('label');
-		label.setAttribute('for', 'cldraw-winner-' + i);
+		var p = document.getElementsByClassName('cldraw-editor-label')[i];
 		if (i < 12) {
-			label.appendChild(document.createTextNode('Group ' + String.fromCharCode(65 + i) + ':'));
+			p.innerHTML = 'Group ' + String.fromCharCode(65 + i) + ':';
 		} else {
-			label.appendChild(document.createTextNode('CL ' + (i - 11) + ':'));
+			p.innerHTML = 'CL ' + (i - 11) + ':';
 		}
-		label.appendChild(document.createElement('p'));
-		div.appendChild(label);
-		row.appendChild(div);
-		for (var j = 0; j < 2; j++) {
-			if (j == 0) {
-				var type = 'winner';
-			} else {
-				var type = 'runner-up';
-			}
-			var div = document.createElement('div');
-			div.classList.add('col-xs-5');
-			var input = document.createElement('input');
-			input.setAttribute('id', 'cldraw-' + type + '-' + i);
-			input.classList.add('col-xs-8');
-			input.classList.add('padding-0');
-			if (!empty) {
-				if (type == 'winner') {
-					input.value = teamsW[i];
-				} else {
-					input.value = teamsR[i];
-				}
-			}
-			input.placeholder = "Team";
-			div.appendChild(input);
-			div.appendChild(document.createTextNode(' '));
-			input = document.createElement('input');
-			input.setAttribute('id', 'cldraw-' + type + '-' + i + '-country');
-			input.classList.add('col-xs-4');
-			input.classList.add('padding-0');
-			if (!empty) {
-				if (type == 'winner') {
-					input.value = attrW[i][1];
-				} else {
-					input.value = attrR[i][1];
-				}
-			}
-			input.placeholder = "Country";
-			div.appendChild(input);
-			row.appendChild(div);
+		var winner = document.getElementsByClassName('cldraw-winner')[i];
+		var winnerCountry = document.getElementsByClassName('cldraw-winner-country')[i];
+		var runnerUp = document.getElementsByClassName('cldraw-runner-up')[i];
+		var runnerUpCountry = document.getElementsByClassName('cldraw-runner-up-country')[i];
+		if (!empty) {
+			winner.value = teamsW[i];
+			winnerCountry.value = attrW[i][1];
+			runnerUp.value = teamsR[i];
+			runnerUpCountry.value = attrR[i][1];
+		} else {
+			winner.value = '';
+			winnerCountry.value = '';
+			runnerUp.value = '';
+			runnerUpCountry.value = '';
 		}
-		editor.appendChild(row);
 	}
 	if (!empty) {
 		document.getElementById('cldraw-editor-season').value = selectedSeason[1];
@@ -1094,19 +1065,19 @@ function saveTeams() {
 	var runnersUp = document.createElementNS('', 'runners-up');
 	for (var i = 0; i < potSize; i++) {
 		var team = document.createElementNS('', 'team');
-		team.textContent = document.getElementById('cldraw-winner-' + i).value;
+		team.textContent = document.getElementsByClassName('cldraw-winner')[i].value;
 		if (i < 12) {
 			team.setAttribute('group', String.fromCharCode(65 + i));
 		}
-		team.setAttribute('country', document.getElementById('cldraw-winner-' + i + '-country').value);
+		team.setAttribute('country', document.getElementsByClassName('cldraw-winner-country')[i].value);
 		winners.appendChild(team);
 
 		team = document.createElementNS('', 'team');
-		team.textContent = document.getElementById('cldraw-runner-up-' + i).value;
+		team.textContent = document.getElementsByClassName('cldraw-runner-up')[i].value;
 		if (i < 12) {
 			team.setAttribute('group', String.fromCharCode(65 + i));
 		}
-		team.setAttribute('country', document.getElementById('cldraw-runner-up-' + i + '-country').value);
+		team.setAttribute('country', document.getElementsByClassName('cldraw-runner-up-country')[i].value);
 		runnersUp.appendChild(team);
 	}
 	teams.appendChild(winners);

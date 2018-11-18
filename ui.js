@@ -718,9 +718,13 @@ function updateFixtures() {
 			right.appendChild(small);
 			if (j * 2 < drawHistory.length) {
 				left.appendChild(document.createTextNode(teamsR[drawHistory[j * 2]]));
-				if (j * 2 + 1 < drawHistory.length) {
-					right.appendChild(document.createTextNode(teamsW[drawHistory[j * 2 + 1] - potSize]));
-				}
+			} else {
+				left.appendChild(document.createTextNode('.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.'));
+			}
+			if (j * 2 + 1 < drawHistory.length) {
+				right.appendChild(document.createTextNode(teamsW[drawHistory[j * 2 + 1] - potSize]));
+			} else {
+				right.appendChild(document.createTextNode('.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.'));
 			}
 			small = document.createElement('small');
 			small.appendChild(document.createTextNode('\u00A0\u00A0v'));

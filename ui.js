@@ -128,6 +128,10 @@ function initialize(competition, season) {
 				ignoreClicks = false;
 				reset();
 			} else {
+				document.getElementById('cldraw-computation').style.display = '';
+				document.getElementById('cldraw-computation-download').classList.add('disabled');
+				document.getElementById('cldraw-dlbadge').innerHTML = 'checking availability...';
+				document.getElementById('cldraw-dlsize').innerHTML = '';
 				var filename = 'probabilities/' + e.data[0] + '.json';
 				var xhr = new XMLHttpRequest();
 				xhr.open('HEAD', filename);
@@ -146,7 +150,6 @@ function initialize(competition, season) {
 						document.getElementById('cldraw-computation-download').classList.remove('disabled');
 						document.getElementById('cldraw-dlbadge').innerHTML = 'recommended';
 					}
-					document.getElementById('cldraw-computation').style.display = '';
 				};
 				xhr.send();
 			}

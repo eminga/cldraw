@@ -59,43 +59,45 @@
 						<div class="modal-body">
 							<div class="row">
 								<div class="col-xs-5 col-xs-offset-2">
-									<label>Group winners:</label>
+									<label class="control-label">Group winners:</label>
 								</div>
 								<div class="col-xs-5">
-									<label>Group runners-up:</label>
+									<label class="control-label">Group runners-up:</label>
 								</div>
 							</div>
-							<div id="cldraw-editor-groups" class="form-group">
-								<div class="row">
+							<form id="cldraw-editor-groups" class="form-horizontal">
+								<div class="form-group">
 									<div class="col-xs-2">
-										<label><p class="cldraw-editor-label"></p></label>
+										<label class="cldraw-editor-label control-label"></label>
 									</div>
 									<div class="col-xs-5">
 										<div class="col-xs-7 padding-0">
-											<input type="text" placeholder="Team" class="cldraw-winner" style="max-width: 100%"></input>
+											<input type="text" placeholder="Team" class="cldraw-winner form-control" style="max-width: 100%"></input>
 										</div>
 										<div class="col-xs-4 col-xs-offset-1 padding-0">
-											<input type="text" placeholder="Country" class="cldraw-winner-country" style="max-width: 100%"></input>
+											<input type="text" placeholder="Country" class="cldraw-winner-country form-control" style="max-width: 100%"></input>
 										</div>
 									</div>
 									<div class="col-xs-5">
 										<div class="col-xs-7 padding-0">
-											<input type="text" placeholder="Team" class="cldraw-runner-up" style="max-width: 100%"></input>
+											<input type="text" placeholder="Team" class="cldraw-runner-up form-control" style="max-width: 100%"></input>
 										</div>
 										<div class="col-xs-4 col-xs-offset-1 padding-0">
-											<input type="text" placeholder="Country" class="cldraw-runner-up-country" style="max-width: 100%"></input>
+											<input type="text" placeholder="Country" class="cldraw-runner-up-country form-control" style="max-width: 100%"></input>
 										</div>
 									</div>
 								</div>
-							</div>
-							<div class="row">
-								<div class="col-xs-2">
-									<label for="cldraw-editor-season">Season:</label>
+							</form>
+							<form class="form-horizontal" style="margin-top: 30px">
+								<div class="form-group">
+									<div class="col-xs-2">
+										<label class="control-label" for="cldraw-editor-season">Season:</label>
+									</div>
+									<div class="col-xs-3">
+										<input class="form-control" id="cldraw-editor-season" size="10" placeholder="20xx/xx">
+									</div>
 								</div>
-								<div class="col-xs-3">
-									<input id="cldraw-editor-season" size="10" placeholder="20xx/xx">
-								</div>
-							</div>
+							</form>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

@@ -24,6 +24,7 @@ var drawnR = [];
 // matched[i] == j if teams i and j are matched
 var matched = [];
 var drawHistory = [];
+var activeDownload;
 var precomputedSeasons = new Set();
 var importedLimit = {};
 var ignoreClicks = true;
@@ -105,6 +106,12 @@ function initialize(competition, season) {
 		document.getElementById('cldraw-computation-running').style.display = 'none';
 	}
 	document.getElementById('cldraw-computation-running2').style.display = 'none';
+
+	if (activeDownload != null) {
+		activeDownload.abort();
+		activeDownload = null;
+	}
+	document.getElementById('cldraw-dlprogress').style.display = 'none';
 
 	calculator.postMessage([INITIALIZE, attrW, attrR]);
 
@@ -435,17 +442,18 @@ function reset(expensive) {
 function downloadProbabilities() {
 	if (!document.getElementById('cldraw-computation-download').classList.contains('disabled')) {
 		document.getElementById('cldraw-computation').style.display = 'none';
+		document.getElementById('cldraw-dlprogress').style.display = '';
 		precomputedSeasons.add(selectedSeason.toString());
 		calculator.postMessage([GET_ID]);
 		calculator.onmessage = function(e) {
 			var filename = 'probabilities/' + e.data[0] + '.json';
-			var xhr = new XMLHttpRequest();
-			xhr.addEventListener('load', processDownload);
-			xhr.addEventListener('progress', updateProgress);
-			xhr.addEventListener('error', abortDownload);
-			xhr.addEventListener('abort', abortDownload);
-			xhr.open('GET', filename);
-			xhr.send();
+			activeDownload = new XMLHttpRequest();
+			activeDownload.addEventListener('load', processDownload);
+			activeDownload.addEventListener('progress', updateProgress);
+			activeDownload.addEventListener('error', abortDownload);
+			activeDownload.addEventListener('abort', abortDownload);
+			activeDownload.open('GET', filename);
+			activeDownload.send();
 		}
 	}
 }
@@ -462,7 +470,7 @@ function processDownload() {
 	calculator.postMessage([IMPORT_PROBABILITIES, probabilities]);
 	importedLimit[selectedSeason.toString()] = minLength / 4;
 
-	document.getElementById("cldraw-dlprogress").style.display = 'none';
+	document.getElementById('cldraw-dlprogress').style.display = 'none';
 	ignoreClicks = false;
 	reset();
 }
@@ -475,13 +483,15 @@ function abortDownload() {
 
 function updateProgress(progress) {
 	if (progress.lengthComputable) {
-		document.getElementById("cldraw-dlprogress").style.display = '';
+		document.getElementById('cldraw-dlprogress-text').style.display = '';
+		document.getElementById('cldraw-dlprogress-text').innerHTML = (progress.loaded / 1000000).toFixed(1) + 'MB of ' + (progress.total / 1000000).toFixed(1) + 'MB downloaded.';
 		var percentComplete = progress.loaded / progress.total * 100;
-		document.getElementById("cldraw-dlprogress-value").innerHTML = (progress.loaded / 1000000).toFixed(1) + "MB / " + (progress.total / 1000000).toFixed(1) + "MB";
-		document.getElementById("cldraw-dlprogressbar").style.width = percentComplete + '%';
-		document.getElementById("cldraw-dlprogressbar").setAttribute('aria-valuenow', percentComplete.toFixed());
+		document.getElementById('cldraw-dlprogressbar').style.width = percentComplete + '%';
+		document.getElementById('cldraw-dlprogressbar').setAttribute('aria-valuenow', percentComplete.toFixed());
 	} else {
-		document.getElementById("cldraw-dlprogress").style.display = 'none';
+		document.getElementById('cldraw-dlprogressbar').style.width = '100%';
+		document.getElementById('cldraw-dlprogressbar').setAttribute('aria-valuenow', 100);
+		document.getElementById('cldraw-dlprogress-text').style.display = 'none';
 	}
 }
 

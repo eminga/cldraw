@@ -484,7 +484,7 @@ function abortDownload() {
 function updateProgress(progress) {
 	if (progress.lengthComputable) {
 		document.getElementById('cldraw-dlprogress-text').style.display = '';
-		document.getElementById('cldraw-dlprogress-text').innerHTML = (progress.loaded / 1000000).toFixed(1) + 'MB of ' + (progress.total / 1000000).toFixed(1) + 'MB downloaded.';
+		document.getElementById('cldraw-dlprogress-text').innerHTML = (progress.loaded / 1000000).toFixed(1) + ' MB of ' + (progress.total / 1000000).toFixed(1) + ' MB downloaded.';
 		var percentComplete = progress.loaded / progress.total * 100;
 		document.getElementById('cldraw-dlprogressbar').style.width = percentComplete + '%';
 		document.getElementById('cldraw-dlprogressbar').setAttribute('aria-valuenow', percentComplete.toFixed());

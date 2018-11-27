@@ -22,12 +22,12 @@
 
 'use strict';
 
-var computedProbabilities = {};
-var fullCompatibilityMatrix;
+let computedProbabilities = {};
+let fullCompatibilityMatrix;
 
 // needed for export function
-var seasonId;
-var seasonLog = {};
+let seasonId;
+let seasonLog = {};
 
 // Web Worker
 if (typeof(onmessage) !== 'undefined') {
@@ -72,18 +72,19 @@ function initialize(attr1, attr2) {
 	if (attr2 == null && !Array.isArray(attr1[0][0])) {
 		fullCompatibilityMatrix = attr1;
 	} else {
+		let attributes;
 		if (attr2 != null) {
-			var attributes = [attr1, attr2];
+			attributes = [attr1, attr2];
 		} else {
-			var attributes = attr1;
+			attributes = attr1;
 		}
 		fullCompatibilityMatrix = [];
 		// use attributes to build compatibility matrix
-		for (var i = 0; i < attributes[0].length; i++) {
-			var row = [];
-			for (var j = 0; j < attributes[0].length; j++) {
-				var matchable = true;
-				for (var k = 0; k < attributes[0][i].length; k++) {
+		for (let i = 0; i < attributes[0].length; i++) {
+			let row = [];
+			for (let j = 0; j < attributes[0].length; j++) {
+				let matchable = true;
+				for (let k = 0; k < attributes[0][i].length; k++) {
 					if (attributes[0][i][k] == attributes[1][j][k] && attributes[0][i][k] != null
 							&& attributes[1][j][k] != null && attributes[0][i][k] !== '' && attributes[1][j][k] !== '') {
 						matchable = false;
@@ -106,12 +107,12 @@ function initialize(attr1, attr2) {
 }
 
 function sortMatrix(matrix, rowOrder, columnOrder, inverse) {
-	var result = [];
-	for (var i = 0; i < rowOrder.length; i++) {
+	let result = [];
+	for (let i = 0; i < rowOrder.length; i++) {
 		result[i] = [];
 	}
-	for (var i = 0; i < rowOrder.length; i++) {
-		for (var j = 0; j < rowOrder.length; j++) {
+	for (let i = 0; i < rowOrder.length; i++) {
+		for (let j = 0; j < rowOrder.length; j++) {
 			if (!inverse) {
 				result[i][j] = matrix[rowOrder[i]][columnOrder[j]];
 			} else {
@@ -125,15 +126,16 @@ function sortMatrix(matrix, rowOrder, columnOrder, inverse) {
 // maps each row/column of the (boolean) compatibility matrix to
 // an int in {0,...,(2^n)-1} (n := number of undrawn winners)
 function generateUnsortedId(matrix, order, rowMode) {
-	var id = [];
-	for (var i = 0; i < matrix.length; i++) {
-		var temp = 0;
-		for (var j = 0; j < matrix.length; j++) {
+	let id = [];
+	for (let i = 0; i < matrix.length; i++) {
+		let temp = 0;
+		for (let j = 0; j < matrix.length; j++) {
 			temp <<= 1;
+			let entry;
 			if (rowMode) {
-				var entry = matrix[i][j];
+				entry = matrix[i][j];
 			} else {
-				var entry = matrix[j][i];
+				entry = matrix[j][i];
 			}
 			if (entry) {
 				temp |= 1;
@@ -150,27 +152,29 @@ function generateUnsortedId(matrix, order, rowMode) {
 // result includes two order arrays characterizing the permutation of 
 // the original matrix to undo or redo the sorting
 function generateSortedId(compatibilityMatrix) {
-	var rowOrder = [];
-	var columnOrder = [];
-	for (var i = 0; i < compatibilityMatrix.length; i++) {
+	let rowOrder = [];
+	let columnOrder = [];
+	for (let i = 0; i < compatibilityMatrix.length; i++) {
 		rowOrder.push(i);
 		columnOrder.push(i);
 	}
 
-	var matrix2 = compatibilityMatrix;
-	var row = true;
-	var sorted = [false, false];
+	let matrix2 = compatibilityMatrix;
+	let row = true;
+	let sorted = [false, false];
+	let id;
 	// alternatingly sort rows and columns
 	while (true) {
+		let order;
 		if (row) {
-			var order = rowOrder;
+			order = rowOrder;
 		} else {
-			var order = columnOrder;
+			order = columnOrder;
 		}
-		var subId = generateUnsortedId(matrix2, order, row);
+		let subId = generateUnsortedId(matrix2, order, row);
 		sorted[row ? 0 : 1] = true;
-		var maximum = -1;
-		for (var i = 0; i < subId.length; i++) {
+		let maximum = -1;
+		for (let i = 0; i < subId.length; i++) {
 			if (subId[i][0] < maximum) {
 				sorted[row ? 0 : 1] = false;
 				break;
@@ -182,12 +186,12 @@ function generateSortedId(compatibilityMatrix) {
 			subId.sort(function(a,b) {
 				return a[0] - b[0];
 			});
-			for (var i = 0; i < subId.length; i++) {
+			for (let i = 0; i < subId.length; i++) {
 				order[i] = subId[i][1];
 			}
 		}
 		if (row) {
-			var id = subId;
+			id = subId;
 		}
 		if (sorted[0] && sorted[1]) {
 			break;
@@ -195,8 +199,8 @@ function generateSortedId(compatibilityMatrix) {
 		matrix2 = sortMatrix(compatibilityMatrix, rowOrder, columnOrder);
 		row = !row;
 	}
-	var key = [];
-	for (var i = 0; i < id.length; i++) {
+	let key = [];
+	for (let i = 0; i < id.length; i++) {
 		key[i] = id[i][0];
 	}
 
@@ -205,8 +209,8 @@ function generateSortedId(compatibilityMatrix) {
 
 
 function idToString(id) {
-	var s = '';
-	for (var i = 0; i < id.length; i++) {
+	let s = '';
+	for (let i = 0; i < id.length; i++) {
 		if (id[i] < 16) {
 			s += '000' + (id[i]).toString(16);
 		} else if (id[i] < 256) {
@@ -222,61 +226,62 @@ function idToString(id) {
 
 // returns cached probabilities, null if dead end or undefined if not cached yet
 function loadProbabilities(id) {
-	var s = idToString(id[0]);
+	let s = idToString(id[0]);
 	seasonLog[seasonId].add(s);
-	var temp = computedProbabilities[s];
+	let temp = computedProbabilities[s];
 	if (temp == null) {
 		return temp;
 	}
-	var probabilities = sortMatrix(temp, id[1], id[2], true);
+	let probabilities = sortMatrix(temp, id[1], id[2], true);
 	return probabilities;
 }
 
 // caches probabilities
 function saveProbabilities(id, probabilities) {
-	var s = idToString(id[0]);
+	let s = idToString(id[0]);
 	computedProbabilities[s] = probabilities;
 	if (probabilities == null) {
 		computedProbabilities[s] = null;
 	} else {
-		var temp = sortMatrix(probabilities, id[1], id[2]);
+		let temp = sortMatrix(probabilities, id[1], id[2]);
 		computedProbabilities[s] = temp;
 	}
 }
 
 
 function computeProbabilities(compatibilityMatrix, unmatchedRunnerUp) {
+	let id;
 	if (unmatchedRunnerUp == undefined) {
 		// use cached probabilities if existing
-		var id = generateSortedId(compatibilityMatrix);
-		var cachedProbabilities = loadProbabilities(id);
+		id = generateSortedId(compatibilityMatrix);
+		let cachedProbabilities = loadProbabilities(id);
 		if (cachedProbabilities !== undefined) {
 			return cachedProbabilities;
 		}
 	}
 
-	var probabilities = [];
-	var options = 0;
-	var size = compatibilityMatrix.length;
+	let probabilities = [];
+	let options = 0;
+	let size = compatibilityMatrix.length;
 
-	for (var i = 0; i < size; i++) {
+	for (let i = 0; i < size; i++) {
 		probabilities[i] = [];
-		for (var j = 0; j < size; j++) {
+		for (let j = 0; j < size; j++) {
 			probabilities[i][j] = 0;
 		}
 	}
 
 	// if the same number of winners and runners-up has been drawn
 	if (unmatchedRunnerUp == undefined) {
-		for (var i = 0; i < size; i++) {
+		for (let i = 0; i < size; i++) {
 			options++;
 			// temporarily draw runner-up i and compute the resulting probabilities
-			var conditionalProbabilities = computeProbabilities(compatibilityMatrix, i);
+			let conditionalProbabilities = computeProbabilities(compatibilityMatrix, i);
 			if (conditionalProbabilities === null) {
 				options--;
 			} else {
-				for (var j = 0; j < size; j++) {
-					for (var k = 0; k < size; k++) {
+				for (let j = 0; j < size; j++) {
+					for (let k = 0; k < size; k++) {
 						probabilities[j][k] += conditionalProbabilities[j][k];
 					}
 				}
@@ -289,15 +294,15 @@ function computeProbabilities(compatibilityMatrix, unmatchedRunnerUp) {
 
 	// if an opponent for team 'unmatchedRunnerUp' is to be drawn next
 	} else {
-		for (var i = 0; i < size; i++) {
+		for (let i = 0; i < size; i++) {
 			if (compatibilityMatrix[i][unmatchedRunnerUp]) {
 				options++;
 				// temporarily match unmatchedRunnerUp with winner i and compute the resulting probabilities
-				var subMatrix = [];
-				for (var j = 0; j < size; j++) {
+				let subMatrix = [];
+				for (let j = 0; j < size; j++) {
 					if (j != i) {
-						var row = [];
-						for (var k = 0; k < size; k++) {
+						let row = [];
+						for (let k = 0; k < size; k++) {
 							if (k != unmatchedRunnerUp) {
 								row.push(compatibilityMatrix[j][k]);
 							}
@@ -305,12 +310,12 @@ function computeProbabilities(compatibilityMatrix, unmatchedRunnerUp) {
 						subMatrix.push(row);
 					}
 				}
-				var conditionalProbabilities = computeProbabilities(subMatrix);
+				let conditionalProbabilities = computeProbabilities(subMatrix);
 				if (conditionalProbabilities === null) {
 					options--;
 				} else {
-					for (var j = 0; j < size; j++) {
-						for (var k = 0; k < size; k++) {
+					for (let j = 0; j < size; j++) {
+						for (let k = 0; k < size; k++) {
 							if (j < i) {
 								if (k < unmatchedRunnerUp) {
 									probabilities[j][k] += conditionalProbabilities[j][k];
@@ -339,8 +344,8 @@ function computeProbabilities(compatibilityMatrix, unmatchedRunnerUp) {
 	}
 
 	if (options != 0) {
-		for (var i = 0; i < size; i++) {
-			for (var j = 0; j < size; j++) {
+		for (let i = 0; i < size; i++) {
+			for (let j = 0; j < size; j++) {
 				probabilities[i][j] /= options;
 			}
 		}
@@ -358,11 +363,11 @@ function getProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 	if (drawnW == null) {
 		return computeProbabilities(fullCompatibilityMatrix);
 	}
-	var compatibilityMatrix = [];
-	for (var i = 0; i < fullCompatibilityMatrix.length; i++) {
+	let compatibilityMatrix = [];
+	for (let i = 0; i < fullCompatibilityMatrix.length; i++) {
 		if (!drawnW[i]) {
-			var row = [];
-			for (var j = 0; j < fullCompatibilityMatrix.length; j++) {
+			let row = [];
+			for (let j = 0; j < fullCompatibilityMatrix.length; j++) {
 				if (!drawnR[j] || j == unmatchedRunnerUp) {
 					if (fullCompatibilityMatrix[i][j]) {
 						row.push(true);
@@ -374,7 +379,7 @@ function getProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 			compatibilityMatrix.push(row);
 		}
 	}
-	for (var i = unmatchedRunnerUp - 1; i >= 0; i--) {
+	for (let i = unmatchedRunnerUp - 1; i >= 0; i--) {
 		if (drawnR[i]) {
 			unmatchedRunnerUp--;
 		}
@@ -384,9 +389,9 @@ function getProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 
 
 function getProbabilitiesPreview(drawnW, drawnR, possibleOpponent) {
-	var probabilities = [];
-	var num = 0;
-	for (var i = 0; i < drawnR.length; i++) {
+	let probabilities = [];
+	let num = 0;
+	for (let i = 0; i < drawnR.length; i++) {
 		if (drawnR[i]) {
 			num++;
 		}
@@ -395,7 +400,7 @@ function getProbabilitiesPreview(drawnW, drawnR, possibleOpponent) {
 		}
 	}
 	if (num == 0) {
-		for (var i = 0; i < drawnR.length; i++) {
+		for (let i = 0; i < drawnR.length; i++) {
 			if (possibleOpponent[i]) {
 				drawnR[i] = true;
 				probabilities[i] = getProbabilities(drawnW, drawnR, i);
@@ -403,7 +408,7 @@ function getProbabilitiesPreview(drawnW, drawnR, possibleOpponent) {
 			}
 		}
 	} else {
-		for (var i = 0; i < drawnR.length; i++) {
+		for (let i = 0; i < drawnR.length; i++) {
 			if (possibleOpponent[i]) {
 				drawnW[i] = true;
 				probabilities[i] = getProbabilities(drawnW, drawnR);
@@ -419,7 +424,7 @@ function exportProbabilities(limit) {
 	if (limit == undefined) {
 		limit = 0;
 	}
-	var croppedProbabilities = {};
+	let croppedProbabilities = {};
 	for (let id of seasonLog[seasonId]) {
 		// only consider probabilities for cases where >= 'limit' teams are in the winners pot
 		if (id.length >= limit * 4) {
@@ -431,7 +436,7 @@ function exportProbabilities(limit) {
 
 
 function importProbabilities(probabilities) {
-	for (var id in probabilities) {
+	for (let id in probabilities) {
 		computedProbabilities[id] = probabilities[id];
 	}
 }

@@ -1,3 +1,5 @@
+'use strict';
+
 const INITIALIZE = 0;
 const GET_PROBABILITIES = 1;
 const GET_PROBABILITIES_PREVIEW = 2;
@@ -6,36 +8,37 @@ const EXPORT_PROBABILITIES = 4;
 const CLEAR_CACHE = 5;
 const GET_ID = 6;
 
-var previewMode = false;
-var hideMode = false;
+let previewMode = false;
+let hideMode = false;
 // swap == false: winners are rows, swap == true: winners are columns
-var swap = false;
+let swap = false;
 
-var config;
-var selectedSeason = [];
-var teamsW;
-var teamsR;
-var attrW;
-var attrR;
-var potSize;
+let calculator;
+let config;
+let selectedSeason = [];
+let teamsW;
+let teamsR;
+let attrW;
+let attrR;
+let potSize;
 // drawn{W,R}[i] == true if team i has already been drawn
-var drawnW = [];
-var drawnR = [];
+let drawnW = [];
+let drawnR = [];
 // matched[i] == j if teams i and j are matched
-var matched = [];
-var drawHistory = [];
-var activeDownload;
-var precomputedSeasons = new Set();
-var importedLimit = {};
-var ignoreClicks = true;
+let matched = [];
+let drawHistory = [];
+let activeDownload;
+let precomputedSeasons = new Set();
+let importedLimit = {};
+let ignoreClicks = true;
 
 // check if browser supports used js features
 if (typeof(XPathResult) == 'undefined' || typeof(Worker) == 'undefined') {
 	document.getElementById('cldraw-browser').style.display = '';
 } else {
-	var calculator = new Worker('cldraw.js');
+	calculator = new Worker('cldraw.js');
 
-	var xhr = new XMLHttpRequest();
+	let xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			config = this.responseXML;
@@ -46,6 +49,8 @@ if (typeof(XPathResult) == 'undefined' || typeof(Worker) == 'undefined') {
 	xhr.send();
 }
 
+window.addEventListener('resize', autoResizeTable, false);
+autoResizeTable();
 
 function initialize(competition, season) {
 	ignoreClicks = true;
@@ -63,10 +68,10 @@ function initialize(competition, season) {
 	}
 
 	// load teams from config
-	predicates = '[../@competition = "' + competition + '"][../@season = "' + season + '"]';
+	let predicates = '[../@competition = "' + competition + '"][../@season = "' + season + '"]';
 	selectedSeason = [competition, season];
-	var iterator = config.evaluate('//winners' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-	var team = iterator.iterateNext();
+	let iterator = config.evaluate('//winners' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+	let team = iterator.iterateNext();
 	while (team) {
 		teamsW.push(team.textContent);
 		attrW.push([team.getAttribute('group'), team.getAttribute('country')]);
@@ -81,7 +86,7 @@ function initialize(competition, season) {
 	}
 	potSize = attrW.length;
 
-	for (var i = 0; i < potSize; i++) {
+	for (let i = 0; i < potSize; i++) {
 		drawnW[i] = false;
 		drawnR[i] = false;
 		matched[i] = -1;
@@ -94,8 +99,6 @@ function initialize(competition, season) {
 	createSeasons(competition);
 	removeButtons();
 	updateFixtures();
-	window.addEventListener('resize', autoResizeTable, false);
-	autoResizeTable();
 
 	// terminate web worker and spawn a new one if there is an ongoing expensive computation
 	if (document.getElementById('cldraw-computation-running').style.display === '') {
@@ -139,8 +142,8 @@ function initialize(competition, season) {
 				document.getElementById('cldraw-computation-download').classList.add('disabled');
 				document.getElementById('cldraw-dlbadge').innerHTML = 'checking availability...';
 				document.getElementById('cldraw-dlsize').innerHTML = '';
-				var filename = 'probabilities/' + e.data[0] + '.json';
-				var xhr = new XMLHttpRequest();
+				let filename = 'probabilities/' + e.data[0] + '.json';
+				let xhr = new XMLHttpRequest();
 				xhr.open('HEAD', filename);
 				xhr.onreadystatechange = function() {
 					if (xhr.status != 200) {
@@ -148,7 +151,7 @@ function initialize(competition, season) {
 						document.getElementById('cldraw-dlbadge').innerHTML = 'not available';
 						document.getElementById('cldraw-dlsize').innerHTML = '';
 					} else {
-						var contentLength = xhr.getResponseHeader('Content-Length');
+						let contentLength = xhr.getResponseHeader('Content-Length');
 						if (contentLength != null) {
 							document.getElementById('cldraw-dlsize').innerHTML = '(' + (contentLength / 1000000).toFixed(1) + ' MB)';
 						} else {
@@ -169,44 +172,15 @@ function initialize(competition, season) {
 
 
 function createTable() {
-	var table = document.getElementById('cldraw-table');
-	var buttonShrink = document.getElementById('button-shrink');
-	if (buttonShrink == null) {
-		buttonShrink = document.createElement('button');
-		buttonShrink.id = 'button-shrink';
-		buttonShrink.classList.add('btn');
-		buttonShrink.classList.add('btn-default');
-		buttonShrink.appendChild(document.createTextNode('－'));
-		buttonShrink.addEventListener('click', resizeTable.bind(null, false), false);
-	}
-	var buttonEnlarge = document.getElementById('button-enlarge');
-	if (buttonEnlarge == null) {
-		buttonEnlarge = document.createElement('button');
-		buttonEnlarge.id = 'button-enlarge';
-		buttonEnlarge.classList.add('btn');
-		buttonEnlarge.classList.add('btn-default');
-		buttonEnlarge.appendChild(document.createTextNode('＋'));
-		buttonEnlarge.addEventListener('click', resizeTable.bind(null, true), false);
-	}
 	document.getElementById('cldraw-impossible').style.display = 'none';
-
-	while (table.firstChild) {
-		table.removeChild(table.firstChild);
+	let table = document.getElementById('cldraw-table');
+	let tr = table.getElementsByTagName('tr')[0];
+	while (tr.children.length > 1) {
+		tr.removeChild(tr.lastChild);
 	}
-	var thead = document.createElement('thead');
-	var tr = document.createElement('tr');
-	var th = document.createElement('th');
-	tr.appendChild(th);
-	var div = document.createElement('div');
-	div.classList.add('btn-group');
-	div.classList.add('btn-group-xs');
-	div.role = 'group';
-	div.appendChild(buttonShrink);
-	div.appendChild(buttonEnlarge);
-	th.appendChild(div);
 
-	for (var i = 0; i < potSize; i++) {
-		th = document.createElement('th');
+	for (let i = 0; i < potSize; i++) {
+		let th = document.createElement('th');
 		if (!swap) {
 			th.appendChild(document.createTextNode(teamsR[i]));
 		} else {
@@ -215,12 +189,14 @@ function createTable() {
 		th.scope = 'col';
 		tr.appendChild(th);
 	}
-	thead.appendChild(tr);
 
-	var tbody = document.createElement('tbody');
-	for (var i = 0; i < potSize; i++) {
-		var tr = document.createElement('tr');
-		var th = document.createElement('th');
+	let tbody = table.getElementsByTagName('tbody')[0];
+	while (tbody.firstChild) {
+		tbody.removeChild(tbody.firstChild);
+	}
+	for (let i = 0; i < potSize; i++) {
+		let tr = document.createElement('tr');
+		let th = document.createElement('th');
 		th.scope = 'row';
 		if (!swap) {
 			th.appendChild(document.createTextNode(teamsW[i]));
@@ -228,17 +204,14 @@ function createTable() {
 			th.appendChild(document.createTextNode(teamsR[i]));
 		}
 		tr.appendChild(th);
-		for (var j = 0; j < potSize; j++) {
-			var td = document.createElement('td');
+		for (let j = 0; j < potSize; j++) {
+			let td = document.createElement('td');
 			td.style.textAlign = 'center';
 			td.appendChild(document.createTextNode('\u231B'));
 			tr.appendChild(td);
 		}
 		tbody.appendChild(tr);
 	}
-
-	table.appendChild(thead);
-	table.appendChild(tbody);
 }
 
 // only show team editor buttons if the loaded configuration is a sorted cl/el config with group names A...H/L
@@ -246,7 +219,7 @@ function showEditorButtons() {
 	document.getElementById('button-editor').style.display = 'none';
 	document.getElementById('cldraw-seasons-separator').style.display = 'none';
 	document.getElementById('cldraw-add-season').style.display = 'none';
-	for (var i = 0; i < potSize; i++) {
+	for (let i = 0; i < potSize; i++) {
 		if (i < 12) {
 			if (attrW[i][0] !== String.fromCharCode(65 + i) || attrR[i][0] !== String.fromCharCode(65 + i)) {
 				return;
@@ -264,24 +237,24 @@ function showEditorButtons() {
 
 
 function createEditor(empty) {
-	var editor = document.getElementById('cldraw-editor-groups');
+	let editor = document.getElementById('cldraw-editor-groups');
 	while (editor.children.length > potSize) {
 		editor.removeChild(editor.lastChild);
 	}
 	while (editor.children.length < potSize) {
 		editor.appendChild(editor.firstElementChild.cloneNode(true));
 	}
-	for (var i = 0; i < potSize; i++) {
-		var p = document.getElementsByClassName('cldraw-editor-label')[i];
+	for (let i = 0; i < potSize; i++) {
+		let p = document.getElementsByClassName('cldraw-editor-label')[i];
 		if (i < 12) {
 			p.innerHTML = 'Group ' + String.fromCharCode(65 + i) + ':';
 		} else {
 			p.innerHTML = 'CL ' + (i - 11) + ':';
 		}
-		var winner = document.getElementsByClassName('cldraw-winner')[i];
-		var winnerCountry = document.getElementsByClassName('cldraw-winner-country')[i];
-		var runnerUp = document.getElementsByClassName('cldraw-runner-up')[i];
-		var runnerUpCountry = document.getElementsByClassName('cldraw-runner-up-country')[i];
+		let winner = document.getElementsByClassName('cldraw-winner')[i];
+		let winnerCountry = document.getElementsByClassName('cldraw-winner-country')[i];
+		let runnerUp = document.getElementsByClassName('cldraw-runner-up')[i];
+		let runnerUpCountry = document.getElementsByClassName('cldraw-runner-up-country')[i];
 		if (!empty) {
 			winner.value = teamsW[i];
 			winnerCountry.value = attrW[i][1];
@@ -303,18 +276,18 @@ function createEditor(empty) {
 
 
 function createCompetitions() {
-	var buttonList = document.getElementById('cldraw-competitions');
+	let buttonList = document.getElementById('cldraw-competitions');
 	while (buttonList.firstChild) {
 		buttonList.removeChild(buttonList.firstChild);
 	}
-	var iterator = config.evaluate('//competition', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-	competition = iterator.iterateNext();
+	let iterator = config.evaluate('//competition', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+	let competition = iterator.iterateNext();
 	while (competition) {
-		var button = document.createElement('li');
+		let button = document.createElement('li');
 		button.id = ('competition-' + competition.getAttribute('id'));
-		var a = document.createElement('a');
+		let a = document.createElement('a');
 		a.setAttribute("role", "button");
-		var text = document.createTextNode(competition.getElementsByTagName('name')[0].textContent);
+		let text = document.createTextNode(competition.getElementsByTagName('name')[0].textContent);
 		a.appendChild(text);
 		button.appendChild(a);
 		button.addEventListener('click', createSeasons.bind(null, competition.getAttribute('id')), false);
@@ -325,35 +298,35 @@ function createCompetitions() {
 
 
 function createSeasons(competition) {
-	var buttons= document.getElementById('cldraw-competitions').children;
-	for (var i = 0; i < buttons.length; i++) {
+	let buttons= document.getElementById('cldraw-competitions').children;
+	for (let i = 0; i < buttons.length; i++) {
 		if (buttons[i].id == 'competition-' + competition) {
 			buttons[i].classList.add('active');
 		} else {
 			buttons[i].classList.remove('active');
 		}
 	}
-	var buttonList = document.getElementById('cldraw-seasons');
+	let buttonList = document.getElementById('cldraw-seasons');
 	while (buttonList.firstChild.id !== 'cldraw-seasons-separator') {
 		buttonList.removeChild(buttonList.firstChild);
 	}
-	var seasonSeparator = document.getElementById('cldraw-seasons-separator');
-	var iterator = config.evaluate('//teams[@competition = "' + competition + '"]/@season', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-	season = iterator.iterateNext();
+	let seasonSeparator = document.getElementById('cldraw-seasons-separator');
+	let iterator = config.evaluate('//teams[@competition = "' + competition + '"]/@season', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+	let season = iterator.iterateNext();
 
 	if (competition != selectedSeason[0]) {
 		initialize(competition, season.textContent);
 	}
 
 	while (season) {
-		var button = document.createElement('li');
+		let button = document.createElement('li');
 		button.id = ('season-' + competition + '-' + season.textContent);
 		if (competition == selectedSeason[0] && season.textContent == selectedSeason[1]) {
 			button.classList.add('active');
 		}
-		var a = document.createElement('a');
+		let a = document.createElement('a');
 		a.setAttribute("role", "button");
-		var text = document.createTextNode(season.textContent);
+		let text = document.createTextNode(season.textContent);
 		a.appendChild(text);
 		button.appendChild(a);
 		button.addEventListener('click', initialize.bind(null, competition, season.textContent), false);
@@ -364,10 +337,10 @@ function createSeasons(competition) {
 
 
 function adjustSizes(competition, season) {
-	var short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
-	var roundOf = attrW.length * 2;
+	let short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
+	let roundOf = attrW.length * 2;
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
-	var heading = document.getElementsByTagName('h1')[0];
+	let heading = document.getElementsByTagName('h1')[0];
 	heading.innerHTML = short + ' Draw Probabilities <small>(' + season + ' Round of ' + roundOf + ')</small>';
 	if (potSize < 9) {
 		document.getElementById('cldraw-table').classList.remove('table-condensed');
@@ -377,12 +350,12 @@ function adjustSizes(competition, season) {
 		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-3');
 		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-push-9');
 		document.getElementById('cldraw-fixtures-panel').classList.remove('col-xs-12');
-		var fixtures = document.getElementsByClassName('cldraw-fixtures');
-		for (var i = 0; i < fixtures.length; i++) {
+		let fixtures = document.getElementsByClassName('cldraw-fixtures');
+		for (let i = 0; i < fixtures.length; i++) {
 			fixtures[i].classList.remove('col-md-6');
 		}
-		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
-		for (var i = 0; i < wrapper.length; i++) {
+		let wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
+		for (let i = 0; i < wrapper.length; i++) {
 			wrapper[i].classList.add('col-md-12');
 		}
 	} else {
@@ -393,12 +366,12 @@ function adjustSizes(competition, season) {
 		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-3');
 		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-push-9');
 		document.getElementById('cldraw-fixtures-panel').classList.add('col-xs-12');
-		var fixtures = document.getElementsByClassName('cldraw-fixtures');
-		for (var i = 0; i < fixtures.length; i++) {
+		let fixtures = document.getElementsByClassName('cldraw-fixtures');
+		for (let i = 0; i < fixtures.length; i++) {
 			fixtures[i].classList.add('col-md-6');
 		}
-		var wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
-		for (var i = 0; i < wrapper.length; i++) {
+		let wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
+		for (let i = 0; i < wrapper.length; i++) {
 			wrapper[i].classList.remove('col-md-12');
 		}
 	}
@@ -407,7 +380,7 @@ function adjustSizes(competition, season) {
 
 function reset(expensive) {
 	if (!ignoreClicks || expensive) {
-		for (var i = 0; i < potSize; i++) {
+		for (let i = 0; i < potSize; i++) {
 			drawnW[i] = false;
 			drawnR[i] = false;
 			matched[i] = -1;
@@ -421,12 +394,12 @@ function reset(expensive) {
 
 		calculator.postMessage([GET_PROBABILITIES]);
 		calculator.onmessage = function(e) {
-			var probabilities = e.data;
+			let probabilities = e.data;
 			updateTable(probabilities);
 			createButtonsR(probabilities);
 			document.getElementById('cldraw-computation-running').style.display = 'none';
 			document.getElementById('button-randomteam').classList.remove('disabled');
-			var button = document.getElementById('button-dl');
+			let button = document.getElementById('button-dl');
 			if (potSize > 12 && !precomputedSeasons.has(selectedSeason.toString())) {
 				button.style.display = '';
 			} else {
@@ -446,7 +419,7 @@ function downloadProbabilities() {
 		precomputedSeasons.add(selectedSeason.toString());
 		calculator.postMessage([GET_ID]);
 		calculator.onmessage = function(e) {
-			var filename = 'probabilities/' + e.data[0] + '.json';
+			let filename = 'probabilities/' + e.data[0] + '.json';
 			activeDownload = new XMLHttpRequest();
 			activeDownload.addEventListener('load', processDownload);
 			activeDownload.addEventListener('progress', updateProgress);
@@ -460,9 +433,9 @@ function downloadProbabilities() {
 
 
 function processDownload() {
-	var probabilities = JSON.parse(this.responseText);
-	var minLength = 999999;
-	for (var id in probabilities) {
+	let probabilities = JSON.parse(this.responseText);
+	let minLength = 999999;
+	for (let id in probabilities) {
 		if (id.length < minLength) {
 			minLength = id.length;
 		}
@@ -485,7 +458,7 @@ function updateProgress(progress) {
 	if (progress.lengthComputable) {
 		document.getElementById('cldraw-dlprogress-text').style.display = '';
 		document.getElementById('cldraw-dlprogress-text').innerHTML = (progress.loaded / 1000000).toFixed(1) + ' MB of ' + (progress.total / 1000000).toFixed(1) + ' MB downloaded.';
-		var percentComplete = progress.loaded / progress.total * 100;
+		let percentComplete = progress.loaded / progress.total * 100;
 		document.getElementById('cldraw-dlprogressbar').style.width = percentComplete + '%';
 		document.getElementById('cldraw-dlprogressbar').setAttribute('aria-valuenow', percentComplete.toFixed());
 	} else {
@@ -497,15 +470,15 @@ function updateProgress(progress) {
 
 
 function getPossibleMatches(probabilities, team) {
-	var possibleMatch = [];
-	var indexR = team;
-	for (var i = 0; i < team; i++) {
+	let possibleMatch = [];
+	let indexR = team;
+	for (let i = 0; i < team; i++) {
 		if (drawnR[i]) {
 			indexR--;
 		}
 	}
-	var indexW = 0;
-	for (var i = 0; i < potSize; i++) {
+	let indexW = 0;
+	for (let i = 0; i < potSize; i++) {
 		if (drawnW[i]) {
 			possibleMatch[i] = false;
 			indexW++;
@@ -525,8 +498,8 @@ function drawRunnerUp(team) {
 	if (!ignoreClicks) {
 		ignoreClicks = true;
 		disableButtons();
-		var remainingTeams = 0;
-		for (var i = 0; i < potSize; i++) {
+		let remainingTeams = 0;
+		for (let i = 0; i < potSize; i++) {
 			if (!drawnR[i]) {
 				remainingTeams++;
 			}
@@ -540,7 +513,7 @@ function drawRunnerUp(team) {
 		drawHistory.push(team);
 		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, team]);
 		calculator.onmessage = function(e) {
-			var probabilities = e.data;
+			let probabilities = e.data;
 			updateTable(probabilities, team);
 			createButtonsW(team, probabilities);
 			updateFixtures();
@@ -560,7 +533,7 @@ function drawWinner(team, opponent) {
 		drawHistory.push(team + potSize);
 		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
 		calculator.onmessage = function(e) {
-			var probabilities = e.data;
+			let probabilities = e.data;
 			updateTable(probabilities);
 			createButtonsR(probabilities);
 			updateFixtures();
@@ -572,14 +545,14 @@ function drawWinner(team, opponent) {
 
 function undo() {
 	if (!ignoreClicks) {
-		team = drawHistory.pop();
+		let team = drawHistory.pop();
 		if (team != undefined) {
 			if (team < potSize) {
 				ignoreClicks = true;
 				drawnR[team] = false;
 				calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
 				calculator.onmessage = function(e) {
-					var probabilities = e.data;
+					let probabilities = e.data;
 					updateTable(probabilities);
 					createButtonsR(probabilities);
 					ignoreClicks = false;
@@ -589,7 +562,7 @@ function undo() {
 				team -= potSize;
 				drawnW[team] = false;
 				matched[team] = -1;
-				opponent = drawHistory.pop();
+				let opponent = drawHistory.pop();
 				drawnR[opponent] = false;
 				drawRunnerUp(opponent);
 			}
@@ -603,15 +576,15 @@ function drawRandomTeam() {
 	if (!ignoreClicks) {
 		disableButtons();
 		if (drawHistory.length % 2 == 0) {
-			var numR = 0;
-			for (var i = 0; i < potSize; i++) {
+			let numR = 0;
+			for (let i = 0; i < potSize; i++) {
 				if (!drawnR[i]) {
 					numR++;
 				}
 			}
 			if (numR > 0) {
-				var team = Math.floor(Math.random() * numR);
-				for (var i = 0; i <= team; i++) {
+				let team = Math.floor(Math.random() * numR);
+				for (let i = 0; i <= team; i++) {
 					if (drawnR[i]) {
 						team++;
 					}
@@ -619,19 +592,19 @@ function drawRandomTeam() {
 				drawRunnerUp(team);
 			}
 		} else {
-			var opponent = drawHistory[drawHistory.length - 1];
+			let opponent = drawHistory[drawHistory.length - 1];
 			calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, opponent]);
 			calculator.onmessage = function(e) {
-				var probabilities = e.data;
-				var possibleMatch = getPossibleMatches(probabilities, opponent);
-				var numW = 0;
-				for (var i = 0; i < potSize; i++) {
+				let probabilities = e.data;
+				let possibleMatch = getPossibleMatches(probabilities, opponent);
+				let numW = 0;
+				for (let i = 0; i < potSize; i++) {
 					if (possibleMatch[i]) {
 						numW++;
 					}
 				}
-				var team = Math.floor(Math.random() * numW);
-				for (var i = 0; i <= team && i < 20; i++) {
+				let team = Math.floor(Math.random() * numW);
+				for (let i = 0; i <= team && i < 20; i++) {
 					if (!possibleMatch[i]) {
 						team++;
 					}
@@ -648,13 +621,13 @@ function updateTable(probabilities, highlight) {
 		document.getElementById('cldraw-impossible').style.display = '';
 		return;
 	}
-	var fullProbabilities = [];
-	var indexW = 0;
-	for (var i = 0; i < potSize; i++) {
+	let fullProbabilities = [];
+	let indexW = 0;
+	for (let i = 0; i < potSize; i++) {
 		fullProbabilities[i] = [];
 		if (drawnW[i]) {
-			var opponent = matched[i];
-			for (var j = 0; j < potSize; j++) {
+			let opponent = matched[i];
+			for (let j = 0; j < potSize; j++) {
 				if (j == opponent) {
 					fullProbabilities[i][j] = 1;
 				} else {
@@ -662,8 +635,8 @@ function updateTable(probabilities, highlight) {
 				}
 			}
 		} else {
-			var indexR = 0;
-			for (var j = 0; j < potSize; j++) {
+			let indexR = 0;
+			for (let j = 0; j < potSize; j++) {
 				if (drawnR[j] && j != highlight) {
 					fullProbabilities[i][j] = 0;
 				} else {
@@ -675,11 +648,11 @@ function updateTable(probabilities, highlight) {
 		}
 	}
 
-	var table = document.getElementById('cldraw-table');
-	for (var i = 0; i < potSize; i++){
-		for (var j = 0; j < potSize; j++){
-			var color = '';
-			var text;
+	let table = document.getElementById('cldraw-table');
+	for (let i = 0; i < potSize; i++){
+		for (let j = 0; j < potSize; j++){
+			let color = '';
+			let text;
 			if (matched[i] == j) {
 				text = '\u2714';
 				color = '#4998ff';
@@ -709,24 +682,24 @@ function updateTable(probabilities, highlight) {
 
 
 function updateFixtures() {
-	var fixtures = document.getElementsByClassName('cldraw-fixtures');
-	var l = Math.ceil(potSize / fixtures.length);
-	for (var i = 0; i < fixtures.length; i++) {
+	let fixtures = document.getElementsByClassName('cldraw-fixtures');
+	let l = Math.ceil(potSize / fixtures.length);
+	for (let i = 0; i < fixtures.length; i++) {
 		while (fixtures[i].firstChild) {
 			fixtures[i].removeChild(fixtures[i].firstChild);
 		}
-		for (var j = i * l; j < l * (i + 1); j++) {
-			var row = document.createElement('div');
+		for (let j = i * l; j < l * (i + 1); j++) {
+			let row = document.createElement('div');
 			row.classList.add('row');
-			var left = document.createElement('div');
+			let left = document.createElement('div');
 			left.classList.add('col-xs-6');
 			left.classList.add('text-right');
 			left.classList.add('padding-0');
-			var right = document.createElement('div');
+			let right = document.createElement('div');
 			right.classList.add('col-xs-6');
 			right.classList.add('text-left');
 			right.classList.add('padding-0');
-			var small = document.createElement('small');
+			let small = document.createElement('small');
 			small.appendChild(document.createTextNode('s\u00A0\u00A0'));
 			right.appendChild(small);
 			if (j * 2 < drawHistory.length) {
@@ -758,14 +731,14 @@ function updateFixtures() {
 
 
 function hideDrawnTeams() {
-	var matchedR = [];
-	var matchedW = [];
-	var n = drawHistory.length;
+	let matchedR = [];
+	let matchedW = [];
+	let n = drawHistory.length;
 	if (n % 2 == 1) {
 		n -= 1;
 	}
-	for (var i = 0; i < n; i++) {
-		var team = drawHistory[i];
+	for (let i = 0; i < n; i++) {
+		let team = drawHistory[i];
 		if (team < potSize) {
 			matchedR[team] = true;
 		} else {
@@ -774,9 +747,9 @@ function hideDrawnTeams() {
 		}
 	}
 
-	var table = document.getElementById('cldraw-table');
+	let table = document.getElementById('cldraw-table');
 	if (swap) {
-		for (var i = 0; i < potSize; i++) {
+		for (let i = 0; i < potSize; i++) {
 			if (matchedR[i]) {
 				table.rows[i + 1].style.display = 'none';
 			} else {
@@ -791,13 +764,13 @@ function hideDrawnTeams() {
 			}
 		}
 	} else {
-		for (var i = 0; i < potSize; i++) {
+		for (let i = 0; i < potSize; i++) {
 			if (matchedW[i]) {
 				table.rows[i + 1].style.display = 'none';
 			} else {
 				table.rows[i + 1].style.display = '';
 			}
-			for (j = 0; j < potSize + 1; j++) {
+			for (let j = 0; j < potSize + 1; j++) {
 				if (matchedR[i]) {
 					table.rows[j].cells[i + 1].style.display = 'none';
 				} else {
@@ -812,32 +785,33 @@ function hideDrawnTeams() {
 // create buttons of runner-up teams which were not drawn yet
 function createButtonsR(probabilities) {
 	removeButtons();
-	var buttonList = document.getElementById('cldraw-buttons');
-	var button = [];
-	var numR = 0;
-	for (var i = 0; i < potSize ; i++) {
+	let buttonList = document.getElementById('cldraw-buttons');
+	let button = [];
+	let numR = 0;
+	for (let i = 0; i < potSize ; i++) {
 		if (!drawnR[i]) {
 			numR++;
 			button[i] = document.createElement('button');
 			button[i].classList.add('btn');
 			button[i].classList.add('btn-primary');
-			var text = document.createTextNode(teamsR[i]);
+			button[i].type = 'button';
+			let text = document.createTextNode(teamsR[i]);
 			button[i].appendChild(text);
 			button[i].addEventListener('click', drawRunnerUp.bind(null, i, false), false);
 		}
 	}
 
 	if (previewMode) {
-		var teams = [];
-		for (var i = 0; i < potSize; i++) {
+		let teams = [];
+		for (let i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				teams[i] = true;
 			}
 		}
 		calculator.postMessage([GET_PROBABILITIES_PREVIEW, drawnW, drawnR, teams]);
 		calculator.onmessage = function(e) {
-			var probabilities2 = e.data;
-			for (var i = 0; i < potSize; i++) {
+			let probabilities2 = e.data;
+			for (let i = 0; i < potSize; i++) {
 				if (button[i] != undefined) {
 					button[i].addEventListener('mouseover', updateTable.bind(null, probabilities2[i], i), false);
 					button[i].addEventListener('mouseout', updateTable.bind(null, probabilities), false);
@@ -846,7 +820,7 @@ function createButtonsR(probabilities) {
 			}
 		}
 	} else {
-		for (var i = 0; i < potSize; i++) {
+		for (let i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				buttonList.appendChild(button[i]);
 			}
@@ -862,31 +836,32 @@ function createButtonsR(probabilities) {
 // create buttons of group winners which can be matched with the last drawn runner-up
 function createButtonsW(opponent, probabilities) {
 	removeButtons();
-	var buttonList = document.getElementById('cldraw-buttons');
-	var button = [];
-	var possibleMatch = getPossibleMatches(probabilities, opponent);
-	for (var i = 0; i < potSize ; i++) {
+	let buttonList = document.getElementById('cldraw-buttons');
+	let button = [];
+	let possibleMatch = getPossibleMatches(probabilities, opponent);
+	for (let i = 0; i < potSize ; i++) {
 		if (possibleMatch[i]) {
 			button[i] = document.createElement('button');
 			button[i].classList.add('btn');
 			button[i].classList.add('btn-primary');
-			var text = document.createTextNode(teamsW[i]);
+			button[i].type = 'button';
+			let text = document.createTextNode(teamsW[i]);
 			button[i].appendChild(text);
 			button[i].addEventListener('click', drawWinner.bind(null, i, opponent, false), false);
 		}
 	}
 
 	if (previewMode) {
-		var teams = [];
-		for (var i = 0; i < potSize; i++) {
+		let teams = [];
+		for (let i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				teams[i] = true;
 			}
 		}
 		calculator.postMessage([GET_PROBABILITIES_PREVIEW, drawnW, drawnR, teams]);
 		calculator.onmessage = function(e) {
-			var probabilities2 = e.data;
-			for (var i = 0; i < potSize; i++) {
+			let probabilities2 = e.data;
+			for (let i = 0; i < potSize; i++) {
 				if (button[i] != undefined) {
 					button[i].addEventListener('mouseover', previewHelper.bind(null, probabilities2[i], i, opponent), false);
 					button[i].addEventListener('mouseout', updateTable.bind(null, probabilities, opponent), false);
@@ -895,7 +870,7 @@ function createButtonsW(opponent, probabilities) {
 			}
 		}
 	} else {
-		for (var i = 0; i < potSize; i++) {
+		for (let i = 0; i < potSize; i++) {
 			if (button[i] != undefined) {
 				buttonList.appendChild(button[i]);
 			}
@@ -907,7 +882,7 @@ function createButtonsW(opponent, probabilities) {
 
 function removeButtons() {
 	document.getElementById('button-randomteam').classList.add('disabled');
-	var buttonList = document.getElementById('cldraw-buttons');
+	let buttonList = document.getElementById('cldraw-buttons');
 	while (buttonList.firstChild) {
 		buttonList.removeChild(buttonList.firstChild);
 	}
@@ -916,8 +891,8 @@ function removeButtons() {
 
 function disableButtons() {
 	document.getElementById('button-randomteam').classList.add('disabled');
-	var buttons = document.getElementById('cldraw-buttons').children;
-	for (var i = 0; i < buttons.length; i++) {
+	let buttons = document.getElementById('cldraw-buttons').children;
+	for (let i = 0; i < buttons.length; i++) {
 		buttons[i].classList.add('disabled');
 	}
 }
@@ -933,7 +908,7 @@ function previewHelper(probabilities, winner, runnerUp) {
 
 
 function togglePreviewMode() {
-	var button = document.getElementById('button-preview');
+	let button = document.getElementById('button-preview');
 	if (previewMode) {
 		previewMode = false;
 		button.classList.remove('active');
@@ -946,7 +921,7 @@ function togglePreviewMode() {
 			reset();
 		}
 	} else {
-		var team = drawHistory.pop();
+		let team = drawHistory.pop();
 		if (team < potSize) {
 			drawRunnerUp(team);
 		} else {
@@ -957,14 +932,14 @@ function togglePreviewMode() {
 
 
 function toggleHideMode() {
-	var button = document.getElementById('button-hide');
+	let button = document.getElementById('button-hide');
 	if (hideMode) {
 		hideMode = false;
 		button.classList.remove('active');
-		var table = document.getElementById('cldraw-table');
-		for (var i = 0; i < potSize; i++) {
+		let table = document.getElementById('cldraw-table');
+		for (let i = 0; i < potSize; i++) {
 			table.rows[i + 1].style.display = '';
-			for (var j = 0; j < potSize + 1; j++) {
+			for (let j = 0; j < potSize + 1; j++) {
 				table.rows[j].cells[i + 1].style.display = '';
 			}
 		}
@@ -978,19 +953,19 @@ function toggleHideMode() {
 
 function transposeTable() {
 	swap = !swap;
-	var table = document.getElementById('cldraw-table');
-	var oldTable = [];
-	for (var i = 0; i < potSize; i++) {
+	let table = document.getElementById('cldraw-table');
+	let oldTable = [];
+	for (let i = 0; i < potSize; i++) {
 		oldTable[i] = [];
-		for (var j = 0; j < potSize; j++) {
+		for (let j = 0; j < potSize; j++) {
 			oldTable[i][j] = [];
 			oldTable[i][j][0] = table.rows[i + 1].cells[j + 1].innerHTML;
 			oldTable[i][j][1] = table.rows[i + 1].cells[j + 1].style.background;
 		}
 	}
 	createTable();
-	for (var i = 0; i < potSize; i++) {
-		for (var j = 0; j < potSize; j++) {
+	for (let i = 0; i < potSize; i++) {
+		for (let j = 0; j < potSize; j++) {
 			table.rows[i + 1].cells[j + 1].innerHTML = oldTable[j][i][0];
 			table.rows[i + 1].cells[j + 1].style.background = oldTable[j][i][1];
 		}
@@ -1003,7 +978,7 @@ function transposeTable() {
 
 function resizeTable(enlarge) {
 	window.removeEventListener('resize', autoResizeTable, false);
-	var table = document.getElementById('cldraw-table');
+	let table = document.getElementById('cldraw-table');
 	if (table.classList.contains('table-smallest')) {
 		if (enlarge) {
 			document.getElementById('button-shrink').classList.remove('disabled');
@@ -1053,16 +1028,16 @@ function autoResizeTable() {
 
 
 function saveTeams() {
-	var season = document.getElementById('cldraw-editor-season').value;
-	var button = document.getElementById('button-editor');
+	let season = document.getElementById('cldraw-editor-season').value;
+	let button = document.getElementById('button-editor');
 	button.classList.remove('active');
-	var teams = document.createElementNS('', 'teams');
+	let teams = document.createElementNS('', 'teams');
 	teams.setAttribute('competition', selectedSeason[0]);
 	teams.setAttribute('season', season);
-	var winners = document.createElementNS('', 'winners');
-	var runnersUp = document.createElementNS('', 'runners-up');
-	for (var i = 0; i < potSize; i++) {
-		var team = document.createElementNS('', 'team');
+	let winners = document.createElementNS('', 'winners');
+	let runnersUp = document.createElementNS('', 'runners-up');
+	for (let i = 0; i < potSize; i++) {
+		let team = document.createElementNS('', 'team');
 		team.textContent = document.getElementsByClassName('cldraw-winner')[i].value;
 		if (i < 12) {
 			team.setAttribute('group', String.fromCharCode(65 + i));
@@ -1081,7 +1056,7 @@ function saveTeams() {
 	teams.appendChild(winners);
 	teams.appendChild(runnersUp);
 
-	var oldTeams = config.evaluate('//teams[@competition = "' + selectedSeason[0] + '"][@season = "' + season + '"]', config, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+	let oldTeams = config.evaluate('//teams[@competition = "' + selectedSeason[0] + '"][@season = "' + season + '"]', config, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
 	if (oldTeams == null) {
 		config.firstChild.insertBefore(teams, config.firstChild.firstChild);
 	} else {
@@ -1099,23 +1074,23 @@ function exportJSON(limit, auto) {
 	}
 	calculator.postMessage([EXPORT_PROBABILITIES, limit]);
 	calculator.onmessage = function(e) {
-		var probabilities = e.data;
-		var filename = '';
-		var maxLength = -1;
-		for (var id in probabilities) {
+		let probabilities = e.data;
+		let filename = '';
+		let maxLength = -1;
+		for (let id in probabilities) {
 			if (id.length > maxLength) {
 				filename = id;
 				maxLength = id.length;
 			}
 		}
-		var a = document.createElement('a');
+		let a = document.createElement('a');
 		document.body.appendChild(a);
-		var blob = new Blob([JSON.stringify(probabilities)], {type: 'octet/stream'});
+		let blob = new Blob([JSON.stringify(probabilities)], {type: 'octet/stream'});
 		// increase limit if file is larger than 50MB (usually 5-10MB gzipped)
 		if (auto && blob.size > 50000000) {
 			calculator.postMessage([EXPORT_PROBABILITIES, limit + 1]);
 		} else {
-			url = window.URL.createObjectURL(blob);
+			let url = window.URL.createObjectURL(blob);
 			a.href = url;
 			a.download = filename + '.json';
 			a.click();

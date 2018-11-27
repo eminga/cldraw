@@ -107,7 +107,6 @@
 				</div>
 			</div>
 
-
 			<div class="page-header">
 				<h1>CL Draw Probabilities <small>(Round of 16)</small></h1>
 			</div>
@@ -154,7 +153,6 @@
 					<button type="button" class="btn btn-default pull-right" onclick="abortDownload()">
 						Cancel
 					</button>
-
 				</div>
 
 			</div>
@@ -193,7 +191,24 @@
 					</div>
 				</div>
 				<div class="col-md-9 col-md-pull-3 table-responsive">
-					<table class="table" id="cldraw-table"></table>
+					<table class="table" id="cldraw-table">
+						<thead>
+							<tr>
+								<th>
+									<div class="btn-group btn-group-xs" role="group">
+										<button type="button" class="btn btn-default" id="button-shrink" onclick="resizeTable(false)">
+											－
+										</button>
+										<button type="button" class="btn btn-default" id="button-enlarge" onclick="resizeTable(true)">
+											＋
+										</button>
+									</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
 				</div>
 			</div>
 

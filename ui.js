@@ -748,34 +748,17 @@ function hideDrawnTeams() {
 	}
 
 	let table = document.getElementById('cldraw-table');
-	if (swap) {
-		for (let i = 0; i < potSize; i++) {
-			if (matchedR[i]) {
-				table.rows[i + 1].style.display = 'none';
-			} else {
-				table.rows[i + 1].style.display = '';
-			}
-			for (j = 0; j < potSize + 1; j++) {
-				if (matchedW[i]) {
-					table.rows[j].cells[i + 1].style.display = 'none';
-				} else {
-					table.rows[j].cells[i + 1].style.display = '';
-				}
-			}
+	for (let i = 0; i < potSize; i++) {
+		if (swap ? matchedR[i] : matchedW[i]) {
+			table.rows[i + 1].style.display = 'none';
+		} else {
+			table.rows[i + 1].style.display = '';
 		}
-	} else {
-		for (let i = 0; i < potSize; i++) {
-			if (matchedW[i]) {
-				table.rows[i + 1].style.display = 'none';
+		for (let j = 0; j < potSize + 1; j++) {
+			if (swap ? matchedW[i] : matchedR[i]) {
+				table.rows[j].cells[i + 1].style.display = 'none';
 			} else {
-				table.rows[i + 1].style.display = '';
-			}
-			for (let j = 0; j < potSize + 1; j++) {
-				if (matchedR[i]) {
-					table.rows[j].cells[i + 1].style.display = 'none';
-				} else {
-					table.rows[j].cells[i + 1].style.display = '';
-				}
+				table.rows[j].cells[i + 1].style.display = '';
 			}
 		}
 	}

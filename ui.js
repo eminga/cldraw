@@ -112,7 +112,7 @@ function initialize(competition, season) {
 
 	if (activeDownload != null) {
 		activeDownload.abort();
-		activeDownload = null;
+		return;
 	}
 	document.getElementById('cldraw-dlprogress').style.display = 'none';
 
@@ -298,17 +298,17 @@ function createCompetitions() {
 
 
 function createSeasons(competition) {
-	let buttons= document.getElementById('cldraw-competitions').children;
-	for (let i = 0; i < buttons.length; i++) {
-		if (buttons[i].id == 'competition-' + competition) {
-			buttons[i].classList.add('active');
+	let competitionButtons = document.getElementById('cldraw-competitions').children;
+	for (let i = 0; i < competitionButtons.length; i++) {
+		if (competitionButtons[i].id == 'competition-' + competition) {
+			competitionButtons[i].classList.add('active');
 		} else {
-			buttons[i].classList.remove('active');
+			competitionButtons[i].classList.remove('active');
 		}
 	}
-	let buttonList = document.getElementById('cldraw-seasons');
-	while (buttonList.firstChild.id !== 'cldraw-seasons-separator') {
-		buttonList.removeChild(buttonList.firstChild);
+	let seasonButtons = document.getElementById('cldraw-seasons');
+	while (seasonButtons.firstChild.id !== 'cldraw-seasons-separator') {
+		seasonButtons.removeChild(seasonButtons.firstChild);
 	}
 	let seasonSeparator = document.getElementById('cldraw-seasons-separator');
 	let iterator = config.evaluate('//teams[@competition = "' + competition + '"]/@season', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
@@ -316,6 +316,7 @@ function createSeasons(competition) {
 
 	if (competition != selectedSeason[0]) {
 		initialize(competition, season.textContent);
+		return;
 	}
 
 	while (season) {
@@ -330,7 +331,7 @@ function createSeasons(competition) {
 		a.appendChild(text);
 		button.appendChild(a);
 		button.addEventListener('click', initialize.bind(null, competition, season.textContent), false);
-		buttonList.insertBefore(button, seasonSeparator);
+		seasonButtons.insertBefore(button, seasonSeparator);
 		season = iterator.iterateNext();
 	}
 }
@@ -445,11 +446,13 @@ function processDownload() {
 
 	document.getElementById('cldraw-dlprogress').style.display = 'none';
 	ignoreClicks = false;
+	activeDownload = null;
 	reset();
 }
 
 
 function abortDownload() {
+	activeDownload = null;
 	initialize(selectedSeason[0], selectedSeason[1]);
 }
 

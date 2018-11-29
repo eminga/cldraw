@@ -59,16 +59,27 @@ function initialize(competition, season) {
 	attrW = [];
 	attrR = [];
 
+	// read url parameters if supported by browser
+	if ('URLSearchParams' in window) {
+		const url = new URL(window.location);
+		if (competition == undefined) {
+			competition = url.searchParams.get('competition');
+		}
+		if (season == undefined) {
+			season = url.searchParams.get('season');
+		}
+	}
+
 	// select first config entry unless competition/season is explicitly specified
-	if (competition === undefined) {
+	if (competition == undefined) {
 		competition = config.evaluate('//teams[1]/@competition', config, null, XPathResult.STRING_TYPE, null).stringValue;
 	}
-	if (season === undefined) {
+	if (season == undefined) {
 		season = config.evaluate('//teams[@competition = "' + competition + '"][1]/@season', config, null, XPathResult.STRING_TYPE, null).stringValue;
 	}
 
 	// load teams from config
-	let predicates = '[../@competition = "' + competition + '"][../@season = "' + season + '"]';
+	const predicates = '[../@competition = "' + competition + '"][../@season = "' + season + '"]';
 	selectedSeason = [competition, season];
 	let iterator = config.evaluate('//winners' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	let team = iterator.iterateNext();
@@ -142,7 +153,7 @@ function initialize(competition, season) {
 				document.getElementById('cldraw-computation-download').classList.add('disabled');
 				document.getElementById('cldraw-dlbadge').innerHTML = 'checking availability...';
 				document.getElementById('cldraw-dlsize').innerHTML = '';
-				let filename = 'probabilities/' + e.data[0] + '.json';
+				const filename = 'probabilities/' + e.data[0] + '.json';
 				let xhr = new XMLHttpRequest();
 				xhr.open('HEAD', filename);
 				xhr.onreadystatechange = function() {
@@ -151,7 +162,7 @@ function initialize(competition, season) {
 						document.getElementById('cldraw-dlbadge').innerHTML = 'not available';
 						document.getElementById('cldraw-dlsize').innerHTML = '';
 					} else {
-						let contentLength = xhr.getResponseHeader('Content-Length');
+						const contentLength = xhr.getResponseHeader('Content-Length');
 						if (contentLength != null) {
 							document.getElementById('cldraw-dlsize').innerHTML = '(' + (contentLength / 1000000).toFixed(1) + ' MB)';
 						} else {

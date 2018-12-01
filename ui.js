@@ -452,13 +452,15 @@ function processDownload() {
 			minLength = id.length;
 		}
 	}
-	calculator.postMessage([IMPORT_PROBABILITIES, probabilities]);
 	importedLimit[selectedSeason.toString()] = minLength / 4;
 
 	document.getElementById('cldraw-dlprogress').style.display = 'none';
 	ignoreClicks = false;
 	activeDownload = null;
-	reset();
+	calculator.postMessage([IMPORT_PROBABILITIES, probabilities]);
+	calculator.onmessage = function(e) {
+		reset();
+	}
 }
 
 

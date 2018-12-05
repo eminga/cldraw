@@ -19,25 +19,64 @@ The regulations in the round of 32 of the UEFA Europa League are similar to thos
 
 Regulation 1. differs: One pot consists of the twelve EL group winners and the four best third-placed teams from the CL group phase. The other pot consists of the EL group runners-up and the four other third-placed teams from the CL group phase.
 
+## Algorithm
+### Summary
+The algorithm (cldraw.js:computeProbabilities()) iterates over all possible draw sequences and computes the probabilities of the possible pairings using the [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability). To determine the possible opponents of drawn runners-up (calculation step described in the background section), an implicit "dead end check" is included: All opponents which meet the regulations are tried, the ones that lead to a dead end are ignored afterwards.
+
+### Details
+#### Initialization
+Create a bipartite graph G where each node represents a team and two nodes are connected by an edge iff the teams are allowed to be matched based on the regulations.
+
+#### Computation
+##### Case 1: a runner-up is to be drawn next
+Iterate over all runners-up in G and recursively call the computation function with parameters (G, runner-up). Ignore the runners-up for which the recursive call returned null. The remaining recursive calls returned conditional probabilities. Use the [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability) to compute the overall probabilities.
+
+Return null if all recursive calls returned null, otherwise return a complete bipartite graph containing all nodes in G where each edge has a weight in [0,1] which indicates the matching probability of the teams connected by the edge.
+
+##### Case 2: a winner is to be drawn next
+Iterate over all neighbors of the unmatched runner-up and recursively call the computation function with parameter G' = G \ {unmatched runner-up, winner}. Ignore the winners for which the recursive call returned null. The remaining recursive calls returned conditional probabilities. Use the law of total probability to compute the overall probabilities.
+
+Return null if the unmatched runner-up has no neighbor (i.e. the draw is in a dead end) or all recursive calls returned null, otherwise return a complete bipartite graph containing all nodes in G where each edge has a weight in [0,1] which indicates the matching probability of the teams connected by the edge.
+
+#### [Memoization](https://en.wikipedia.org/wiki/Memoization)
+Intermediate results are stored based on the team graph G.
+
+If the probabilities for a given graph have already been computed, they can be reused directly. If the probabilities of an [isomorphic graph](https://en.wikipedia.org/wiki/Graph_isomorphism) have already been computed, they can be reused after bringing them into the right order.
+
+The memoization function takes advantage of these properties by sorting the (boolean) adjacency matrices of the graphs. Each matrix is sorted by alternatingly sorting rows and columns until the order doesn't change anymore. Rows/columns are compared by mapping each row/column to an integer x ∈ {0,..., 2^n-1}, x += 2^i if element i of the row/column is true.
+This method does not ensure that two isomorphic graphs are mapped to the same graph (see [Graph isomorphism problem](https://en.wikipedia.org/wiki/Graph_isomorphism_problem) for details on this problem). However, many of them are and therefore the number of computation steps can be reduced by 80%-90% compared to not sorting the adjacency matrices *(Example CL Draw 2017/18: don't sort: 4002 stored elements, sort: 495 stored elements)*.
+
+
+## Performance
+The memoization technique described above works better the more similar the teams are (e.g. the algorithm is faster if there are 2 runners-up and 2 winners from country A and 2 runners-up and 2 winners from country B, compared to 1 runner-up and 3 winners from country A and 2 runners-up and 1 winner from country B).
+
+Tests with a Pentium G4600 using Node.js 10.13.0 yield computation times of 110ms for the CL draw 2017/18 and 2:02 minutes (310MB RAM usage) for the EL draw 2017/18. However, there are cases where the computation is much more expensive, like EL season 2014/15 where it takes 88 minutes and 5.3GB of RAM.
+
+To bypass the long computation times, precomputed probabilities can be used in EL mode. With a gzipped filesize of 5MB all possible combinations of the first 4 or 6 draw steps can be stored. The probabilities for the remaining 26/28 teams are then computed locally which usually takes a couple of seconds / up to 1 minute.
+
 ## Host yourself
 If this tool wasn't updated in time or you want to host it yourself for another reason, feel free to do so! To host it on GitHub, fork this repo and enable the GitHub Pages feature.
 
 You can edit the teams in the config.xml file. In EL mode, you can provide precomputed probabilities. To do so, press the "Export probabilities" button and upload the JSON file to the probabilities folder afterwards.
 
-It is also possible to use the calculation part without the UI. Here is a minimal example for using it as a Web Worker:
+### cldraw.js
+It is also possible to use the calculation part without the UI, either as a Web Worker or in Node.js.
+
+Here is a minimal example for using it as a Web Worker:
+
 ```javascript
-var calculator = new Worker('cldraw.js');
+var cldraw = new Worker('cldraw.js');
 // set groups and countries
 var winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
 var runnersUp = [["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
-calculator.postMessage([0, winners, runnersUp]);
+cldraw.postMessage([0, winners, runnersUp]);
 // write output to console
-calculator.onmessage = function(e) {
+cldraw.onmessage = function(e) {
   var probabilities = e.data;
   console.log(probabilities);
 }
-// calculate overall probabilities, returns 8x8 matrix
-calculator.postMessage([1]);
+// compute overall probabilities, returns 8x8 matrix
+cldraw.postMessage([1]);
 /*
 Array(8) [
 0: Array(8) [ 0, 0.1479738518753526, 0, … ]
@@ -50,25 +89,25 @@ Array(8) [
 7: Array(8) [ 0.1593314896731272, 0.15155718280510136, 0, … ]
 ]
 */
-// calculate probabilities after winners B and F and runners-up A and G have been drawn, returns 6x6 matrix
+// compute probabilities after winners B and F and runners-up A and G have been drawn, returns 6x6 matrix
 var drawnWinners = [false, true, false, false, false, true, false, false];
 var drawnRunnersUp = [true, false, false, false, false, false, true, false];
-calculator.postMessage([1, drawnWinners, drawnRunnersUp]);
-// draw runner-up H (still unmatched) and calculate probabilites, returns 6x6 matrix
+cldraw.postMessage([1, drawnWinners, drawnRunnersUp]);
+// draw runner-up H (still unmatched) and compute probabilites, returns 6x6 matrix
 drawnRunnersUp[7] = true;
-calculator.postMessage([1, drawnWinners, drawnRunnersUp, 7]);
+cldraw.postMessage([1, drawnWinners, drawnRunnersUp, 7]);
 ```
 
 The same example in Node.js:
 ```javascript
-var calculator = require('./cldraw');
+var cldraw = require('./cldraw.js');
 // set groups and countries
 var winners = [["A","EN"], ["B","FR"], ["C","IT"], ["D","ES"], ["E","EN"], ["F","EN"], ["G","TR"], ["H","EN"]];
 var runnersUp = [["A","CH"], ["B","DE"], ["C","EN"], ["D","IT"], ["E","ES"], ["F","UA"], ["G","PT"], ["H","ES"]];
-calculator.initialize(winners, runnersUp);
+cldraw.initialize(winners, runnersUp);
 
-// calculate overall probabilities, returns 8x8 matrix
-calculator.getProbabilities();
+// compute overall probabilities, returns 8x8 matrix
+cldraw.getProbabilities();
 /*
 [ [ 0,
     0.1479738518753526,
@@ -81,28 +120,14 @@ calculator.getProbabilities();
     0.15155718280510136,
     ... ] ]
 */
-// calculate probabilities after winners B and F and runners-up A and G have been drawn, returns 6x6 matrix
+// compute probabilities after winners B and F and runners-up A and G have been drawn, returns 6x6 matrix
 var drawnWinners = [false, true, false, false, false, true, false, false];
 var drawnRunnersUp = [true, false, false, false, false, false, true, false];
-calculator.getProbabilities(drawnWinners, drawnRunnersUp);
-// draw runner-up H (still unmatched) and calculate probabilites, returns 6x6 matrix
+cldraw.getProbabilities(drawnWinners, drawnRunnersUp);
+// draw runner-up H (still unmatched) and compute probabilites, returns 6x6 matrix
 drawnRunnersUp[7] = true;
-calculator.getProbabilities(drawnWinners, drawnRunnersUp, 7);
+cldraw.getProbabilities(drawnWinners, drawnRunnersUp, 7);
 ```
-
-## Algorithm
-The algorithm (cldraw.js:computeProbabilities()) computes the probabilities of all possible pairings using the [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability). To determine the possible opponents of drawn runners-up (calculation step described in the background section), an implicit "dead end check" is included: All opponents which meet the regulations are tried, the ones that lead to a dead end are ignored afterwards.
-
-To avoid redundant computations, [memoization](https://en.wikipedia.org/wiki/Memoization) is used. Intermediate results are stored and identified using Boolean matrices of size m x m (m := number of unmatched winners). Entry e[i][j] states whether teams i and j can be matched.
-
-Rows and columns of the probability table can be ordered arbitrarily without changing the probabilities. Hence, as a further optimization, each matrix is sorted by alternatingly sorting rows and columns until the order doesn't change anymore. *(Note: There might be a better way to sort the matrices, as the number of cached elements depends on whether the sorting is started with rows or with columns. Hence, there exist matrices A and B which could be transformed to the same matrix C but aren't by this approach. Example CL Draw 2017/18: don't sort: 4002 elements, start with rows: 495 elements, start with columns: 554 elements.)*
-
-## Performance
-The memoization technique described above works better the more similar the teams are (e.g. the algorithm is faster if there are 2 runners-up and 2 winners from country A and 2 runners-up and 2 winners from country B, compared to 1 runner-up and 3 winners from country A and 2 runners-up and 1 winner from country B).
-
-Tests with a Pentium G4600 in Firefox 62 yield computation times of 120ms for the CL draw 2017/18 and 1:45 minutes (450MB RAM usage) for the EL draw 2017/18. However, there are cases where the EL draw takes much longer, like season 2015/16 which takes around 15 minutes and up to 3.5GB of RAM.
-
-To bypass the long computation times, precomputed probabilities can be used in EL mode. With a gzipped filesize of 5MB all possible combinations of the first 4 or 6 draw steps can be stored. The probabilities for the remaining 26/28 teams are then computed locally which takes a couple of seconds / up to 1 minute.
 
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.

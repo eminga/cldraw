@@ -3,6 +3,9 @@ An interactive probability calculator for the round of 16 of the UEFA Champions 
 
 Try it: https://eminga.github.io/cldraw/
 
+If you prefer exact fractions over rounded decimals, have a look at the fractions version: https://eminga.github.io/cldraw/fractions/  
+The fractions version does only work in browsers which support BigInt (currently Chrome and other browsers that use V8).
+
 ## Background (Champions League)
 In the round of 16 of the UEFA Champions League, the UEFA imposes some regulations on how the teams are matched:
 1. Group winners play against group runners-up.
@@ -34,7 +37,9 @@ Iterate over all runners-up in G and recursively call the computation function w
 Return null if all recursive calls returned null, otherwise return a complete bipartite graph containing all nodes in G where each edge has a weight in [0,1] which indicates the matching probability of the teams connected by the edge.
 
 ##### Case 2: a winner is to be drawn next
-Iterate over all neighbors of the unmatched runner-up and recursively call the computation function with parameter G' = G \ {unmatched runner-up, winner}. Ignore the winners for which the recursive call returned null. The remaining recursive calls returned conditional probabilities. Use the law of total probability to compute the overall probabilities.
+If G contains only two nodes: If the nodes are connected by an edge, return G with edge weight 1. If there is no edge (dead end), return null.
+
+If G contains more than two nodes: Iterate over all neighbors of the unmatched runner-up and recursively call the computation function with parameter G' = G \ {unmatched runner-up, winner}. Ignore the winners for which the recursive call returned null. The remaining recursive calls returned conditional probabilities. Use the law of total probability to compute the overall probabilities.
 
 Return null if the unmatched runner-up has no neighbor (i.e. the draw is in a dead end) or all recursive calls returned null, otherwise return a complete bipartite graph containing all nodes in G where each edge has a weight in [0,1] which indicates the matching probability of the teams connected by the edge.
 
@@ -44,7 +49,7 @@ Intermediate results are stored based on the team graph G.
 If the probabilities for a given graph have already been computed, they can be reused directly. If the probabilities of an [isomorphic graph](https://en.wikipedia.org/wiki/Graph_isomorphism) have already been computed, they can be reused after bringing them into the right order.
 
 The memoization function takes advantage of these properties by sorting the (boolean) adjacency matrices of the graphs. Each matrix is sorted by alternatingly sorting rows and columns until the order doesn't change anymore. Rows/columns are compared by mapping each row/column to an integer x ∈ {0,..., 2^n-1}, x += 2^i if element i of the row/column is true.
-This method does not ensure that two isomorphic graphs are mapped to the same graph (see [Graph isomorphism problem](https://en.wikipedia.org/wiki/Graph_isomorphism_problem) for details on this problem). However, many of them are and therefore the number of computation steps can be reduced by 80%-90% compared to not sorting the adjacency matrices *(Example CL Draw 2017/18: don't sort: 4002 stored elements, sort: 495 stored elements)*.
+This method does not ensure that two isomorphic graphs are mapped to the same graph (see [graph isomorphism problem](https://en.wikipedia.org/wiki/Graph_isomorphism_problem) and [graph canonization](https://en.wikipedia.org/wiki/Graph_canonization) for details on this problem). However, many of them are and therefore the number of computation steps can be reduced by 80%-90% compared to not sorting the adjacency matrices *(Example CL Draw 2017/18: don't sort: 4002 stored elements, sort: 495 stored elements)*.
 
 
 ## Performance
@@ -132,4 +137,6 @@ cldraw.getProbabilities(drawnWinners, drawnRunnersUp, 7);
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.
 
-It uses [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs) and [bootstrap.native](https://github.com/thednp/bootstrap.native) by [thednp](https://github.com/thednp). The favicons were generated with [RealFaviconGenerator](https://realfavicongenerator.net/).
+It uses [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs) and [bootstrap.native](https://github.com/thednp/bootstrap.native) by [thednp](https://github.com/thednp).  
+Furthermore, the fractions version uses [Fraction.js](https://github.com/infusion/Fraction.js) by [Robert Eisele](https://github.com/infusion) and [MathJax](https://github.com/mathjax/MathJax).  
+The favicons were generated with [RealFaviconGenerator](https://realfavicongenerator.net/).

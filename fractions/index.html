@@ -116,8 +116,8 @@
 					<h3 class="panel-title">Browser not supported</h3>
 				</div>
 				<div class="panel-body">
-					Your web browser is not supported, sorry! :(<br>
-					Please visit this site with a modern browser like Firefox, Chrome, Safari, or Edge.
+					For fraction mode, your web browser needs to support BigInt.<br>
+					Please try again with Chrome or a Chromium-based browser (Opera, Vivaldi, ...).
 				</div>
 			</div>
 			<noscript>
@@ -262,6 +262,11 @@
 				<p>Source code, background info, and bug reports on <a href="https://github.com/eminga/cldraw">GitHub</a></p>
 			</div>
 		</footer>
+		<script type="text/javascript">
+			if (typeof(BigInt) == 'undefined') {
+				document.getElementById('cldraw-browser').style.display = '';
+			}
+		</script>
 		<script src="../bootstrap/bootstrap-native.min.js"></script>
 		<script src="../ui.js"></script>
 		<script src="fractions-ui.js"></script>

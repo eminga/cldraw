@@ -9,6 +9,28 @@
 	</competition>
 
 	<!-- the uppermost teams element is loaded by default -->
+	<teams competition="cl" season="2018/19">
+		<winners>
+			<team group="A" country="DE">Dortmund</team>
+			<team group="B" country="ES">FC Barcelona</team>
+			<team group="C" country="FR">Paris SG</team>
+			<team group="D" country="PT">FC Porto</team>
+			<team group="E" country="DE">FC Bayern</team>
+			<team group="F" country="EN">Man. City</team>
+			<team group="G" country="ES">Real Madrid</team>
+			<team group="H" country="IT">Juventus</team>
+		</winners>
+		<runners-up>
+			<team group="A" country="ES">Atlético</team>
+			<team group="B" country="EN">Tottenham</team>
+			<team group="C" country="EN">Liverpool FC</team>
+			<team group="D" country="DE">Schalke 04</team>
+			<team group="E" country="NL">Ajax</team>
+			<team group="F" country="FR">Lyon</team>
+			<team group="G" country="IT">AS Roma</team>
+			<team group="H" country="EN">Man. United</team>
+		</runners-up>
+	</teams>
 	<teams competition="cl" season="2017/18">
 		<winners>
 			<team group="A" country="EN">Man. United</team>
@@ -26,7 +48,7 @@
 			<team group="C" country="EN">Chelsea FC</team>
 			<team group="D" country="IT">Juventus</team>
 			<team group="E" country="ES">Sevilla FC</team>
-			<team group="F" country="UA">Shakhtar</team>
+			<team group="F" country="RU/UA">Shakhtar</team>
 			<team group="G" country="PT">FC Porto</team>
 			<team group="H" country="ES">Real Madrid</team>
 		</runners-up>
@@ -34,18 +56,18 @@
 	<teams competition="el" season="2017/18">
 		<winners>
 			<team group="A" country="ES">Villareal</team>
-			<team group="B" country="RU">Kyiv</team>
+			<team group="B" country="RU/UA">Kyiv</team>
 			<team group="C" country="PT">Braga</team>
 			<team group="D" country="IT">Milan</team>
 			<team group="E" country="IT">Atalanta</team>
-			<team group="F" country="RU">Lokomotiv</team>
+			<team group="F" country="RU/UA">Lokomotiv</team>
 			<team group="G" country="CZ">Plzen</team>
 			<team group="H" country="EN">Arsenal</team>
 			<team group="I" country="AT">Salzburg</team>
 			<team group="J" country="ES">Bilbao</team>
 			<team group="K" country="IT">Lazio</team>
-			<team group="L" country="RU">Zenit</team>
-			<team country="RU">CSKA</team>
+			<team group="L" country="RU/UA">Zenit</team>
+			<team country="RU/UA">CSKA</team>
 			<team country="ES">Atlético</team>
 			<team country="DE">Leipzig</team>
 			<team country="PT">Sporting</team>
@@ -64,7 +86,7 @@
 			<team group="K" country="FR">Nice</team>
 			<team group="L" country="ES">Sociedad</team>
 			<team country="IT">Napoli</team>
-			<team country="RU">Spartak</team>
+			<team country="RU/UA">Spartak</team>
 			<team country="SC">Celtic</team>
 			<team country="DE">Dortmund</team>
 		</runners-up>
@@ -96,11 +118,11 @@
 			<team group="A" country="TR">Fenerbahçe</team>
 			<team group="B" country="CY">APOEL</team>
 			<team group="C" country="FR">Saint-Étienne</team>
-			<team group="D" country="RU">Zenit</team>
+			<team group="D" country="RU/UA">Zenit</team>
 			<team group="E" country="IT">Roma</team>
 			<team group="F" country="BE">Genk</team>
 			<team group="G" country="NL">Ajax</team>
-			<team group="H" country="RU">Shakhtar</team>
+			<team group="H" country="RU/UA">Shakhtar</team>
 			<team group="I" country="DE">Schalke</team>
 			<team group="J" country="IT">Fiorentina</team>
 			<team group="K" country="CZ">Sparta</team>
@@ -119,11 +141,11 @@
 			<team group="F" country="ES">Bilbao</team>
 			<team group="G" country="ES">Celta</team>
 			<team group="H" country="BE">Gent</team>
-			<team group="I" country="RU">Krasnodar</team>
+			<team group="I" country="RU/UA">Krasnodar</team>
 			<team group="J" country="GR">PAOK</team>
 			<team group="K" country="IL">Be'er Sheva</team>
 			<team group="L" country="ES">Villareal</team>
-			<team country="RU">Rostov</team>
+			<team country="RU/UA">Rostov</team>
 			<team country="DE">Gladbach</team>
 			<team country="PL">Legia</team>
 			<team country="BG">Razgrad</team>
@@ -138,7 +160,7 @@
 			<team group="E" country="ES">FC Barcelona</team>
 			<team group="F" country="DE">FC Bayern</team>
 			<team group="G" country="EN">Chelsea FC</team>
-			<team group="H" country="RU">Zenit</team>
+			<team group="H" country="RU/UA">Zenit</team>
 		</winners>
 		<runners-up>
 			<team group="A" country="FR">Paris SG</team>
@@ -147,7 +169,7 @@
 			<team group="D" country="IT">Juventus</team>
 			<team group="E" country="IT">AS Roma</team>
 			<team group="F" country="EN">Arsenal FC</team>
-			<team group="G" country="RU">Kyiv</team>
+			<team group="G" country="RU/UA">Kyiv</team>
 			<team group="H" country="BE">Gent</team>
 		</runners-up>
 	</teams>
@@ -155,12 +177,12 @@
 		<winners>
 			<team group="A" country="NO">Molde</team>
 			<team group="B" country="EN">Liverpool</team>
-			<team group="C" country="RU">Krasnodar</team>
+			<team group="C" country="RU/UA">Krasnodar</team>
 			<team group="D" country="IT">Napoli</team>
 			<team group="E" country="AT">Rapid</team>
 			<team group="F" country="PT">Braga</team>
 			<team group="G" country="IT">Lazio</team>
-			<team group="H" country="RU">Lokomotiv</team>
+			<team group="H" country="RU/UA">Lokomotiv</team>
 			<team group="I" country="CH">Basel</team>
 			<team group="J" country="EN">Tottenham</team>
 			<team group="K" country="DE">Schalke</team>
@@ -186,7 +208,7 @@
 			<team country="ES">Sevilla</team>
 			<team country="ES">Valencia</team>
 			<team country="TR">Galatasaray</team>
-			<team country="RU">Shakhtar</team>
+			<team country="RU/UA">Shakhtar</team>
 		</runners-up>
 	</teams>
 	<teams competition="cl" season="2014/15">
@@ -208,7 +230,7 @@
 			<team group="E" country="EN">Man. City</team>
 			<team group="F" country="FR">Paris SG</team>
 			<team group="G" country="DE">Schalke 04</team>
-			<team group="H" country="UA">Shakhtar</team>
+			<team group="H" country="RU/UA">Shakhtar</team>
 		</runners-up>
 	</teams>
 	<teams competition="el" season="2014/15">
@@ -217,18 +239,18 @@
 			<team group="B" country="BE">Brugge</team>
 			<team group="C" country="TR">Beşiktaş</team>
 			<team group="D" country="AT">Salzburg</team>
-			<team group="E" country="RU">Moskva</team>
+			<team group="E" country="RU/UA">Moskva</team>
 			<team group="F" country="IT">Inter</team>
 			<team group="G" country="NL">Feyenoord</team>
 			<team group="H" country="EN">Everton</team>
 			<team group="I" country="IT">Napoli</team>
-			<team group="J" country="RU">Kyiv</team>
+			<team group="J" country="RU/UA">Kyiv</team>
 			<team group="K" country="IT">Fiorentina</team>
 			<team group="L" country="PL">Legia</team>
 			<team country="GR">Olympiacos</team>
 			<team country="PT">Sporting</team>
 			<team country="ES">Bilbao</team>
-			<team country="RU">Zenit</team>
+			<team country="RU/UA">Zenit</team>
 		</winners>
 		<runners-up>
 			<team group="A" country="ES">Villareal</team>
@@ -236,7 +258,7 @@
 			<team group="C" country="EN">Tottenham</team>
 			<team group="D" country="SC">Celtic</team>
 			<team group="E" country="NL">Eindhoven</team>
-			<team group="F" country="RU">Dnipro</team>
+			<team group="F" country="RU/UA">Dnipro</team>
 			<team group="G" country="ES">Sevilla</team>
 			<team group="H" country="DE">Wolfsburg</team>
 			<team group="I" country="CH">Bern</team>

@@ -5,6 +5,28 @@
 	</competition>
 
 	<!-- the uppermost teams element is loaded by default -->
+	<teams competition="cl" season="2018/19">
+		<winners>
+			<team group="A" country="DE">Dortmund</team>
+			<team group="B" country="ES">FC Barcelona</team>
+			<team group="C" country="FR">Paris SG</team>
+			<team group="D" country="PT">FC Porto</team>
+			<team group="E" country="DE">FC Bayern</team>
+			<team group="F" country="EN">Man. City</team>
+			<team group="G" country="ES">Real Madrid</team>
+			<team group="H" country="IT">Juventus</team>
+		</winners>
+		<runners-up>
+			<team group="A" country="ES">Atlético</team>
+			<team group="B" country="EN">Tottenham</team>
+			<team group="C" country="EN">Liverpool FC</team>
+			<team group="D" country="DE">Schalke 04</team>
+			<team group="E" country="NL">Ajax</team>
+			<team group="F" country="FR">Lyon</team>
+			<team group="G" country="IT">AS Roma</team>
+			<team group="H" country="EN">Man. United</team>
+		</runners-up>
+	</teams>
 	<teams competition="cl" season="2017/18">
 		<winners>
 			<team group="A" country="EN">Man. United</team>
@@ -27,7 +49,6 @@
 			<team group="H" country="ES">Real Madrid</team>
 		</runners-up>
 	</teams>
-
 	<teams competition="cl" season="2016/17">
 		<winners>
 			<team group="A" country="EN">Arsenal FC</team>

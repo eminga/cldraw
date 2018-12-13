@@ -31,6 +31,44 @@
 			<team group="H" country="EN">Man. United</team>
 		</runners-up>
 	</teams>
+	<teams competition="el" season="2018/19">
+		<winners>
+			<team group="A" country="DE">Leverkusen</team>
+			<team group="B" country="AT">Salzburg</team>
+			<team group="C" country="RU/UA">Zenit</team>
+			<team group="D" country="CR">Zagreb</team>
+			<team group="E" country="EN">Arsenal</team>
+			<team group="F" country="ES">Betis</team>
+			<team group="G" country="ES">Villareal</team>
+			<team group="H" country="DE">Frankfurt</team>
+			<team group="I" country="BE">Genk</team>
+			<team group="J" country="ES">Sevilla FC</team>
+			<team group="K" country="RU/UA">Kyiv</team>
+			<team group="L" country="EN">Chelsea</team>
+			<team country="IT">Napoli</team>
+			<team country="ES">Valencia</team>
+			<team country="IT">Inter</team>
+			<team country="PT">Benfica</team>
+		</winners>
+		<runners-up>
+			<team group="A" country="CH">Zürich</team>
+			<team group="B" country="SC">Celtic</team>
+			<team group="C" country="CZ">Praha</team>
+			<team group="D" country="TR">Fenerbahçe</team>
+			<team group="E" country="PT">Sporting</team>
+			<team group="F" country="GR">Olympiakos</team>
+			<team group="G" country="AT">Rapid</team>
+			<team group="H" country="IT">Lazio</team>
+			<team group="I" country="SE">Malmö</team>
+			<team group="J" country="RU/UA">Krasnodar</team>
+			<team group="K" country="FR">Rennes</team>
+			<team group="L" country="BY">BATE</team>
+			<team country="CZ">Plzeň</team>
+			<team country="BE">Brugge</team>
+			<team country="RU/UA">Shakhtar</team>
+			<team country="TR">Galatasaray</team>
+		</runners-up>
+	</teams>
 	<teams competition="cl" season="2017/18">
 		<winners>
 			<team group="A" country="EN">Man. United</team>

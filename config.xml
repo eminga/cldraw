@@ -39,7 +39,7 @@
 			<team group="D" country="CR">Zagreb</team>
 			<team group="E" country="EN">Arsenal</team>
 			<team group="F" country="ES">Betis</team>
-			<team group="G" country="ES">Villareal</team>
+			<team group="G" country="ES">Villarreal</team>
 			<team group="H" country="DE">Frankfurt</team>
 			<team group="I" country="BE">Genk</team>
 			<team group="J" country="ES">Sevilla FC</team>
@@ -93,7 +93,7 @@
 	</teams>
 	<teams competition="el" season="2017/18">
 		<winners>
-			<team group="A" country="ES">Villareal</team>
+			<team group="A" country="ES">Villarreal</team>
 			<team group="B" country="RU/UA">Kyiv</team>
 			<team group="C" country="PT">Braga</team>
 			<team group="D" country="IT">Milan</team>
@@ -182,7 +182,7 @@
 			<team group="I" country="RU/UA">Krasnodar</team>
 			<team group="J" country="GR">PAOK</team>
 			<team group="K" country="IL">Be'er Sheva</team>
-			<team group="L" country="ES">Villareal</team>
+			<team group="L" country="ES">Villarreal</team>
 			<team country="RU/UA">Rostov</team>
 			<team country="DE">Gladbach</team>
 			<team country="PL">Legia</team>
@@ -235,7 +235,7 @@
 			<team group="B" country="CH">Sion</team>
 			<team group="C" country="DE">Dortmund</team>
 			<team group="D" country="DK">Midtjylland</team>
-			<team group="E" country="ES">Villareal</team>
+			<team group="E" country="ES">Villarreal</team>
 			<team group="F" country="FR">Marseille</team>
 			<team group="G" country="FR">Saint-Étienne</team>
 			<team group="H" country="PT">Sporting</team>
@@ -291,7 +291,7 @@
 			<team country="RU/UA">Zenit</team>
 		</winners>
 		<runners-up>
-			<team group="A" country="ES">Villareal</team>
+			<team group="A" country="ES">Villarreal</team>
 			<team group="B" country="IT">Torino</team>
 			<team group="C" country="EN">Tottenham</team>
 			<team group="D" country="SC">Celtic</team>
@@ -549,7 +549,7 @@
 			<team group="B" country="IT">Inter</team>
 			<team group="C" country="PT">Sporting</team>
 			<team group="D" country="ES">Atlético</team>
-			<team group="E" country="ES">Villareal</team>
+			<team group="E" country="ES">Villarreal</team>
 			<team group="F" country="FR">Lyon</team>
 			<team group="G" country="EN">Arsenal FC</team>
 			<team group="H" country="ES">Real Madrid</team>

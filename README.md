@@ -4,7 +4,7 @@ An interactive probability calculator for the round of 16 of the UEFA Champions 
 Try it: https://eminga.github.io/cldraw/
 
 If you prefer exact fractions over rounded decimals, have a look at the fractions version: https://eminga.github.io/cldraw/fractions/  
-The fractions version does only work in browsers which support BigInt (currently Chrome and other browsers that use V8).
+The fractions version does only work in browsers which support BigInt (currently Firefox 68+, Chrome 67+, and other browsers that use V8).
 
 ## Background (Champions League)
 In the round of 16 of the UEFA Champions League, the UEFA imposes some regulations on how the teams are matched:

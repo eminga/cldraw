@@ -5,6 +5,28 @@
 	</competition>
 
 	<!-- the uppermost teams element is loaded by default -->
+	<teams competition="cl" season="2019/20">
+		<winners>
+			<team group="A" country="FR">Paris SG</team>
+			<team group="B" country="DE">FC Bayern</team>
+			<team group="C" country="EN">Man. City</team>
+			<team group="D" country="IT">Juventus</team>
+			<team group="E" country="EN">Liverpool FC</team>
+			<team group="F" country="ES">FC Barcelona</team>
+			<team group="G" country="DE">Leipzig</team>
+			<team group="H" country="ES">FC Valencia</team>
+		</winners>
+		<runners-up>
+			<team group="A" country="ES">Real Madrid</team>
+			<team group="B" country="EN">Tottenham</team>
+			<team group="C" country="IT">Atalanta</team>
+			<team group="D" country="ES">Atlético</team>
+			<team group="E" country="IT">Napoli</team>
+			<team group="F" country="DE">Dortmund</team>
+			<team group="G" country="FR">Lyon</team>
+			<team group="H" country="EN">Chelsea FC</team>
+		</runners-up>
+	</teams>
 	<teams competition="cl" season="2018/19">
 		<winners>
 			<team group="A" country="DE">Dortmund</team>

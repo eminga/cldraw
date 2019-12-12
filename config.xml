@@ -31,6 +31,44 @@
 			<team group="H" country="EN">Chelsea FC</team>
 		</runners-up>
 	</teams>
+	<teams competition="el" season="2019/20">
+		<winners>
+			<team group="A" country="ES">Sevilla</team>
+			<team group="B" country="SE">Malmö</team>
+			<team group="C" country="CH">Basel</team>
+			<team group="D" country="AT">LASK</team>
+			<team group="E" country="SC">Celtic</team>
+			<team group="F" country="EN">Arsenal</team>
+			<team group="G" country="PT">Porto</team>
+			<team group="H" country="ES">Espanyol</team>
+			<team group="I" country="BE">Gent</team>
+			<team group="J" country="TR">Başakşehir</team>
+			<team group="K" country="PT">Braga</team>
+			<team group="L" country="EN">ManUtd</team>
+			<team country="NL">Ajax</team>
+			<team country="AT">Salzburg</team>
+			<team country="IT">Inter</team>
+			<team country="PT">Benfica</team>
+		</winners>
+		<runners-up>
+			<team group="A" country="CY">APOEL</team>
+			<team group="B" country="DK">København</team>
+			<team group="C" country="ES">Getafe</team>
+			<team group="D" country="PT">Sporting</team>
+			<team group="E" country="RO">Cluj</team>
+			<team group="F" country="DE">Frankfurt</team>
+			<team group="G" country="SC">Rangers</team>
+			<team group="H" country="BG">Razgrad</team>
+			<team group="I" country="DE">Wolfsburg</team>
+			<team group="J" country="IT">Roma</team>
+			<team group="K" country="EN">Wolverh.</team>
+			<team group="L" country="NL">Alkmaar</team>
+			<team country="DE">Leverk.</team>
+			<team country="RU/UA">Shakhtar</team>
+			<team country="GR">Olympiakos</team>
+			<team country="BE">Brugge</team>
+		</runners-up>
+	</teams>
 	<teams competition="cl" season="2018/19">
 		<winners>
 			<team group="A" country="DE">Dortmund</team>

@@ -31,6 +31,44 @@
 			<team group="H" country="DE">Leipzig</team>
 		</runners-up>
 	</teams>
+	<teams competition="el" season="2020/21">
+		<winners>
+			<team group="A" country="IT">Roma</team>
+			<team group="B" country="EN">Arsenal</team>
+			<team group="C" country="DE">Leverkusen</team>
+			<team group="D" country="SC">Rangers</team>
+			<team group="E" country="NL">Eindhoven</team>
+			<team group="F" country="IT">Napoli</team>
+			<team group="G" country="EN">Leicester</team>
+			<team group="H" country="IT">Milan</team>
+			<team group="I" country="ES">Villarreal</team>
+			<team group="J" country="EN">Tottenham</team>
+			<team group="K" country="CR">Zagreb</team>
+			<team group="L" country="DE">Hoffenheim</team>
+			<team country="EN">ManUtd</team>
+			<team country="BE">Brugge</team>
+			<team country="RU/UA">Shakhtar</team>
+			<team country="NL">Ajax</team>
+		</winners>
+		<runners-up>
+			<team group="A" country="CH">Bern</team>
+			<team group="B" country="NO">Molde</team>
+			<team group="C" country="CZ">Praha</team>
+			<team group="D" country="PT">Benfica</team>
+			<team group="E" country="ES">Granada</team>
+			<team group="F" country="ES">Sociedad</team>
+			<team group="G" country="PT">Braga</team>
+			<team group="H" country="FR">Lille</team>
+			<team group="I" country="IL">Tel Aviv</team>
+			<team group="J" country="BE">Antwerp</team>
+			<team group="K" country="AT">Wolfsberg</team>
+			<team group="L" country="RS">Belgrade</team>
+			<team country="RU/UA">Krasnodar</team>
+			<team country="AT">Salzburg</team>
+			<team country="RU/UA">Kyiv</team>
+			<team country="GR">Olympiakos</team>
+		</runners-up>
+	</teams>
 	<teams competition="cl" season="2019/20">
 		<winners>
 			<team group="A" country="FR">Paris SG</team>
@@ -200,7 +238,7 @@
 			<team group="E" country="FR">Lyon</team>
 			<team group="F" country="DK">København</team>
 			<team group="G" country="RO">FCSB</team>
-			<team group="H" country="RS">Belgrad</team>
+			<team group="H" country="RS">Belgrade</team>
 			<team group="I" country="FR">Marseille</team>
 			<team group="J" country="SE">Östersund</team>
 			<team group="K" country="FR">Nice</team>

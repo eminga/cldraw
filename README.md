@@ -137,6 +137,6 @@ cldraw.getProbabilities(drawnWinners, drawnRunnersUp, 7);
 ## License
 This project is licensed under MIT License, read the LICENSE file for more information.
 
-It uses [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs) and [bootstrap.native](https://github.com/thednp/bootstrap.native) by [thednp](https://github.com/thednp).  
+It uses [bootstrap](https://github.com/twbs/bootstrap) by [Twitter, Inc. and The Bootstrap Authors](https://github.com/twbs).  
 Furthermore, the fractions version uses [Fraction.js](https://github.com/infusion/Fraction.js) by [Robert Eisele](https://github.com/infusion) and [MathJax](https://github.com/mathjax/MathJax).  
 The favicons were generated with [RealFaviconGenerator](https://realfavicongenerator.net/).

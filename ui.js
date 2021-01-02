@@ -256,11 +256,12 @@ function createEditor(empty) {
 		editor.appendChild(editor.firstElementChild.cloneNode(true));
 	}
 	for (let i = 0; i < potSize; i++) {
-		let p = document.getElementsByClassName('cldraw-editor-label')[i];
+		let p = document.getElementsByClassName('cldraw-winner-label')[i];
+		let p2 = document.getElementsByClassName('cldraw-runner-up-label')[i];
 		if (i < 12) {
-			p.innerHTML = 'Group ' + String.fromCharCode(65 + i) + ':';
+			p.innerHTML = p2.innerHTML = '<span class="d-none d-lg-block">Group&nbsp;</span>' + String.fromCharCode(65 + i);
 		} else {
-			p.innerHTML = 'CL ' + (i - 11) + ':';
+			p.innerHTML = p2.innerHTML = 'CL ' + (i - 11);
 		}
 		let winner = document.getElementsByClassName('cldraw-winner')[i];
 		let winnerCountry = document.getElementsByClassName('cldraw-winner-country')[i];
@@ -296,7 +297,9 @@ function createCompetitions() {
 	while (competition) {
 		let button = document.createElement('li');
 		button.id = ('competition-' + competition.getAttribute('id'));
+		button.classList.add('nav-item');
 		let a = document.createElement('a');
+		a.classList.add('nav-link');
 		a.setAttribute("role", "button");
 		let text = document.createTextNode(competition.getElementsByTagName('name')[0].textContent);
 		a.appendChild(text);
@@ -312,9 +315,9 @@ function createSeasons(competition) {
 	let competitionButtons = document.getElementById('cldraw-competitions').children;
 	for (let i = 0; i < competitionButtons.length; i++) {
 		if (competitionButtons[i].id == 'competition-' + competition) {
-			competitionButtons[i].classList.add('active');
+			competitionButtons[i].firstChild.classList.add('active');
 		} else {
-			competitionButtons[i].classList.remove('active');
+			competitionButtons[i].firstChild.classList.remove('active');
 		}
 	}
 	let seasonButtons = document.getElementById('cldraw-seasons');
@@ -338,6 +341,7 @@ function createSeasons(competition) {
 		}
 		let a = document.createElement('a');
 		a.setAttribute("role", "button");
+		a.classList.add('dropdown-item');
 		let text = document.createTextNode(season.textContent);
 		a.appendChild(text);
 		button.appendChild(a);
@@ -353,39 +357,21 @@ function adjustSizes(competition, season) {
 	let roundOf = attrW.length * 2;
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
 	let heading = document.getElementsByTagName('h1')[0];
-	heading.innerHTML = short + ' Draw Probabilities <small>(' + season + ' Round of ' + roundOf + ')</small>';
+	heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round of ' + roundOf + ')</small>';
 	if (potSize < 9) {
-		document.getElementById('cldraw-table').classList.remove('table-condensed');
-		document.getElementById('cldraw-table').parentNode.classList.remove('col-xs-12');
-		document.getElementById('cldraw-table').parentNode.classList.add('col-md-9');
-		document.getElementById('cldraw-table').parentNode.classList.add('col-md-pull-3');
-		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-3');
-		document.getElementById('cldraw-fixtures-panel').classList.add('col-md-push-9');
-		document.getElementById('cldraw-fixtures-panel').classList.remove('col-xs-12');
-		let fixtures = document.getElementsByClassName('cldraw-fixtures');
-		for (let i = 0; i < fixtures.length; i++) {
-			fixtures[i].classList.remove('col-md-6');
-		}
-		let wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
-		for (let i = 0; i < wrapper.length; i++) {
-			wrapper[i].classList.add('col-md-12');
-		}
+		document.getElementById('cldraw-table').classList.remove('table-sm');
+		document.getElementById('cldraw-table').parentNode.classList.add('col-lg-9');
+		document.getElementById('cldraw-table').parentNode.classList.add('order-lg-first');
+		document.getElementById('cldraw-fixtures-card').classList.add('col-lg-3');
+		document.getElementById('cldraw-fixtures-row').classList.add('row-cols-lg-1');
+		document.getElementById('cldraw-fixtures-row').classList.remove('row-cols-lg-4');
 	} else {
-		document.getElementById('cldraw-table').classList.add('table-condensed');
-		document.getElementById('cldraw-table').parentNode.classList.add('col-xs-12');
-		document.getElementById('cldraw-table').parentNode.classList.remove('col-md-9');
-		document.getElementById('cldraw-table').parentNode.classList.remove('col-md-pull-3');
-		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-3');
-		document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-push-9');
-		document.getElementById('cldraw-fixtures-panel').classList.add('col-xs-12');
-		let fixtures = document.getElementsByClassName('cldraw-fixtures');
-		for (let i = 0; i < fixtures.length; i++) {
-			fixtures[i].classList.add('col-md-6');
-		}
-		let wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
-		for (let i = 0; i < wrapper.length; i++) {
-			wrapper[i].classList.remove('col-md-12');
-		}
+		document.getElementById('cldraw-table').classList.add('table-sm');
+		document.getElementById('cldraw-table').parentNode.classList.remove('col-lg-9');
+		document.getElementById('cldraw-table').parentNode.classList.remove('order-lg-first');
+		document.getElementById('cldraw-fixtures-card').classList.remove('col-lg-3');
+		document.getElementById('cldraw-fixtures-row').classList.remove('row-cols-lg-1');
+		document.getElementById('cldraw-fixtures-row').classList.add('row-cols-lg-4');
 	}
 }
 
@@ -670,7 +656,7 @@ function updateTable(probabilities, highlight) {
 			let color = '';
 			let text;
 			if (matched[i] == j) {
-				text = '\u2714';
+				text = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2 " viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>';
 				color = '#4998ff';
 			} else {
 				text = (100 * fullProbabilities[i][j]).toFixed(2) + '%';
@@ -708,13 +694,13 @@ function updateFixtures() {
 			let row = document.createElement('div');
 			row.classList.add('row');
 			let left = document.createElement('div');
-			left.classList.add('col-xs-6');
-			left.classList.add('text-right');
-			left.classList.add('padding-0');
+			left.classList.add('col-6');
+			left.classList.add('text-end');
+			left.classList.add('p-0');
 			let right = document.createElement('div');
-			right.classList.add('col-xs-6');
-			right.classList.add('text-left');
-			right.classList.add('padding-0');
+			right.classList.add('col-6');
+			right.classList.add('text-start');
+			right.classList.add('p-0');
 			let small = document.createElement('small');
 			small.appendChild(document.createTextNode('s\u00A0\u00A0'));
 			right.appendChild(small);
@@ -793,6 +779,7 @@ function createButtonsR(probabilities) {
 			button[i] = document.createElement('button');
 			button[i].classList.add('btn');
 			button[i].classList.add('btn-primary');
+			button[i].classList.add('me-1');
 			button[i].type = 'button';
 			let text = document.createTextNode(teamsR[i]);
 			button[i].appendChild(text);
@@ -843,6 +830,7 @@ function createButtonsW(opponent, probabilities) {
 			button[i] = document.createElement('button');
 			button[i].classList.add('btn');
 			button[i].classList.add('btn-primary');
+			button[i].classList.add('me-2')
 			button[i].type = 'button';
 			let text = document.createTextNode(teamsW[i]);
 			button[i].appendChild(text);

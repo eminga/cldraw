@@ -8,22 +8,13 @@ function adjustSizes(competition, season) {
 	let roundOf = attrW.length * 2;
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
 	let heading = document.getElementsByTagName('h1')[0];
-	heading.innerHTML = short + ' Draw Probabilities <small>(' + season + ' Round of ' + roundOf + ')</small>';
-	document.getElementById('cldraw-table').classList.add('table-condensed');
-	document.getElementById('cldraw-table').parentNode.classList.add('col-xs-12');
-	document.getElementById('cldraw-table').parentNode.classList.remove('col-md-9');
-	document.getElementById('cldraw-table').parentNode.classList.remove('col-md-pull-3');
-	document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-3');
-	document.getElementById('cldraw-fixtures-panel').classList.remove('col-md-push-9');
-	document.getElementById('cldraw-fixtures-panel').classList.add('col-xs-12');
-	let fixtures = document.getElementsByClassName('cldraw-fixtures');
-	for (let i = 0; i < fixtures.length; i++) {
-		fixtures[i].classList.add('col-md-6');
-	}
-	let wrapper = document.getElementsByClassName('cldraw-fixtures-wrapper');
-	for (let i = 0; i < wrapper.length; i++) {
-		wrapper[i].classList.remove('col-md-12');
-	}
+	heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round of ' + roundOf + ')</small>';
+	document.getElementById('cldraw-table').classList.add('table-sm');
+	document.getElementById('cldraw-table').parentNode.classList.remove('col-lg-9');
+	document.getElementById('cldraw-table').parentNode.classList.remove('order-lg-first');
+	document.getElementById('cldraw-fixtures-card').classList.remove('col-lg-3');
+	document.getElementById('cldraw-fixtures-row').classList.remove('row-cols-lg-1');
+	document.getElementById('cldraw-fixtures-row').classList.add('row-cols-lg-4');
 }
 
 function updateTable(probabilities, highlight) {
@@ -64,7 +55,7 @@ function updateTable(probabilities, highlight) {
 			let color = '';
 			let text;
 			if (matched[i] == j) {
-				text = '\u2714';
+				text = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2 " viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>';
 				color = '#4998ff';
 			} else {
 				let n;

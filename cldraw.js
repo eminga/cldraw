@@ -33,18 +33,15 @@ let seasonLog = {};
 if (typeof(onmessage) !== 'undefined') {
 	const INITIALIZE = 0;
 	const GET_PROBABILITIES = 1;
-	const GET_PROBABILITIES_PREVIEW = 2;
-	const IMPORT_PROBABILITIES = 3;
-	const EXPORT_PROBABILITIES = 4;
-	const CLEAR_CACHE = 5;
-	const GET_ID = 6;
+	const IMPORT_PROBABILITIES = 2;
+	const EXPORT_PROBABILITIES = 3;
+	const CLEAR_CACHE = 4;
+	const GET_ID = 5;
 	onmessage = function(e) {
 		if (e.data[0] == INITIALIZE) {
 			initialize(e.data[1], e.data[2]);
 		} else if (e.data[0] == GET_PROBABILITIES) {
 			postMessage(getProbabilities(e.data[1], e.data[2], e.data[3]));
-		} else if (e.data[0] == GET_PROBABILITIES_PREVIEW) {
-			postMessage(getProbabilitiesPreview(e.data[1], e.data[2], e.data[3]));
 		} else if (e.data[0] == IMPORT_PROBABILITIES) {
 			postMessage(importProbabilities(e.data[1]));
 		} else if (e.data[0] == EXPORT_PROBABILITIES) {
@@ -60,7 +57,6 @@ if (typeof(onmessage) !== 'undefined') {
 if (typeof(exports) !== 'undefined') {
 	exports.initialize = initialize;
 	exports.getProbabilities = getProbabilities;
-	exports.getProbabilitiesPreview = getProbabilitiesPreview;
 	exports.importProbabilities = importProbabilities;
 	exports.exportProbabilities = exportProbabilities;
 	exports.clearCache = clearCache;
@@ -385,38 +381,6 @@ function getProbabilities(drawnW, drawnR, unmatchedRunnerUp) {
 		}
 	}
 	return computeProbabilities(compatibilityMatrix, unmatchedRunnerUp);
-}
-
-
-function getProbabilitiesPreview(drawnW, drawnR, possibleOpponent) {
-	let probabilities = [];
-	let num = 0;
-	for (let i = 0; i < drawnR.length; i++) {
-		if (drawnR[i]) {
-			num++;
-		}
-		if (drawnW[i]) {
-			num--;
-		}
-	}
-	if (num == 0) {
-		for (let i = 0; i < drawnR.length; i++) {
-			if (possibleOpponent[i]) {
-				drawnR[i] = true;
-				probabilities[i] = getProbabilities(drawnW, drawnR, i);
-				drawnR[i] = false;
-			}
-		}
-	} else {
-		for (let i = 0; i < drawnR.length; i++) {
-			if (possibleOpponent[i]) {
-				drawnW[i] = true;
-				probabilities[i] = getProbabilities(drawnW, drawnR);
-				drawnW[i] = false;
-			}
-		}
-	}
-	return probabilities;
 }
 
 

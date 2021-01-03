@@ -355,15 +355,13 @@ function adjustSizes(competition, season) {
 	document.getElementById('cldraw-seasons-button').innerText = season;
 	if (potSize < 9) {
 		document.getElementById('cldraw-table').classList.remove('table-sm');
-		document.getElementById('cldraw-table').parentNode.classList.add('col-lg-9');
-		document.getElementById('cldraw-table').parentNode.classList.add('order-lg-first');
+		document.getElementById('cldraw-table').parentNode.classList.add('col-lg-9', 'order-lg-first');
 		document.getElementById('cldraw-fixtures-card').classList.add('col-lg-3');
 		document.getElementById('cldraw-fixtures-row').classList.add('row-cols-lg-1');
 		document.getElementById('cldraw-fixtures-row').classList.remove('row-cols-lg-4');
 	} else {
 		document.getElementById('cldraw-table').classList.add('table-sm');
-		document.getElementById('cldraw-table').parentNode.classList.remove('col-lg-9');
-		document.getElementById('cldraw-table').parentNode.classList.remove('order-lg-first');
+		document.getElementById('cldraw-table').parentNode.classList.remove('col-lg-9', 'order-lg-first');
 		document.getElementById('cldraw-fixtures-card').classList.remove('col-lg-3');
 		document.getElementById('cldraw-fixtures-row').classList.remove('row-cols-lg-1');
 		document.getElementById('cldraw-fixtures-row').classList.add('row-cols-lg-4');
@@ -705,13 +703,9 @@ function updateFixtures() {
 			let row = document.createElement('div');
 			row.classList.add('row');
 			let left = document.createElement('div');
-			left.classList.add('col-6');
-			left.classList.add('text-end');
-			left.classList.add('p-0');
+			left.classList.add('col-6', 'text-end', 'p-0', 'overflow-hidden');
 			let right = document.createElement('div');
-			right.classList.add('col-6');
-			right.classList.add('text-start');
-			right.classList.add('p-0');
+			right.classList.add('col-6', 'text-start', 'p-0', 'overflow-hidden');
 			let small = document.createElement('small');
 			small.appendChild(document.createTextNode('s\u00A0\u00A0'));
 			right.appendChild(small);
@@ -788,9 +782,7 @@ function createButtonsR(probabilities) {
 		if (!drawnR[i]) {
 			numR++;
 			button[i] = document.createElement('button');
-			button[i].classList.add('btn');
-			button[i].classList.add('btn-primary');
-			button[i].classList.add('me-1');
+			button[i].classList.add('btn', 'btn-primary', 'me-1');
 			button[i].type = 'button';
 			let text = document.createTextNode(teamsR[i]);
 			button[i].appendChild(text);
@@ -820,9 +812,7 @@ function createButtonsW(opponent, probabilities) {
 	for (let i = 0; i < potSize ; i++) {
 		if (possibleMatch[i]) {
 			button[i] = document.createElement('button');
-			button[i].classList.add('btn');
-			button[i].classList.add('btn-primary');
-			button[i].classList.add('me-2')
+			button[i].classList.add('btn', 'btn-primary', 'me-1');
 			button[i].type = 'button';
 			let text = document.createTextNode(teamsW[i]);
 			button[i].appendChild(text);

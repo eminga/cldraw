@@ -10,8 +10,7 @@ function adjustSizes(competition, season) {
 	let heading = document.getElementsByTagName('h1')[0];
 	heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round of ' + roundOf + ')</small>';
 	document.getElementById('cldraw-table').classList.add('table-sm');
-	document.getElementById('cldraw-table').parentNode.classList.remove('col-lg-9');
-	document.getElementById('cldraw-table').parentNode.classList.remove('order-lg-first');
+	document.getElementById('cldraw-table').parentNode.classList.remove('col-lg-9', 'order-lg-first');
 	document.getElementById('cldraw-fixtures-card').classList.remove('col-lg-3');
 	document.getElementById('cldraw-fixtures-row').classList.remove('row-cols-lg-1');
 	document.getElementById('cldraw-fixtures-row').classList.add('row-cols-lg-4');
@@ -63,7 +62,9 @@ function updateTable(probabilities, highlight) {
 			let text;
 			if (matched[i] == j) {
 				text = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2 " viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>';
-				if (!heatMode) {
+				if (heatMode) {
+					cell.style.background = '#ff0000';
+				} else {
 					cell.classList.add('table-primary');
 				}
 			} else {
@@ -94,7 +95,7 @@ function updateTable(probabilities, highlight) {
 					cell.style.background = '#ff' + intensity + intensity;
 				} else {
 					if (n == 0) {
-						cell.classList.add('table-secondary');
+						cell.classList.add('table-secondary', 'table-active');
 					} else if (j == highlight) {
 						cell.classList.add('table-warning');
 					}

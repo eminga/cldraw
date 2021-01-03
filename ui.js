@@ -8,6 +8,7 @@ const CLEAR_CACHE = 4;
 const GET_ID = 5;
 
 let hideMode = false;
+let heatMode = false;
 // swap == false: winners are rows, swap == true: winners are columns
 let swap = false;
 
@@ -351,6 +352,7 @@ function adjustSizes(competition, season) {
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
 	let heading = document.getElementsByTagName('h1')[0];
 	heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round of ' + roundOf + ')</small>';
+	document.getElementById('cldraw-seasons-button').innerText = season;
 	if (potSize < 9) {
 		document.getElementById('cldraw-table').classList.remove('table-sm');
 		document.getElementById('cldraw-table').parentNode.classList.add('col-lg-9');
@@ -377,6 +379,7 @@ function reset(expensive) {
 			matched[i] = -1;
 		}
 		drawHistory = [];
+		document.getElementById('cldraw-buttons-heading').classList.add('d-none');
 		document.getElementById('button-randomteam').classList.add('disabled');
 		document.getElementById('cldraw-computation').style.display = 'none';
 		if (expensive) {
@@ -389,6 +392,7 @@ function reset(expensive) {
 			updateTable(probabilities);
 			createButtonsR(probabilities);
 			document.getElementById('cldraw-computation-running').style.display = 'none';
+			document.getElementById('cldraw-buttons-heading').classList.remove('d-none');
 			document.getElementById('button-randomteam').classList.remove('disabled');
 			let button = document.getElementById('button-dl');
 			if (potSize > 12 && !precomputedSeasons.has(selectedSeason.toString())) {
@@ -561,6 +565,7 @@ function undo() {
 				drawnR[opponent] = false;
 				drawRunnerUp(opponent);
 			}
+			document.getElementById('cldraw-buttons-heading').classList.remove('d-none');
 			document.getElementById('button-randomteam').classList.remove('disabled');
 		}
 	}
@@ -653,16 +658,29 @@ function updateTable(probabilities, highlight) {
 				cell = table.rows[j + 1].cells[i + 1];
 			}
 			cell.classList.remove('table-active', 'table-primary', 'table-secondary', 'table-warning');
+			cell.style.background = '';
 			let text;
 			if (matched[i] == j) {
 				text = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2 " viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>';
-				cell.classList.add('table-primary');
+				if (heatMode) {
+					cell.style.background = '#ff0000';
+				} else {
+					cell.classList.add('table-primary');
+				}
 			} else {
 				text = (100 * fullProbabilities[i][j]).toFixed(2) + '%';
-				if (fullProbabilities[i][j] == 0) {
-					cell.classList.add('table-secondary', 'table-active');
-				} else if (j == highlight) {
-					cell.classList.add('table-warning');
+				if (heatMode) {
+					let intensity = Math.round(256 * (1 - fullProbabilities[i][j])).toString(16);
+					if (intensity.length == 1) {
+						intensity = '0' + intensity;
+					}
+					cell.style.background = '#ff' + intensity + intensity;
+				} else {
+					if (fullProbabilities[i][j] == 0) {
+						cell.classList.add('table-secondary', 'table-active');
+					} else if (j == highlight) {
+						cell.classList.add('table-warning');
+					}
 				}
 			}
 			cell.innerHTML = text;
@@ -787,6 +805,7 @@ function createButtonsR(probabilities) {
 	}
 
 	if (numR > 0) {
+		document.getElementById('cldraw-buttons-heading').classList.remove('d-none');
 		document.getElementById('button-randomteam').classList.remove('disabled');
 	}
 }
@@ -816,11 +835,13 @@ function createButtonsW(opponent, probabilities) {
 			buttonList.appendChild(button[i]);
 		}
 	}
+	document.getElementById('cldraw-buttons-heading').classList.remove('d-none');
 	document.getElementById('button-randomteam').classList.remove('disabled');
 }
 
 
 function removeButtons() {
+	document.getElementById('cldraw-buttons-heading').classList.add('d-none');
 	document.getElementById('button-randomteam').classList.add('disabled');
 	let buttonList = document.getElementById('cldraw-buttons');
 	while (buttonList.firstChild) {
@@ -840,10 +861,10 @@ function disableButtons() {
 
 function toggleHideMode() {
 	let button = document.getElementById('button-hide');
-	if (hideMode) {
-		hideMode = false;
-		button.classList.remove('active');
-		button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16"><path d="M10.79 12.912l-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.027 7.027 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.088z"/><path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708l-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6l-12-12 .708-.708 12 12-.708.707z"/></svg>  Hide drawn teams';
+	button.classList.toggle('active');
+	hideMode = !hideMode;
+	if (!hideMode) {
+		button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16"><path d="M10.79 12.912l-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.027 7.027 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.088z"/><path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708l-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6l-12-12 .708-.708 12 12-.708.707z"/></svg> Hide drawn teams';
 		let table = document.getElementById('cldraw-table');
 		for (let i = 0; i < potSize; i++) {
 			table.rows[i + 1].style.display = '';
@@ -852,10 +873,30 @@ function toggleHideMode() {
 			}
 		}
 	} else {
-		hideMode = true;
-		button.classList.add('active');
 		button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg> Show drawn teams';
 		hideDrawnTeams();
+	}
+}
+
+
+function toggleHeatMode() {
+	heatMode = !heatMode;
+	let button = document.getElementById('button-heat');
+	button.classList.toggle('active');
+
+	if (drawHistory.length % 2 == 0) {
+		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR]);
+		calculator.onmessage = function(e) {
+			let probabilities = e.data;
+			updateTable(probabilities);
+		}
+	} else {
+		let opponent = drawHistory[drawHistory.length - 1];
+		calculator.postMessage([GET_PROBABILITIES, drawnW, drawnR, opponent]);
+		calculator.onmessage = function(e) {
+			let probabilities = e.data;
+			updateTable(probabilities, opponent);
+		}
 	}
 }
 
@@ -870,6 +911,7 @@ function transposeTable() {
 			oldTable[i][j] = [];
 			oldTable[i][j][0] = table.rows[i + 1].cells[j + 1].innerHTML;
 			oldTable[i][j][1] = table.rows[i + 1].cells[j + 1].classList;
+			oldTable[i][j][2] = table.rows[i + 1].cells[j + 1].style.background;
 		}
 	}
 	createTable();
@@ -877,11 +919,12 @@ function transposeTable() {
 		for (let j = 0; j < potSize; j++) {
 			table.rows[i + 1].cells[j + 1].innerHTML = oldTable[j][i][0];
 			let classes = oldTable[j][i][1].value.split(' ');
-			for (const c of classes) {
+			for (let c of classes) {
 				if (c) {
 					table.rows[i + 1].cells[j + 1].classList.add(c);
 				}
 			}
+			table.rows[i + 1].cells[j + 1].style.background = oldTable[j][i][2];
 		}
 	}
 	if (hideMode) {

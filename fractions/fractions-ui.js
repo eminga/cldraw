@@ -59,10 +59,13 @@ function updateTable(probabilities, highlight) {
 				cell = table.rows[j + 1].cells[i + 1];
 			}
 			cell.classList.remove('table-primary', 'table-secondary', 'table-warning');
+			cell.style.background = '';
 			let text;
 			if (matched[i] == j) {
 				text = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2 " viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>';
-				cell.classList.add('table-primary');
+				if (!heatMode) {
+					cell.classList.add('table-primary');
+				}
 			} else {
 				let n;
 				let d;
@@ -83,10 +86,18 @@ function updateTable(probabilities, highlight) {
 						text = '<math><mfrac><mi>' + n + '</mi><mn>' + d + '</mn></mfrac></math>';
 					}
 				}
-				if (n == 0) {
-					cell.classList.add('table-secondary');
-				} else if (j == highlight) {
-					cell.classList.add('table-warning');
+				if (heatMode) {
+					let intensity = Math.round(256 * (1 - Number(10000n * n / d) / 10000)).toString(16);
+					if (intensity.length == 1) {
+						intensity = '0' + intensity;
+					}
+					cell.style.background = '#ff' + intensity + intensity;
+				} else {
+					if (n == 0) {
+						cell.classList.add('table-secondary');
+					} else if (j == highlight) {
+						cell.classList.add('table-warning');
+					}
 				}
 			}
 			cell.innerHTML = text;

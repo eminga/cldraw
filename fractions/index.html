@@ -32,7 +32,7 @@
 					</ul>
 					<ul class="nav navbar-nav ms-auto mb-2 mb-sm-0">
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Season</a>
+							<a class="nav-link dropdown-toggle" id="cldraw-seasons-button" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Season</a>
 							<ul class="dropdown-menu dropdown-menu-end" id="cldraw-seasons">
 								<li id="cldraw-seasons-separator"><hr class="dropdown-divider"></li>
 								<li><a class="dropdown-item" role="button" id="cldraw-add-season" onclick="createEditor(true)" data-bs-toggle="modal" data-bs-target="#cldraw-editor">Add season</a></li>
@@ -214,7 +214,7 @@
 				The remaining probabilities are being computed. Please wait...
 			</div>
 
-			<h3>Draw team</h3>
+			<h3 id="cldraw-buttons-heading" class="d-none">Draw team</h3>
 			<div class="btn-toolbar" id="cldraw-buttons">
 			</div>
 			<h3>Options</h3>
@@ -249,6 +249,9 @@
 							<path d="M10.79 12.912l-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.027 7.027 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.088z"/>
 							<path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708l-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6l-12-12 .708-.708 12 12-.708.707z"/>
 						</svg> Hide drawn teams
+					</button>
+					<button type="button" class="btn btn-outline-dark" id="button-heat" onclick="toggleHeatMode()">
+						Heat map
 					</button>
 					<button type="button" class="btn btn-outline-dark" onclick="transposeTable()">
 						Transpose table

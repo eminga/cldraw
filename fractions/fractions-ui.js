@@ -9,6 +9,7 @@ function adjustSizes(competition, season) {
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
 	let heading = document.getElementsByTagName('h1')[0];
 	heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round of ' + roundOf + ')</small>';
+	document.getElementById('cldraw-seasons-button').innerText = season;
 	document.getElementById('cldraw-table').classList.add('table-sm');
 	document.getElementById('cldraw-table').parentNode.classList.remove('col-lg-9', 'order-lg-first');
 	document.getElementById('cldraw-fixtures-card').classList.remove('col-lg-3');
@@ -57,7 +58,7 @@ function updateTable(probabilities, highlight) {
 			} else {
 				cell = table.rows[j + 1].cells[i + 1];
 			}
-			cell.classList.remove('table-primary', 'table-secondary', 'table-warning');
+			cell.classList.remove('table-active', 'table-primary', 'table-secondary', 'table-warning');
 			cell.style.background = '';
 			let text;
 			if (matched[i] == j) {
@@ -109,7 +110,9 @@ function updateTable(probabilities, highlight) {
 	if (hideMode) {
 		hideDrawnTeams();
 	}
-	MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'cldraw-table']);
+	// for some reason typeset() needs to be called twice for spacing to be correct
+	MathJax.typeset();
+  MathJax.typeset();
 }
 
 function getPossibleMatches(probabilities, team) {

@@ -700,31 +700,31 @@ function updateFixtures() {
 			fixtures[i].removeChild(fixtures[i].firstChild);
 		}
 		for (let j = i * l; j < l * (i + 1); j++) {
-			let row = document.createElement('div');
-			row.classList.add('row');
-			let left = document.createElement('div');
-			left.classList.add('col-6', 'text-end', 'p-0', 'overflow-hidden');
-			let right = document.createElement('div');
-			right.classList.add('col-6', 'text-start', 'p-0', 'overflow-hidden');
-			let small = document.createElement('small');
-			small.appendChild(document.createTextNode('s\u00A0\u00A0'));
-			right.appendChild(small);
+			let div = document.createElement('div');
+			div.classList.add('d-flex', 'align-items-baseline');
+			let left = document.createElement('span');
+			left.classList.add('text-end', 'p-0', 'overflow-hidden');
+			left.style.flex = '1';
+			let right = document.createElement('span');
+			right.classList.add('text-start', 'p-0', 'overflow-hidden');
+			right.style.flex = '1';
+			let middle = document.createElement('span');
+			middle.classList.add('small');
+			middle.appendChild(document.createTextNode('\u2002vs\u2002'));
 			if (j * 2 < drawHistory.length) {
 				left.appendChild(document.createTextNode(teamsR[drawHistory[j * 2]]));
 			} else {
-				left.appendChild(document.createTextNode('.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.'));
+				left.appendChild(document.createTextNode('. . . . . . . . . .'));
 			}
 			if (j * 2 + 1 < drawHistory.length) {
 				right.appendChild(document.createTextNode(teamsW[drawHistory[j * 2 + 1] - potSize]));
 			} else {
-				right.appendChild(document.createTextNode('.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.\u00A0.'));
+				right.appendChild(document.createTextNode('. . . . . . . . . .'));
 			}
-			small = document.createElement('small');
-			small.appendChild(document.createTextNode('\u00A0\u00A0v'));
-			left.appendChild(small);
-			row.appendChild(left);
-			row.appendChild(right);
-			fixtures[i].appendChild(row);
+			div.appendChild(left);
+			div.appendChild(middle);
+			div.appendChild(right);
+			fixtures[i].appendChild(div);
 		}
 	}
 	if (drawHistory.length > 0) {

@@ -7,11 +7,6 @@ body {
 	margin-bottom: 120px;
 }
 
-.padding-0 {
-	padding-right: 0;
-	padding-left: 0;
-}
-
 .navbar {
 	-webkit-user-select: none;
 	-moz-user-select: none;

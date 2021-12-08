@@ -80,14 +80,14 @@ function initialize(competition, season) {
 	// load teams from config
 	const predicates = '[../@competition = "' + competition + '"][../@season = "' + season + '"]';
 	selectedSeason = [competition, season];
-	let iterator = config.evaluate('//winners' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+	let iterator = config.evaluate('//seeded' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	let team = iterator.iterateNext();
 	while (team) {
 		teamsW.push(team.textContent);
 		attrW.push([team.getAttribute('group'), team.getAttribute('country')]);
 		team = iterator.iterateNext();
 	}
-	iterator = config.evaluate('//runners-up' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+	iterator = config.evaluate('//unseeded' + predicates + '/team', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
 	team = iterator.iterateNext();
 	while (team) {
 		teamsR.push(team.textContent);

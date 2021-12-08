@@ -10,7 +10,7 @@
 
 	<!-- the uppermost teams element is loaded by default -->
 	<teams competition="cl" season="2021/22 [with Villarreal]">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Man. City</team>
 			<team group="B" country="EN">Liverpool FC</team>
 			<team group="C" country="NL">Ajax</team>
@@ -19,8 +19,8 @@
 			<team group="F" country="EN">Man. United</team>
 			<team group="G" country="FR">LOSC Lille</team>
 			<team group="H" country="IT">Juventus</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="FR">Paris SG</team>
 			<team group="B" country="ES">Atlético</team>
 			<team group="C" country="PT">Sporting</team>
@@ -29,10 +29,10 @@
 			<team group="F" country="ES">Villarreal</team>
 			<team group="G" country="AT">Salzburg</team>
 			<team group="H" country="EN">Chelsea FC</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2021/22 [with Atalanta]">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Man. City</team>
 			<team group="B" country="EN">Liverpool FC</team>
 			<team group="C" country="NL">Ajax</team>
@@ -41,8 +41,8 @@
 			<team group="F" country="EN">Man. United</team>
 			<team group="G" country="FR">LOSC Lille</team>
 			<team group="H" country="IT">Juventus</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="FR">Paris SG</team>
 			<team group="B" country="ES">Atlético</team>
 			<team group="C" country="PT">Sporting</team>
@@ -51,10 +51,10 @@
 			<team group="F" country="IT">Atalanta</team>
 			<team group="G" country="AT">Salzburg</team>
 			<team group="H" country="EN">Chelsea FC</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2020/21">
-		<winners>
+		<seeded>
 			<team group="A" country="DE">FC Bayern</team>
 			<team group="B" country="ES">Real Madrid</team>
 			<team group="C" country="EN">Man. City</team>
@@ -63,8 +63,8 @@
 			<team group="F" country="DE">Dortmund</team>
 			<team group="G" country="IT">Juventus</team>
 			<team group="H" country="FR">Paris SG</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="ES">Atlético</team>
 			<team group="B" country="DE">Gladbach</team>
 			<team group="C" country="PT">FC Porto</team>
@@ -73,10 +73,10 @@
 			<team group="F" country="IT">Lazio</team>
 			<team group="G" country="ES">FC Barcelona</team>
 			<team group="H" country="DE">Leipzig</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2020/21">
-		<winners>
+		<seeded>
 			<team group="A" country="IT">Roma</team>
 			<team group="B" country="EN">Arsenal</team>
 			<team group="C" country="DE">Leverkusen</team>
@@ -93,8 +93,8 @@
 			<team country="BE">Brugge</team>
 			<team country="RU/UA">Shakhtar</team>
 			<team country="NL">Ajax</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="CH">Bern</team>
 			<team group="B" country="NO">Molde</team>
 			<team group="C" country="CZ">Praha</team>
@@ -111,10 +111,10 @@
 			<team country="AT">Salzburg</team>
 			<team country="RU/UA">Kyiv</team>
 			<team country="GR">Olympiakos</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2019/20">
-		<winners>
+		<seeded>
 			<team group="A" country="FR">Paris SG</team>
 			<team group="B" country="DE">FC Bayern</team>
 			<team group="C" country="EN">Man. City</team>
@@ -123,8 +123,8 @@
 			<team group="F" country="ES">FC Barcelona</team>
 			<team group="G" country="DE">Leipzig</team>
 			<team group="H" country="ES">FC Valencia</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="ES">Real Madrid</team>
 			<team group="B" country="EN">Tottenham</team>
 			<team group="C" country="IT">Atalanta</team>
@@ -133,10 +133,10 @@
 			<team group="F" country="DE">Dortmund</team>
 			<team group="G" country="FR">Lyon</team>
 			<team group="H" country="EN">Chelsea FC</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2019/20">
-		<winners>
+		<seeded>
 			<team group="A" country="ES">Sevilla</team>
 			<team group="B" country="SE">Malmö</team>
 			<team group="C" country="CH">Basel</team>
@@ -153,8 +153,8 @@
 			<team country="AT">Salzburg</team>
 			<team country="IT">Inter</team>
 			<team country="PT">Benfica</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="CY">APOEL</team>
 			<team group="B" country="DK">København</team>
 			<team group="C" country="ES">Getafe</team>
@@ -171,10 +171,10 @@
 			<team country="RU/UA">Shakhtar</team>
 			<team country="GR">Olympiakos</team>
 			<team country="BE">Brugge</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2018/19">
-		<winners>
+		<seeded>
 			<team group="A" country="DE">Dortmund</team>
 			<team group="B" country="ES">FC Barcelona</team>
 			<team group="C" country="FR">Paris SG</team>
@@ -183,8 +183,8 @@
 			<team group="F" country="EN">Man. City</team>
 			<team group="G" country="ES">Real Madrid</team>
 			<team group="H" country="IT">Juventus</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="ES">Atlético</team>
 			<team group="B" country="EN">Tottenham</team>
 			<team group="C" country="EN">Liverpool FC</team>
@@ -193,10 +193,10 @@
 			<team group="F" country="FR">Lyon</team>
 			<team group="G" country="IT">AS Roma</team>
 			<team group="H" country="EN">Man. United</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2018/19">
-		<winners>
+		<seeded>
 			<team group="A" country="DE">Leverkusen</team>
 			<team group="B" country="AT">Salzburg</team>
 			<team group="C" country="RU/UA">Zenit</team>
@@ -213,8 +213,8 @@
 			<team country="ES">Valencia</team>
 			<team country="IT">Inter</team>
 			<team country="PT">Benfica</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="CH">Zürich</team>
 			<team group="B" country="SC">Celtic</team>
 			<team group="C" country="CZ">Praha</team>
@@ -231,10 +231,10 @@
 			<team country="BE">Brugge</team>
 			<team country="RU/UA">Shakhtar</team>
 			<team country="TR">Galatasaray</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2017/18">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Man. United</team>
 			<team group="B" country="FR">Paris SG</team>
 			<team group="C" country="IT">AS Roma</team>
@@ -243,8 +243,8 @@
 			<team group="F" country="EN">Man. City</team>
 			<team group="G" country="TR">Beşiktaş JK</team>
 			<team group="H" country="EN">Tottenham</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="CH">FC Basel</team>
 			<team group="B" country="DE">FC Bayern</team>
 			<team group="C" country="EN">Chelsea FC</team>
@@ -253,10 +253,10 @@
 			<team group="F" country="RU/UA">Shakhtar</team>
 			<team group="G" country="PT">FC Porto</team>
 			<team group="H" country="ES">Real Madrid</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2017/18">
-		<winners>
+		<seeded>
 			<team group="A" country="ES">Villarreal</team>
 			<team group="B" country="RU/UA">Kyiv</team>
 			<team group="C" country="PT">Braga</team>
@@ -273,8 +273,8 @@
 			<team country="ES">Atlético</team>
 			<team country="DE">Leipzig</team>
 			<team country="PT">Sporting</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="KZ">Astana</team>
 			<team group="B" country="RS">Partizan</team>
 			<team group="C" country="BG">Razgrad</team>
@@ -291,10 +291,10 @@
 			<team country="RU/UA">Spartak</team>
 			<team country="SC">Celtic</team>
 			<team country="DE">Dortmund</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2016/17">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Arsenal FC</team>
 			<team group="B" country="IT">Napoli</team>
 			<team group="C" country="ES">FC Barcelona</team>
@@ -303,8 +303,8 @@
 			<team group="F" country="DE">Dortmund</team>
 			<team group="G" country="EN">Leicester</team>
 			<team group="H" country="IT">Juventus</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="FR">Paris SG</team>
 			<team group="B" country="PT">Benfica</team>
 			<team group="C" country="EN">Man. City</team>
@@ -313,10 +313,10 @@
 			<team group="F" country="ES">Real Madrid</team>
 			<team group="G" country="PT">FC Porto</team>
 			<team group="H" country="ES">Sevilla FC</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2016/17">
-		<winners>
+		<seeded>
 			<team group="A" country="TR">Fenerbahçe</team>
 			<team group="B" country="CY">APOEL</team>
 			<team group="C" country="FR">Saint-Étienne</team>
@@ -333,8 +333,8 @@
 			<team country="FR">Lyon</team>
 			<team country="EN">Tottenham</team>
 			<team country="TR">Beşiktaş</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="EN">ManUtd</team>
 			<team group="B" country="GR">Olympiacos</team>
 			<team group="C" country="BE">Anderlecht</team>
@@ -351,10 +351,10 @@
 			<team country="DE">Gladbach</team>
 			<team country="PL">Legia</team>
 			<team country="BG">Razgrad</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2015/16">
-		<winners>
+		<seeded>
 			<team group="A" country="ES">Real Madrid</team>
 			<team group="B" country="DE">Wolfsburg</team>
 			<team group="C" country="ES">Atlético</team>
@@ -363,8 +363,8 @@
 			<team group="F" country="DE">FC Bayern</team>
 			<team group="G" country="EN">Chelsea FC</team>
 			<team group="H" country="RU/UA">Zenit</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="FR">Paris SG</team>
 			<team group="B" country="NL">Eindhoven</team>
 			<team group="C" country="PT">Benfica</team>
@@ -373,10 +373,10 @@
 			<team group="F" country="EN">Arsenal FC</team>
 			<team group="G" country="RU/UA">Kyiv</team>
 			<team group="H" country="BE">Gent</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2015/16">
-		<winners>
+		<seeded>
 			<team group="A" country="NO">Molde</team>
 			<team group="B" country="EN">Liverpool</team>
 			<team group="C" country="RU/UA">Krasnodar</team>
@@ -393,8 +393,8 @@
 			<team country="GR">Olympiacos</team>
 			<team country="EN">ManUtd</team>
 			<team country="DE">Leverkusen</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="TR">Fenerbahçe</team>
 			<team group="B" country="CH">Sion</team>
 			<team group="C" country="DE">Dortmund</team>
@@ -411,10 +411,10 @@
 			<team country="ES">Valencia</team>
 			<team country="TR">Galatasaray</team>
 			<team country="RU/UA">Shakhtar</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2014/15">
-		<winners>
+		<seeded>
 			<team group="A" country="ES">Atlético</team>
 			<team group="B" country="ES">Real Madrid</team>
 			<team group="C" country="FR">AS Monaco</team>
@@ -423,8 +423,8 @@
 			<team group="F" country="ES">FC Barcelona</team>
 			<team group="G" country="EN">Chelsea FC</team>
 			<team group="H" country="PT">FC Porto</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="IT">Juventus</team>
 			<team group="B" country="CH">FC Basel</team>
 			<team group="C" country="DE">Leverkusen</team>
@@ -433,10 +433,10 @@
 			<team group="F" country="FR">Paris SG</team>
 			<team group="G" country="DE">Schalke 04</team>
 			<team group="H" country="RU/UA">Shakhtar</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2014/15">
-		<winners>
+		<seeded>
 			<team group="A" country="DE">Gladbach</team>
 			<team group="B" country="BE">Brugge</team>
 			<team group="C" country="TR">Beşiktaş</team>
@@ -453,8 +453,8 @@
 			<team country="PT">Sporting</team>
 			<team country="ES">Bilbao</team>
 			<team country="RU/UA">Zenit</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="ES">Villarreal</team>
 			<team group="B" country="IT">Torino</team>
 			<team group="C" country="EN">Tottenham</team>
@@ -471,10 +471,10 @@
 			<team country="NL">Ajax</team>
 			<team country="EN">Liverpool</team>
 			<team country="IT">Roma</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2013/14">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Man. United</team>
 			<team group="B" country="ES">Real Madrid</team>
 			<team group="C" country="FR">Paris SG</team>
@@ -483,8 +483,8 @@
 			<team group="F" country="DE">Dortmund</team>
 			<team group="G" country="ES">Atlético</team>
 			<team group="H" country="ES">FC Barcelona</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="DE">Leverkusen</team>
 			<team group="B" country="TR">Galatasaray</team>
 			<team group="C" country="GR">Olympiacos</team>
@@ -493,10 +493,10 @@
 			<team group="F" country="EN">Arsenal FC</team>
 			<team group="G" country="RU">Zenit</team>
 			<team group="H" country="IT">AC Milan</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2013/14">
-		<winners>
+		<seeded>
 			<team group="A" country="ES">Valencia</team>
 			<team group="B" country="BG">Razgrad</team>
 			<team group="C" country="AT">Salzburg</team>
@@ -513,8 +513,8 @@
 			<team country="PT">Benfica</team>
 			<team country="UA">Shakhtar</team>
 			<team country="CH">Basel</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="EN">Swansea</team>
 			<team group="B" country="UA">Odesa</team>
 			<team group="C" country="DK">Esbjerg</team>
@@ -531,10 +531,10 @@
 			<team country="IT">Juventus</team>
 			<team country="PT">Porto</team>
 			<team country="CZ">Plzeň</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2012/13">
-		<winners>
+		<seeded>
 			<team group="A" country="FR">Paris SG</team>
 			<team group="B" country="DE">Schalke 04</team>
 			<team group="C" country="ES">Málaga</team>
@@ -543,8 +543,8 @@
 			<team group="F" country="DE">FC Bayern</team>
 			<team group="G" country="ES">FC Barcelona</team>
 			<team group="H" country="EN">Man. United</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="PT">FC Porto</team>
 			<team group="B" country="EN">Arsenal FC</team>
 			<team group="C" country="IT">AC Milan</team>
@@ -553,10 +553,10 @@
 			<team group="F" country="ES">FC Valencia</team>
 			<team group="G" country="SC">Celtic</team>
 			<team group="H" country="TR">Galatasaray</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2012/13">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Liverpool</team>
 			<team group="B" country="CZ">Plzeň</team>
 			<team group="C" country="TR">Fenerbahçe</team>
@@ -573,8 +573,8 @@
 			<team country="RO">Cluj</team>
 			<team country="GR">Olympiacos</team>
 			<team country="PT">Benfica</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="RU">Anzhi</team>
 			<team group="B" country="ES">Atlético</team>
 			<team group="C" country="DE">Gladbach</team>
@@ -591,10 +591,10 @@
 			<team country="BY">BATE</team>
 			<team country="UA">Kyiv</team>
 			<team country="NL">Ajax</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2011/12">
-		<winners>
+		<seeded>
 			<team group="A" country="DE">FC Bayern</team>
 			<team group="B" country="IT">Inter</team>
 			<team group="C" country="PT">Benfica</team>
@@ -603,8 +603,8 @@
 			<team group="F" country="EN">Arsenal FC</team>
 			<team group="G" country="CY">APOEL</team>
 			<team group="H" country="ES">FC Barcelona</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="IT">Napoli</team>
 			<team group="B" country="RU">CSKA</team>
 			<team group="C" country="CH">FC Basel</team>
@@ -613,10 +613,10 @@
 			<team group="F" country="FR">Marseille</team>
 			<team group="G" country="RU">Zenit</team>
 			<team group="H" country="IT">AC Milan</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="el" season="2011/12">
-		<winners>
+		<seeded>
 			<team group="A" country="GR">PAOK</team>
 			<team group="B" country="BE">Liège</team>
 			<team group="C" country="NL">Eindhoven</team>
@@ -633,8 +633,8 @@
 			<team country="EN">Man. United</team>
 			<team country="GR">Olympiacos</team>
 			<team country="ES">Valencia</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="RU">Kazan</team>
 			<team group="B" country="DE">Hannover</team>
 			<team group="C" country="PL">Legia</team>
@@ -651,10 +651,10 @@
 			<team country="NL">Ajax</team>
 			<team country="TR">Trabzon</team>
 			<team country="CZ">Plzeň</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2010/11">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Tottenham</team>
 			<team group="B" country="DE">Schalke 04</team>
 			<team group="C" country="EN">Man. United</team>
@@ -663,8 +663,8 @@
 			<team group="F" country="EN">Chelsea FC</team>
 			<team group="G" country="ES">Real Madrid</team>
 			<team group="H" country="UA">Shakhtar</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="IT">Inter</team>
 			<team group="B" country="FR">Lyon</team>
 			<team group="C" country="ES">FC Valencia</team>
@@ -673,10 +673,10 @@
 			<team group="F" country="FR">Marseille</team>
 			<team group="G" country="IT">AC Milan</team>
 			<team group="H" country="EN">Arsenal FC</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2009/10">
-		<winners>
+		<seeded>
 			<team group="A" country="FR">Bordeaux</team>
 			<team group="B" country="EN">Man. United</team>
 			<team group="C" country="ES">Real Madrid</team>
@@ -685,8 +685,8 @@
 			<team group="F" country="ES">FC Barcelona</team>
 			<team group="G" country="ES">Sevilla FC</team>
 			<team group="H" country="EN">Arsenal FC</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="DE">FC Bayern</team>
 			<team group="B" country="RU">CSKA</team>
 			<team group="C" country="IT">AC Milan</team>
@@ -695,10 +695,10 @@
 			<team group="F" country="IT">Inter</team>
 			<team group="G" country="DE">Stuttgart</team>
 			<team group="H" country="GR">Olympiacos</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2008/09">
-		<winners>
+		<seeded>
 			<team group="A" country="IT">AS Roma</team>
 			<team group="B" country="GR">Panathinaikos</team>
 			<team group="C" country="ES">FC Barcelona</team>
@@ -707,8 +707,8 @@
 			<team group="F" country="DE">FC Bayern</team>
 			<team group="G" country="PT">FC Porto</team>
 			<team group="H" country="IT">Juventus</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="EN">Chelsea FC</team>
 			<team group="B" country="IT">Inter</team>
 			<team group="C" country="PT">Sporting</team>
@@ -717,10 +717,10 @@
 			<team group="F" country="FR">Lyon</team>
 			<team group="G" country="EN">Arsenal FC</team>
 			<team group="H" country="ES">Real Madrid</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2007/08">
-		<winners>
+		<seeded>
 			<team group="A" country="PT">FC Porto</team>
 			<team group="B" country="EN">Chelsea FC</team>
 			<team group="C" country="ES">Real Madrid</team>
@@ -729,8 +729,8 @@
 			<team group="F" country="EN">Man. United</team>
 			<team group="G" country="IT">Inter</team>
 			<team group="H" country="ES">Sevilla FC</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="EN">Liverpool FC</team>
 			<team group="B" country="DE">Schalke 04</team>
 			<team group="C" country="GR">Olympiacos</team>
@@ -739,10 +739,10 @@
 			<team group="F" country="IT">AS Roma</team>
 			<team group="G" country="TR">Fenerbahçe</team>
 			<team group="H" country="EN">Arsenal FC</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2006/07">
-		<winners>
+		<seeded>
 			<team group="A" country="EN">Chelsea FC</team>
 			<team group="B" country="DE">FC Bayern</team>
 			<team group="C" country="EN">Liverpool FC</team>
@@ -751,8 +751,8 @@
 			<team group="F" country="EN">Man. United</team>
 			<team group="G" country="EN">Arsenal FC</team>
 			<team group="H" country="IT">AC Milan</team>
-		</winners>
-		<runners-up>
+		</seeded>
+		<unseeded>
 			<team group="A" country="ES">FC Barcelona</team>
 			<team group="B" country="IT">Inter</team>
 			<team group="C" country="NL">Eindhoven</team>
@@ -761,6 +761,6 @@
 			<team group="F" country="SC">Celtic</team>
 			<team group="G" country="PT">FC Porto</team>
 			<team group="H" country="FR">LOSC Lille</team>
-		</runners-up>
+		</unseeded>
 	</teams>
 </config>

@@ -348,10 +348,16 @@ function createSeasons(competition) {
 
 function adjustSizes(competition, season) {
 	let short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
+	let heading = document.getElementsByTagName('h1')[0];
+	let knockout = season.includes('Knockout');
+	if (knockout) {
+		document.title = short + ' Knockout Round Draw Probabilities';
+		heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round)</small>';
+	} else {
 	let roundOf = attrW.length * 2;
 	document.title = short + ' R' + roundOf + ' Draw Probabilities';
-	let heading = document.getElementsByTagName('h1')[0];
 	heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round of ' + roundOf + ')</small>';
+	}
 	document.getElementById('cldraw-seasons-button').innerText = season;
 	if (potSize < 9) {
 		document.getElementById('cldraw-table').classList.remove('table-sm');

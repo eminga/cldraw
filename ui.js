@@ -987,8 +987,8 @@ function saveTeams() {
 	let teams = document.createElementNS('', 'teams');
 	teams.setAttribute('competition', selectedSeason[0]);
 	teams.setAttribute('season', season);
-	let winners = document.createElementNS('', 'winners');
-	let runnersUp = document.createElementNS('', 'runners-up');
+	let winners = document.createElementNS('', 'seeded');
+	let runnersUp = document.createElementNS('', 'unseeded');
 	for (let i = 0; i < potSize; i++) {
 		let team = document.createElementNS('', 'team');
 		team.textContent = document.getElementsByClassName('cldraw-winner')[i].value;

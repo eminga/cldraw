@@ -9,7 +9,7 @@
 	</competition>
 
 	<!-- the uppermost teams element is loaded by default -->
-	<teams competition="cl" season="2021/22 [with Villarreal]">
+	<teams competition="cl" season="2021/22">
 		<seeded>
 			<team group="A" country="EN">Man. City</team>
 			<team group="B" country="EN">Liverpool FC</team>
@@ -27,28 +27,6 @@
 			<team group="D" country="IT">Inter</team>
 			<team group="E" country="PT">Benfica</team>
 			<team group="F" country="ES">Villarreal</team>
-			<team group="G" country="AT">Salzburg</team>
-			<team group="H" country="EN">Chelsea FC</team>
-		</unseeded>
-	</teams>
-	<teams competition="cl" season="2021/22 [with Atalanta]">
-		<seeded>
-			<team group="A" country="EN">Man. City</team>
-			<team group="B" country="EN">Liverpool FC</team>
-			<team group="C" country="NL">Ajax</team>
-			<team group="D" country="ES">Real Madrid</team>
-			<team group="E" country="DE">FC Bayern</team>
-			<team group="F" country="EN">Man. United</team>
-			<team group="G" country="FR">LOSC Lille</team>
-			<team group="H" country="IT">Juventus</team>
-		</seeded>
-		<unseeded>
-			<team group="A" country="FR">Paris SG</team>
-			<team group="B" country="ES">Atlético</team>
-			<team group="C" country="PT">Sporting</team>
-			<team group="D" country="IT">Inter</team>
-			<team group="E" country="PT">Benfica</team>
-			<team group="F" country="IT">Atalanta</team>
 			<team group="G" country="AT">Salzburg</team>
 			<team group="H" country="EN">Chelsea FC</team>
 		</unseeded>

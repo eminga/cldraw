@@ -57,7 +57,29 @@
 			<team country="RU/UA">Zenit</team>
 		</unseeded>
 	</teams>
-	<teams competition="ecl" season="2021/22 Knockout">
+	<teams competition="ecl" season="2021/22 Knockout [Tottenham/Vitesse]">
+		<seeded>
+			<team country="IL">Tel Aviv</team>
+			<team country="RS">Partizan</team>
+			<team country="NO">FK Bodø/Glimt</team>
+			<team country="DK">Randers FC</team>
+			<team country="CZ">Slavia</team>
+			<team country="GR">PAOK</team>
+			<team country="EN/NL">Tottenham / Vitesse</team>
+			<team country="AZ">Qarabağ</team>
+		</seeded>
+		<unseeded>
+			<team country="CZ">Sparta</team>
+			<team country="EN/NL">Eindhoven</team>
+			<team country="EN/NL">Leicester</team>
+			<team country="TR">Fenerbahçe</team>
+			<team country="FR">Marseille</team>
+			<team country="DK">Midtjylland</team>
+			<team country="SC">Celtic</team>
+			<team country="AT">Rapid</team>
+		</unseeded>
+	</teams>
+	<teams competition="ecl" season="2021/22 Knockout [Vitesse]">
 		<seeded>
 			<team country="IL">Tel Aviv</team>
 			<team country="RS">Partizan</team>

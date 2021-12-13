@@ -7,6 +7,10 @@
 		<name>UEFA Europa League</name>
 		<short>EL</short>
 	</competition>
+	<competition id="ecl">
+		<name>UEFA Europa Conference League</name>
+		<short>ECL</short>
+	</competition>
 
 	<!-- the uppermost teams element is loaded by default -->
 	<teams competition="cl" season="2021/22">
@@ -51,6 +55,28 @@
 			<team country="IT">Atalanta</team>
 			<team country="ES">Sevilla FC</team>
 			<team country="RU/UA">Zenit</team>
+		</unseeded>
+	</teams>
+	<teams competition="ecl" season="2021/22 Knockout">
+		<seeded>
+			<team country="IL">Tel Aviv</team>
+			<team country="RS">Partizan</team>
+			<team country="NO">FK Bodø/Glimt</team>
+			<team country="DK">Randers FC</team>
+			<team country="CZ">Slavia</team>
+			<team country="GR">PAOK</team>
+			<team country="NL">Vitesse</team>
+			<team country="AZ">Qarabağ</team>
+		</seeded>
+		<unseeded>
+			<team country="CZ">Sparta</team>
+			<team country="NL">Eindhoven</team>
+			<team country="EN">Leicester</team>
+			<team country="TR">Fenerbahçe</team>
+			<team country="FR">Marseille</team>
+			<team country="DK">Midtjylland</team>
+			<team country="SC">Celtic</team>
+			<team country="AT">Rapid</team>
 		</unseeded>
 	</teams>
 	<teams competition="cl" season="2020/21">

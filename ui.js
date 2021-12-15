@@ -108,7 +108,8 @@ function initialize(competition, season) {
 	drawHistory = [];
 	createTable();
 	showEditorButtons();
-	adjustSizes(competition, season);
+	setTitles(competition, season);
+	adjustSizes();
 	createCompetitions();
 	createSeasons(competition);
 	removeButtons();
@@ -350,7 +351,7 @@ function createSeasons(competition) {
 }
 
 
-function adjustSizes(competition, season) {
+function setTitles(competition, season) {
 	let short = config.evaluate('//competition[@id = "' + competition + '"]/short', config, null, XPathResult.STRING_TYPE, null).stringValue;
 	let heading = document.getElementsByTagName('h1')[0];
 	let knockout = season.includes('Knockout');
@@ -363,6 +364,10 @@ function adjustSizes(competition, season) {
 	heading.innerHTML = short + ' Draw Probabilities <small class="text-muted">(' + season + ' Round of ' + roundOf + ')</small>';
 	}
 	document.getElementById('cldraw-seasons-button').innerText = season;
+}
+
+
+function adjustSizes(competition, season) {
 	if (potSize < 9) {
 		document.getElementById('cldraw-table').classList.remove('table-sm');
 		document.getElementById('cldraw-table').parentNode.classList.add('col-lg-9', 'order-lg-first');

@@ -44,7 +44,11 @@ if (typeof(XPathResult) == 'undefined' || typeof(Worker) == 'undefined') {
 			initialize();
 		}
 	};
-	xhr.open('GET', 'config.xml');
+	let configFile = document.currentScript.getAttribute('config');
+	if (configFile === null) {
+		configFile = "config.xml";
+	}
+	xhr.open('GET', configFile);
 	xhr.send();
 }
 

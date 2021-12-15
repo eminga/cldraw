@@ -112,7 +112,7 @@ function updateTable(probabilities, highlight) {
 	}
 	// for some reason typeset() needs to be called twice for spacing to be correct
 	MathJax.typeset();
-  MathJax.typeset();
+	MathJax.typeset();
 }
 
 function getPossibleMatches(probabilities, team) {
@@ -159,5 +159,49 @@ function toggleFractionMode() {
 		} else {
 			drawWinner(team - potSize, drawHistory[drawHistory.length - 1]);
 		}
+	}
+}
+
+
+function createSeasons(competition) {
+	let competitionButtons = document.getElementById('cldraw-competitions').children;
+	for (let i = 0; i < competitionButtons.length; i++) {
+		if (competitionButtons[i].id == 'competition-' + competition) {
+			competitionButtons[i].firstChild.classList.add('active');
+		} else {
+			competitionButtons[i].firstChild.classList.remove('active');
+		}
+	}
+	let seasonButtons = document.getElementById('cldraw-seasons');
+	while (seasonButtons.firstChild.id !== 'cldraw-seasons-separator') {
+		seasonButtons.removeChild(seasonButtons.firstChild);
+	}
+	let seasonSeparator = document.getElementById('cldraw-seasons-separator');
+	let iterator = config.evaluate('//teams[@competition = "' + competition + '"]/@season', config, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+	let season = iterator.iterateNext();
+
+	if (competition != selectedSeason[0]) {
+		initialize(competition, season.textContent);
+		return;
+	}
+
+	while (season) {
+		// skip if round has more than 16 teams
+		if (season.ownerElement.children[0].children.length <= 8) {
+			let button = document.createElement('li');
+			button.id = ('season-' + competition + '-' + season.textContent);
+			if (competition == selectedSeason[0] && season.textContent == selectedSeason[1]) {
+				button.classList.add('active');
+			}
+			let a = document.createElement('a');
+			a.setAttribute("role", "button");
+			a.classList.add('dropdown-item');
+			let text = document.createTextNode(season.textContent);
+			a.appendChild(text);
+			button.appendChild(a);
+			button.addEventListener('click', initialize.bind(null, competition, season.textContent), false);
+			seasonButtons.insertBefore(button, seasonSeparator);
+		}
+		season = iterator.iterateNext();
 	}
 }

@@ -35,6 +35,28 @@
 			<team group="H" country="EN">Chelsea FC</team>
 		</unseeded>
 	</teams>
+	<teams competition="el" season="2021/22">
+		<seeded>
+			<team country="FR">Lyon</team>
+			<team country="FR">Monaco</team>
+			<team country="RU/UA">Spartak</team>
+			<team country="DE">Frankfurt</team>
+			<team country="TR">Galatasaray</team>
+			<team country="RS">Belgrade</team>
+			<team country="DE">Leverkusen</team>
+			<team country="EN">West Ham</team>
+		</seeded>
+		<unseeded>
+			<team country="ES">Sevilla FC</team>
+			<team country="IT">Atalanta</team>
+			<team country="DE">Leipzig</team>
+			<team country="ES">FC Barcelona</team>
+			<team country="ES">Betis</team>
+			<team country="SC">Rangers</team>
+			<team country="PT">Braga</team>
+			<team country="PT">FC Porto</team>
+		</unseeded>
+	</teams>
 	<teams competition="el" season="2021/22 Knockout">
 		<seeded>
 			<team country="SC">Rangers</team>
@@ -57,11 +79,33 @@
 			<team country="RU/UA">Zenit</team>
 		</unseeded>
 	</teams>
+	<teams competition="ecl" season="2021/22">
+		<seeded>
+			<team country="AT">LASK</team>
+			<team country="BE">Gent</team>
+			<team country="IT">AS Roma</team>
+			<team country="NL">Alkmaar</team>
+			<team country="NL">Feyenoord</team>
+			<team country="DK">København</team>
+			<team country="FR">Rennes</team>
+			<team country="CH">Basel</team>
+		</seeded>
+		<unseeded>
+			<team country="FR">Marseille</team>
+			<team country="NL">Eindhoven</team>
+			<team country="CZ">Slavia</team>
+			<team country="GR">PAOK</team>
+			<team country="EN">Leicester</team>
+			<team country="NO">Bodø/Glimt</team>
+			<team country="RS">Partizan</team>
+			<team country="NL">Vitesse</team>
+		</unseeded>
+	</teams>
 	<teams competition="ecl" season="2021/22 Knockout">
 		<seeded>
 			<team country="IL">Tel Aviv</team>
 			<team country="RS">Partizan</team>
-			<team country="NO">FK Bodø/Glimt</team>
+			<team country="NO">Bodø/Glimt</team>
 			<team country="DK">Randers FC</team>
 			<team country="CZ">Slavia</team>
 			<team country="GR">PAOK</team>

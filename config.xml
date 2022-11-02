@@ -22,7 +22,7 @@
 			<team group="E" country="EN">Chelsea FC</team>
 			<team group="F" country="ES">Real Madrid</team>
 			<team group="G" country="EN">Man. City</team>
-			<team group="H" country="FR">Paris SG</team>
+			<team group="H" country="PT">Benfica</team>
 		</seeded>
 		<unseeded>
 			<team group="A" country="EN">Liverpool FC</team>
@@ -32,7 +32,7 @@
 			<team group="E" country="IT">AC Milan</team>
 			<team group="F" country="DE">Leipzig</team>
 			<team group="G" country="DE">Dortmund</team>
-			<team group="H" country="PT">Benfica</team>
+			<team group="H" country="FR">Paris SG</team>
 		</unseeded>
 	</teams>
 	<teams competition="cl" season="2021/22">

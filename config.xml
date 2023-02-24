@@ -55,7 +55,7 @@
 			<team country="PL">Poznań</team>
 			<team country="MD">Sheriff</team>
 			<team country="CH">Basel</team>
-		</seeded>
+		</unseeded>
 	</teams>
 	<teams competition="cl" season="2022/23">
 		<seeded>

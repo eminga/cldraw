@@ -13,6 +13,28 @@
 	</competition>
 
 	<!-- the uppermost teams element is loaded by default -->
+	<teams competition="el" season="2022/23">
+		<seeded>
+			<team country="EN">Man. United</team>
+			<team country="DE">Leverkusen</team>
+			<team country="DE">Union Berlin</team>
+			<team country="IT">Juventus</team>
+			<team country="IT">AS Roma</team>
+			<team country="PT">Sporting</team>
+			<team country="ES">Sevilla FC</team>
+			<team country="UA">Shakhtar</team>
+		</seeded>
+		<unseeded>
+			<team country="BE">Union Saint-Gilloise</team>
+			<team country="EN">Arsenal</team>
+			<team country="DE">SC Freiburg</team>
+			<team country="HU">Ferencváros</team>
+			<team country="NL">Feyenoord</team>
+			<team country="ES">Betis</team>
+			<team country="ES">Sociedad</team>
+			<team country="TR">Fenerbahçe</team>
+		</unseeded>
+	</teams>
 	<teams competition="cl" season="2022/23">
 		<seeded>
 			<team group="A" country="IT">Napoli</team>

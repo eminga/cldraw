@@ -35,6 +35,28 @@
 			<team country="UA">Shakhtar</team>
 		</unseeded>
 	</teams>
+	<teams competition="ecl" season="2022/23">
+		<seeded>
+			<team country="EN">West Ham</team>
+			<team country="FR">Nice</team>
+			<team country="NL">Alkmaar</team>
+			<team country="SK">Bratislava</team>
+			<team country="ES">Villarreal</team>
+			<team country="SE">Djurgården</team>
+			<team country="TR">Başakşehir</team>
+			<team country="TR">Sivasspor</team>
+		</seeded>
+		<unseeded>
+			<team country="BE">Anderlecht</team>
+			<team country="BE">Gent</team>
+			<team country="CY">Larnaca</team>
+			<team country="IT">Fiorentina</team>
+			<team country="IT">Lazio</team>
+			<team country="PL">Poznań</team>
+			<team country="MD">Sheriff</team>
+			<team country="CH">Basel</team>
+		</seeded>
+	</teams>
 	<teams competition="cl" season="2022/23">
 		<seeded>
 			<team group="A" country="IT">Napoli</team>

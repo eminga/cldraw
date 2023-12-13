@@ -13,6 +13,28 @@
 	</competition>
 
 	<!-- the uppermost teams element is loaded by default -->
+	<teams competition="cl" season="2023/24">
+		<seeded>
+			<team group="A" country="DE">FC Bayern</team>
+			<team group="B" country="EN">Arsenal FC</team>
+			<team group="C" country="ES">Real Madrid</team>
+			<team group="D" country="ES">Real Sociedad</team>
+			<team group="E" country="ES">Atlético</team>
+			<team group="F" country="DE">Dortmund</team>
+			<team group="G" country="EN">Man. City</team>
+			<team group="H" country="ES">FC Barcelona</team>
+		</seeded>
+		<unseeded>
+			<team group="A" country="DK">København</team>
+			<team group="B" country="NL">Eindhoven</team>
+			<team group="C" country="IT">Napoli</team>
+			<team group="D" country="IT">Inter</team>
+			<team group="E" country="IT">Lazio</team>
+			<team group="F" country="FR">Paris SG</team>
+			<team group="G" country="DE">Leipzig</team>
+			<team group="H" country="PT">FC Porto</team>
+		</unseeded>
+	</teams>
 	<teams competition="el" season="2022/23">
 		<seeded>
 			<team country="BE">Union Saint-Gilloise</team>

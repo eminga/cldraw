@@ -26,7 +26,7 @@
 		</seeded>
 		<unseeded>
 			<team group="A" country="DK">København</team>
-			<team group="B" country="NL">Eindhoven</team>
+			<team group="B" country="NL">PSV</team>
 			<team group="C" country="IT">Napoli</team>
 			<team group="D" country="IT">Inter</team>
 			<team group="E" country="IT">Lazio</team>
@@ -103,7 +103,7 @@
 	</teams>
 	<teams competition="el" season="2022/23 Knockout">
 		<seeded>
-			<team country="NL">Eindhoven</team>
+			<team country="NL">PSV</team>
 			<team country="FR">Rennes</team>
 			<team country="IT">AS Roma</team>
 			<team country="DE">Union Berlin</team>
@@ -224,7 +224,7 @@
 		</seeded>
 		<unseeded>
 			<team country="FR">Marseille</team>
-			<team country="NL">Eindhoven</team>
+			<team country="NL">PSV</team>
 			<team country="CZ">Slavia</team>
 			<team country="GR">PAOK</team>
 			<team country="EN">Leicester</team>
@@ -246,7 +246,7 @@
 		</seeded>
 		<unseeded>
 			<team country="CZ">Sparta</team>
-			<team country="EN/NL">Eindhoven</team>
+			<team country="EN/NL">PSV</team>
 			<team country="EN/NL">Leicester</team>
 			<team country="TR">Fenerbahçe</team>
 			<team country="FR">Marseille</team>
@@ -283,7 +283,7 @@
 			<team group="B" country="EN">Arsenal</team>
 			<team group="C" country="DE">Leverkusen</team>
 			<team group="D" country="SC">Rangers</team>
-			<team group="E" country="NL">Eindhoven</team>
+			<team group="E" country="NL">PSV</team>
 			<team group="F" country="IT">Napoli</team>
 			<team group="G" country="EN">Leicester</team>
 			<team group="H" country="IT">Milan</team>
@@ -568,7 +568,7 @@
 		</seeded>
 		<unseeded>
 			<team group="A" country="FR">Paris SG</team>
-			<team group="B" country="NL">Eindhoven</team>
+			<team group="B" country="NL">PSV</team>
 			<team group="C" country="PT">Benfica</team>
 			<team group="D" country="IT">Juventus</team>
 			<team group="E" country="IT">AS Roma</team>
@@ -661,7 +661,7 @@
 			<team group="B" country="IT">Torino</team>
 			<team group="C" country="EN">Tottenham</team>
 			<team group="D" country="SC">Celtic</team>
-			<team group="E" country="NL">Eindhoven</team>
+			<team group="E" country="NL">PSV</team>
 			<team group="F" country="RU/UA">Dnipro</team>
 			<team group="G" country="ES">Sevilla</team>
 			<team group="H" country="DE">Wolfsburg</team>
@@ -821,7 +821,7 @@
 		<seeded>
 			<team group="A" country="GR">PAOK</team>
 			<team group="B" country="BE">Liège</team>
-			<team group="C" country="NL">Eindhoven</team>
+			<team group="C" country="NL">PSV</team>
 			<team group="D" country="PT">Sporting</team>
 			<team group="E" country="TR">Beşiktaş</team>
 			<team group="F" country="ES">Bilbao</team>
@@ -957,7 +957,7 @@
 		<unseeded>
 			<team group="A" country="ES">FC Barcelona</team>
 			<team group="B" country="IT">Inter</team>
-			<team group="C" country="NL">Eindhoven</team>
+			<team group="C" country="NL">PSV</team>
 			<team group="D" country="IT">AS Roma</team>
 			<team group="E" country="ES">Real Madrid</team>
 			<team group="F" country="SC">Celtic</team>

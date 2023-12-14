@@ -35,6 +35,50 @@
 			<team group="H" country="PT">FC Porto</team>
 		</unseeded>
 	</teams>
+	<teams competition="el" season="2023/24 Knockout">
+		<seeded>
+			<team country="DE">SC Freiburg</team>
+			<team country="FR">Marseille</team>
+			<team country="CZ">Sparta</team>
+			<team country="PT">Sporting</team>
+			<team country="FR">Toulouse</team>
+			<team country="FR">Rennes</team>
+			<team country="IT">AS Roma</team>
+			<team country="AZ">Qarabağ</team>
+		</seeded>
+		<unseeded>
+			<team country="TR">Galatasaray</team>
+			<team country="FR">Lens</team>
+			<team country="PT">Braga</team>
+			<team country="PT">Benfica</team>
+			<team country="NL">Feyenoord</team>
+			<team country="IT">AC Milan</team>
+			<team country="CH">Bern</team>
+			<team country="UA">Shakhtar</team>
+		</unseeded>
+	</teams>
+	<teams competition="ecl" season="2023/24 Knockout">
+		<seeded>
+			<team country="SK">Bratislava</team>
+			<team country="BE">Gent</team>
+			<team country="CR">Zagreb</team>
+			<team country="NO">Bodø/Glimt</team>
+			<team country="PL">Legia</team>
+			<team country="HU">Ferencváros</team>
+			<team country="DE">Frankfurt</team>
+			<team country="BG">Razgrad</team>
+		</seeded>
+		<unseeded>
+			<team country="GR">Olympiakos</team>
+			<team country="NL">Ajax</team>
+			<team country="ES">Betis</team>
+			<team country="AT">Sturm Graz</team>
+			<team country="BE">Union Saint-Gilloise</team>
+			<team country="IL">Haifa</team>
+			<team country="CH">Servette</team>
+			<team country="NO">Molde</team>
+		</unseeded>
+	</teams>
 	<teams competition="el" season="2022/23">
 		<seeded>
 			<team country="BE">Union Saint-Gilloise</team>

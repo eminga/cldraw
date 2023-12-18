@@ -53,7 +53,7 @@
 			<team country="PT">Benfica</team>
 			<team country="NL">Feyenoord</team>
 			<team country="IT">AC Milan</team>
-			<team country="CH">Bern</team>
+			<team country="CH">BSC Young Boys</team>
 			<team country="UA">Shakhtar</team>
 		</unseeded>
 	</teams>
@@ -341,7 +341,7 @@
 			<team country="NL">Ajax</team>
 		</seeded>
 		<unseeded>
-			<team group="A" country="CH">Bern</team>
+			<team group="A" country="CH">BSC YB</team>
 			<team group="B" country="NO">Molde</team>
 			<team group="C" country="CZ">Praha</team>
 			<team group="D" country="PT">Benfica</team>
@@ -709,7 +709,7 @@
 			<team group="F" country="RU/UA">Dnipro</team>
 			<team group="G" country="ES">Sevilla</team>
 			<team group="H" country="DE">Wolfsburg</team>
-			<team group="I" country="CH">Bern</team>
+			<team group="I" country="CH">BSC YB</team>
 			<team group="J" country="DK">Aalborg</team>
 			<team group="K" country="FR">Guingamp</team>
 			<team group="L" country="TR">Trabzon</team>

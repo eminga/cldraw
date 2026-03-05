@@ -1,4 +1,7 @@
 # CL Draw Probabilities
+
+Note: Since the 2024/25 season, the UEFA Champions League and UEFA Europa League use a new format, so this tool has become obsolete for UEFA draws. While the UI is tailored for UEFA draws, the underlying JavaScript code (cldraw.js) can still be used for any two‑sided draw, with or without constraints.
+
 An interactive probability calculator for the round of 16 of the UEFA Champions League and the round of 32 of the UEFA Europa League.
 
 Try it: https://eminga.github.io/cldraw/
